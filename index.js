@@ -14,6 +14,8 @@ const catchAsync = require('./utils/catchAsync');
 
 const mongoose = require('mongoose');
 
+const authRoutes = require('./routes/auth');
+
 app.use(express.urlencoded({extended : true}));
 
 app.set('views', path.join(__dirname, 'views'));
@@ -54,6 +56,8 @@ mongoose.connect(process.env.MONGO_URL)
     }).catch((err) => {
         console.log("Error", err)
     });
+
+app.use('/', authRoutes);    
 
 app.get('/', (req, res)=>{
     req.flash('success', 'Welcome to EduVision AI');

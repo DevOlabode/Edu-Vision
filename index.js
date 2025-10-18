@@ -46,6 +46,13 @@ app.use((req, res, next)=>{
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => {
+        console.log("Mongo Connection Open")   
+    }).catch((err) => {
+        console.log("Error", err)
+    });
+
 app.get('/', (req, res)=>{
     req.flash('success', 'Welcome to EduVision AI');
     res.render('home');

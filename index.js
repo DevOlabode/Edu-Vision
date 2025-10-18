@@ -12,6 +12,8 @@ const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
 
+const mongoose = require('mongoose');
+
 app.use(express.urlencoded({extended : true}));
 
 app.set('views', path.join(__dirname, 'views'));

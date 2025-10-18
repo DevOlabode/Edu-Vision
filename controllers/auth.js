@@ -7,5 +7,16 @@ module.exports.registerForm = (req, res) =>{
 
 module.exports.register = async(req, res) =>{
     const {username, email, password, lastName, firstName, bio, role} = req.body;
-    res.send(req.body);
-} 
+    const user = new User({ username, firstName, lastName, email, bio,role });
+    const registeredUser = await User.register(user, password);
+
+    req.login(registeredUser, err =>{
+        if(err) return next(err);
+        req.flash('success', 'Welcome to EduVision AI');
+        res.redirect('/');
+    });
+}
+
+module.exports.loginForm = (req, res) =>{
+    res.render('auth/login');
+};

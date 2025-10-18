@@ -9,6 +9,9 @@ const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
 
+const ExpressError = require('./utils/ExpressError');
+const catchAsync = require('./utils/catchAsync');
+
 app.use(express.urlencoded({extended : true}));
 
 app.set('views', path.join(__dirname, 'views'));

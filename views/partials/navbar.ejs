@@ -18,15 +18,19 @@
         </li>
       </ul>
 
-      
-
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/register">Register</a>
-        </li>
+        <% if(currentUser){ %>
+            <li class="navbar-item">
+              <a class="nav-link" href="/profile">Profile</a>
+            </li>
+          <% }else{ %>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+        <% } %>
       </ul>
     </div>
   </div>

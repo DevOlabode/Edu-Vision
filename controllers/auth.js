@@ -1,4 +1,5 @@
 const User = require('../models/user');
+
 const passport = require('passport');
 
 module.exports.registerForm = (req, res) =>{
@@ -20,3 +21,8 @@ module.exports.register = async(req, res) =>{
 module.exports.loginForm = (req, res) =>{
     res.render('auth/login');
 };
+
+module.exports.login = async(req, res) =>{
+    req.flash('success', 'Welcome back to Eduvision!');
+    res.redirect('/')
+}

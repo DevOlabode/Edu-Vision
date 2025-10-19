@@ -20,3 +20,10 @@ module.exports.storeReturnTo = (req, res, next)=>{
     }
     next();
 };
+
+module.exports.redirectIfLoggedIn = (req, res)=>{
+    if (req.isAuthenticated()) {
+        return res.redirect('/');
+    }
+    next();
+}

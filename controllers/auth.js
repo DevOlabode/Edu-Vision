@@ -25,4 +25,12 @@ module.exports.loginForm = (req, res) =>{
 module.exports.login = async(req, res) =>{
     req.flash('success', 'Welcome back to Eduvision!');
     res.redirect('/')
+};
+
+module.exports.logout = (req, res)=>{
+        req.logout(function(err){
+        if(err) return next(err);
+        req.flash('success', 'Successfully Logged out');
+        res.redirect('/')   
+    });
 }

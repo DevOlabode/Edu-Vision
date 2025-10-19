@@ -19,4 +19,6 @@ router.get('/logout', userController.logout);
 
 router.get('/profile', isLoggedIn, userController.profile);
 
+router.get('/forgot-password', redirectIfLoggedIn, userController.forgottenPasswordForm);
+
 module.exports = router;

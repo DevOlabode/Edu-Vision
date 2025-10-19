@@ -40,3 +40,7 @@ module.exports.profile = async(req, res)=>{
     const user = await User.findById(req.user._id);
     res.render('auth/profile', {user})
 };
+
+module.exports.forgottenPasswordForm = (req, res) =>{
+    res.render('auth/forgottenPassword');
+};

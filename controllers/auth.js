@@ -24,7 +24,8 @@ module.exports.loginForm = (req, res) =>{
 
 module.exports.login = async(req, res) =>{
     req.flash('success', 'Welcome back to Eduvision!');
-    res.redirect('/')
+    const returnUrl = res.locals.returnTo || '/'
+    res.redirect(returnUrl)
 };
 
 module.exports.logout = (req, res)=>{

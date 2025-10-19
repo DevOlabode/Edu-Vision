@@ -21,7 +21,7 @@ module.exports.storeReturnTo = (req, res, next)=>{
     next();
 };
 
-module.exports.redirectIfLoggedIn = (req, res)=>{
+module.exports.redirectIfLoggedIn = (req, res, next)=>{
     if (req.isAuthenticated()) {
         return res.redirect('/');
     }

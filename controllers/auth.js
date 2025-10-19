@@ -6,7 +6,7 @@ module.exports.registerForm = (req, res) =>{
     res.render('auth/register');
 }
 
-module.exports.register = async(req, res) =>{
+module.exports.register = async(req, res, next) =>{
     const {username, email, password, lastName, firstName, bio, role} = req.body;
     const user = new User({ username, firstName, lastName, email, bio,role });
     const registeredUser = await User.register(user, password);
@@ -28,11 +28,11 @@ module.exports.login = async(req, res) =>{
     res.redirect(returnUrl)
 };
 
-module.exports.logout = (req, res)=>{
+module.exports.logout = (req, res, next)=>{
         req.logout(function(err){
         if(err) return next(err);
         req.flash('success', 'Successfully Logged out');
-        res.redirect('/')   
+        res.redirect('/')
     });
 }
 

@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 
 const userController = require('../controllers/auth');
 
-const {loginAuthenticate, isLoggedIn, storeReturnTo, redirectIfLoggedIn } = require('../middleware')
+const {loginAuthenticate, isLoggedIn, storeReturnTo, redirectIfLoggedIn} = require('../middleware')
 
 router.get('/register', userController.registerForm);
 

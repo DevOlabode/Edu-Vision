@@ -73,7 +73,6 @@ mongoose.connect(process.env.MONGO_URL)
 app.use('/', authRoutes);    
 
 app.get('/', (req, res)=>{
-    req.flash('success', 'Welcome to EduVision AI');
     res.render('home');
 });
 

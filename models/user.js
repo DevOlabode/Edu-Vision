@@ -38,6 +38,10 @@ const userSchema = new Schema({
     resetCodeExpires: {
         type: Date,
         required: false
+    },
+    googleId: {
+        type: String,
+        required: false
     }
 }, { timestamps: true }
 );

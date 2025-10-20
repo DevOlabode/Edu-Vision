@@ -11,6 +11,7 @@ const flash = require('connect-flash');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+require('./config/oauth')
 
 const User = require('./models/user'); // adjust path as needed
 
@@ -70,7 +71,20 @@ mongoose.connect(process.env.MONGO_URL)
         console.log("Error", err)
     });
 
-app.use('/', authRoutes);    
+app.use('/', authRoutes);
+
+// Google OAuth routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    req.flash('success', 'Welcome to EduVision AI!');
+    res.redirect('/');
+  }
+);
 
 app.get('/', (req, res)=>{
     res.render('home');

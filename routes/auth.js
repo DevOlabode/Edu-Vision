@@ -7,7 +7,7 @@ const userController = require('../controllers/auth');
 
 const {loginAuthenticate, isLoggedIn, storeReturnTo, redirectIfLoggedIn} = require('../middleware')
 
-router.get('/register', userController.registerForm);
+router.get('/register', redirectIfLoggedIn, userController.registerForm);
 
 router.post('/register', catchAsync(userController.register));
 

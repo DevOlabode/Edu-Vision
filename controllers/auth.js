@@ -44,3 +44,7 @@ module.exports.profile = async(req, res)=>{
 module.exports.forgottenPasswordForm = (req, res) =>{
     res.render('auth/forgottenPassword');
 };
+
+module.exports.forgottenPassword = async(req, res) =>{
+    const { email } = req.body
+}

@@ -21,4 +21,6 @@ router.get('/profile', isLoggedIn, userController.profile);
 
 router.get('/forgot-password', redirectIfLoggedIn, userController.forgottenPasswordForm);
 
+router.post('/send-code', userController.sendCode);
+
 module.exports = router;

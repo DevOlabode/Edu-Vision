@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 const passport = require('passport');
-const { sendWelcomeEmail } = require('../utils/emailService');
+const { sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/emailService');
 
 module.exports.registerForm = (req, res) =>{
     res.render('auth/register');
@@ -48,6 +48,21 @@ module.exports.forgottenPasswordForm = (req, res) =>{
     res.render('auth/forgottenPassword');
 };
 
-module.exports.forgottenPassword = async(req, res) =>{
-    const { email } = req.body
-}
+function generateCode(length = 7) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < length; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+};
+
+module.exports.sendCode = async(req, res) =>{
+    const { email } = req.body;
+    const user = await User.find({email});
+
+    if(user){
+        const resetCode = generateCode();
+        sendPasswordResetEmail(email, user.firstName, resetCode);
+    }
+};

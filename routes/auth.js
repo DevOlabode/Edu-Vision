@@ -27,4 +27,8 @@ router.get('/reset-password', redirectIfLoggedIn, userController.resetPasswordFo
 
 router.post('/reset-password', catchAsync(userController.resetPassword));
 
+router.get('/complete-profile', isLoggedIn, userController.completeProfileForm);
+
+router.post('/complete-profile', isLoggedIn, catchAsync(userController.completeProfile));
+
 module.exports = router;

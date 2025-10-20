@@ -29,7 +29,7 @@ const userSchema = new Schema({
     role : {
         type : String,
         enum : ['Teacher' , 'Student'],
-        required : true
+        required : false
     },
     resetCode: {
         type: String,

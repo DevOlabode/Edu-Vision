@@ -81,8 +81,13 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    req.flash('success', 'Welcome to EduVision AI!');
-    res.redirect('/');
+    if (req.user.isNewUser) {
+      req.flash('info', 'Please complete your profile to continue.');
+      res.redirect('/complete-profile');
+    } else {
+      req.flash('success', 'Welcome to EduVision AI!');
+      res.redirect('/');
+    }
   }
 );
 

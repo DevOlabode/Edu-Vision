@@ -43,10 +43,12 @@ passport.use(
           email: profile.emails[0].value,
           firstName: firstName,
           lastName: lastName,
-          role: 'Student' // Default role
+          role: null, // Will be set later
+          bio: ''
         });
 
         await user.save();
+        user.isNewUser = true; // Flag for new user
         return done(null, user);
       } catch (error) {
         return done(error, null);

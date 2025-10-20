@@ -106,3 +106,19 @@ module.exports.resetPassword = async(req, res) => {
     req.flash('success', 'Password reset successfully. You can now log in with your new password.');
     res.redirect('/login');
 };
+
+module.exports.completeProfileForm = (req, res) => {
+    res.render('auth/completeProfile');
+};
+
+module.exports.completeProfile = async(req, res) => {
+    const { bio, role } = req.body;
+    const user = await User.findById(req.user._id);
+
+    user.bio = bio;
+    user.role = role;
+    await user.save();
+
+    req.flash('success', 'Profile completed successfully! Welcome to EduVision AI!');
+    res.redirect('/');
+};

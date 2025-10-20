@@ -1,0 +1,30 @@
+<% layout('layout/boilerplate.ejs') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center">Complete Your Profile</h3>
+        </div>
+        <div class="card-body">
+          <form action="/complete-profile" method="POST" class="needs-validation" novalidate>
+            <div class="mb-3">
+              <label for="bio" class="form-label">Bio (Optional)</label>
+              <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Tell us about yourself..."></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select class="form-select" id="role" name="role" required>
+                <option value="">Select Role</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Complete Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

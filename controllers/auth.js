@@ -12,7 +12,7 @@ module.exports.register = async(req, res, next) =>{
     const user = new User({ username, firstName, lastName, email, bio,role });
     const registeredUser = await User.register(user, password);
 
-    sendWelcomeEmail(email, username)
+    sendWelcomeEmail(email, firstName)
 
     req.login(registeredUser, err =>{
         if(err) return next(err);

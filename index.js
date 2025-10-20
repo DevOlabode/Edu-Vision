@@ -11,6 +11,7 @@ const flash = require('connect-flash');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+
 require('./config/oauth')
 
 const User = require('./models/user'); // adjust path as needed
@@ -18,8 +19,7 @@ const User = require('./models/user'); // adjust path as needed
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
 
-const mongoose = require('mongoose');
-
+const connectDB = require('./config/database')
 const authRoutes = require('./routes/auth');
 
 app.use(express.urlencoded({extended : true}));
@@ -64,12 +64,14 @@ app.use((req, res, next)=>{
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => {
-        console.log("Mongo Connection Open")   
-    }).catch((err) => {
-        console.log("Error", err)
-    });
+connectDB()
+
+// mongoose.connect(process.env.MONGO_URL)
+//     .then(() => {
+//         console.log("Mongo Connection Open")   
+//     }).catch((err) => {
+//         console.log("Error", err)
+//     });
 
 app.use('/', authRoutes);
 

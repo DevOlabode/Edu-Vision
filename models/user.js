@@ -30,6 +30,14 @@ const userSchema = new Schema({
         type : String,
         enum : ['Teacher' , 'Student'],
         required : true
+    },
+    resetCode: {
+        type: String,
+        required: false
+    },
+    resetCodeExpires: {
+        type: Date,
+        required: false
     }
 }, { timestamps: true }
 );

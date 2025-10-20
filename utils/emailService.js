@@ -22,7 +22,7 @@ transporter.verify((error, success) => {
 
 module.exports.sendWelcomeEmail = async (toEmail, firstName) => {
       const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `EduVision AI <${process.env.EMAIL_USER}>`,
     to: toEmail,
     subject: 'Welcome to EduVision AI',
     text: `Hi ${firstName},
@@ -73,13 +73,13 @@ module.exports.sendPasswordResetEmail = async (toEmail, firstName, resetCode) =>
         ${resetCode}
       </p>
 
-      <p>Please enter this code on the password reset page to create a new password. This code will expire in <strong>30 minutes</strong> for security reasons.</p>
+      <p>Please enter this code on the password reset page to create a new password. This code will expire in <strong>15 minutes</strong> for security reasons.</p>
 
       <p>If you didn’t request a password reset, you can safely ignore this email. Your account is still secure and no changes have been made.</p>
 
       <p style="margin-top: 30px;">Need help? Just reply to this email or reach out to our support team.</p>
 
-      <p style="margin-top: 40px;">Stay curious,<br><strong>The EduVision AI Team</strong><br>${process.env.GMAIL_USER}</p>
+      <p style="margin-top: 40px;">Stay curious,<br><strong>The EduVision AI Team</strong><br>${process.env.EMAIL_USER}</p>
     </div>
   `
 });

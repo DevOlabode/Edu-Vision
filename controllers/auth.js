@@ -59,10 +59,50 @@ function generateCode(length = 7) {
 
 module.exports.sendCode = async(req, res) =>{
     const { email } = req.body;
-    const user = await User.find({email});
+    const user = await User.findOne({email});
 
     if(user){
         const resetCode = generateCode();
+        const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        user.resetCode = resetCode;
+        user.resetCodeExpires = expires;
+        await user.save();
         sendPasswordResetEmail(email, user.firstName, resetCode);
+        req.flash('success', 'Password reset code sent to your email.');
+        res.redirect('/reset-password');
+    } else {
+        req.flash('error', 'No account found with that email address.');
+        res.redirect('/forgot-password');
     }
+};
+
+module.exports.resetPasswordForm = (req, res) => {
+    res.render('auth/resetPassword');
+};
+
+module.exports.resetPassword = async(req, res) => {
+    const { resetCode, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+        req.flash('error', 'Passwords do not match.');
+        return res.redirect('/reset-password');
+    }
+
+    const user = await User.findOne({
+        resetCode: resetCode,
+        resetCodeExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+        req.flash('error', 'Invalid or expired reset code.');
+        return res.redirect('/reset-password');
+    }
+
+    await user.setPassword(newPassword);
+    user.resetCode = undefined;
+    user.resetCodeExpires = undefined;
+    await user.save();
+
+    req.flash('success', 'Password reset successfully. You can now log in with your new password.');
+    res.redirect('/login');
 };

@@ -11,7 +11,7 @@ ${extractedText}
   `;
 
   const response = await openrouter.post('/chat/completions', {
-    model: 'openai/gpt-3.5-turbo', // You can change this to other models like 'openai/gpt-4' or 'meta-llama/llama-3-8b'
+    model: 'openai/gpt-3.5-turbo',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.7
   });

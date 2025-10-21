@@ -28,11 +28,41 @@
             </div>
           </div>
 
-          <% if (material.content) { %>
+          <% if (material.summary) { %>
             <hr>
-            <h5>Extracted Content:</h5>
+            <%
+              const summaryParts = material.summary.split('Flashcards:');
+              const studyNotes = summaryParts[0].replace('Study Notes:', '').trim();
+              const flashcards = summaryParts[1] ? summaryParts[1].trim() : '';
+            %>
             <div class="mt-3">
-              <pre style="white-space: pre-wrap; font-family: inherit;"><%= material.content %></pre>
+              <% if (studyNotes) { %>
+                <h5>Study Notes:</h5>
+                <ul class="list-group list-group-flush mb-4">
+                  <% studyNotes.split('\n').forEach(note => { %>
+                    <% if (note.trim().startsWith('-')) { %>
+                      <li class="list-group-item"><%= note.trim().substring(1).trim() %></li>
+                    <% } %>
+                  <% }); %>
+                </ul>
+              <% } %>
+
+              <% if (flashcards) { %>
+                <h5>Flashcards:</h5>
+                <div class="row">
+                  <% flashcards.split('\n').forEach(card => { %>
+                    <% if (card.trim() && /^\d+\./.test(card.trim())) { %>
+                      <div class="col-md-6 mb-3">
+                        <div class="card">
+                          <div class="card-body">
+                            <p class="card-text"><%= card.trim() %></p>
+                          </div>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% }); %>
+                </div>
+              <% } %>
             </div>
           <% } %>
         </div>

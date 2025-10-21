@@ -95,11 +95,11 @@ app.get('/auth/google/callback',
 );
 
 app.get('/', (req, res)=>{
-    res.render('home');
+    res.render('shared/home');
 });
 
 app.get('/upload', (req, res)=>{
-    res.render('upload');
+    res.render('student/upload');
 });
 
 app.get('/upload/success/:id', async (req, res) => {
@@ -110,7 +110,7 @@ app.get('/upload/success/:id', async (req, res) => {
             req.flash('error', 'Material not found');
             return res.redirect('/upload');
         }
-        res.render('uploadSuccess', { material });
+        res.render('student/uploadSuccess', { material });
     } catch (error) {
         req.flash('error', 'Something went wrong');
         res.redirect('/upload');
@@ -121,7 +121,7 @@ app.get('/materials', async (req, res) => {
     try {
         const Material = require('./models/student/material');
         const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
-        res.render('materials', { materials });
+        res.render('student/materials', { materials });
     } catch (error) {
         req.flash('error', 'Something went wrong');
         res.redirect('/');
@@ -136,7 +136,7 @@ app.get('/materials/:id', async (req, res) => {
             req.flash('error', 'Material not found');
             return res.redirect('/materials');
         }
-        res.render('materialDetail', { material });
+        res.render('student/materialDetail', { material });
     } catch (error) {
         req.flash('error', 'Something went wrong');
         res.redirect('/materials');
@@ -152,7 +152,7 @@ app.use((err, req, res, next)=>{
     if(!err.message){
         err.message = 'Something Went Wrong!'
     }
-    res.status(statusCode).render('error', {err})
+    res.status(statusCode).render('shared/error', {err})
 });
 
 const PORT = process.env.PORT || 3000;

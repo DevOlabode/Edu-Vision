@@ -69,7 +69,6 @@ exports.upload = async (req, res) => {
         // Use setImmediate instead of setTimeout for better performance
         setImmediate(async () => {
             try {
-                console.log('Starting text extraction for material:', material._id);
                 // Store the local file path before Cloudinary overwrites it
                 const localFilePath = req.file.path;
                 const text = await extractText(localFilePath, fileType);
@@ -78,9 +77,7 @@ exports.upload = async (req, res) => {
                     content: text,
                     status: 'ready'
                 });
-                console.log('Text extraction completed for material:', material._id);
             } catch (err) {
-                console.error('Text extraction failed for material:', material._id, err);
                 await Material.findByIdAndUpdate(material._id, {
                     status: 'error'
                 });

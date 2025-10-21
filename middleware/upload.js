@@ -12,7 +12,8 @@ const storage = new CloudinaryStorage({
         
         return {
             folder: 'eduvisionai',
-            resource_type: 'raw',
+            resource_type: 'auto', // Changed from 'raw' to 'auto'
+            access_mode: 'public', // Make files publicly accessible
             public_id: uniqueName,
             format: fileExtension
         };

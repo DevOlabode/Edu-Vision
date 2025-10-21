@@ -2,14 +2,17 @@ const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
-exports.extractText = async (filePath, type) => {
+exports.extractText = async (fileUrl, type) => {
     try {
-        console.log('Extracting text from file:', filePath);
+        console.log('Extracting text from file:', fileUrl);
         console.log('File type:', type);
 
-        const fs = require('fs');
-        const buffer = fs.readFileSync(filePath);
-        console.log('Read file, buffer size:', buffer.length);
+        // Download the file from Cloudinary URL
+        const response = await axios.get(fileUrl, {
+            responseType: 'arraybuffer'
+        });
+        const buffer = Buffer.from(response.data);
+        console.log('Downloaded file, buffer size:', buffer.length);
 
         if (type === 'pdf') {
             console.log('Parsing PDF...');

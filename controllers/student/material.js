@@ -37,7 +37,7 @@ exports.upload = async (req, res) => {
             console.log('ERROR: No title provided');
             // Delete from Cloudinary if title is missing
             try {
-                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'raw' });
+                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
                 console.log('Deleted file from Cloudinary due to missing title');
             } catch (deleteError) {
                 console.error('Error deleting file from Cloudinary:', deleteError);
@@ -109,7 +109,7 @@ exports.upload = async (req, res) => {
         // Cleanup: Delete from Cloudinary if upload failed
         if (req.file && req.file.filename) {
             try {
-                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'raw' });
+                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
                 console.log('Cleaned up file from Cloudinary after error');
             } catch (deleteError) {
                 console.error('Error cleaning up file from Cloudinary:', deleteError);
@@ -227,7 +227,7 @@ exports.delete = async (req, res) => {
         // Delete from Cloudinary
         if (material.cloudinaryId) {
             await cloudinary.uploader.destroy(material.cloudinaryId, { 
-                resource_type: 'raw' 
+                resource_type: 'auto' // Changed from 'raw' to 'auto'
             });
             console.log('Deleted from Cloudinary:', material.cloudinaryId);
         }

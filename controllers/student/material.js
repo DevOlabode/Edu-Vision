@@ -1,5 +1,3 @@
-// const Material = require('../models/student/Material');
-
 const Material = require('../../models/student/material');
 const { extractText } = require('../../services/textExtractor');
 const cloudinary = require('../../config/cloudinary');
@@ -7,77 +5,121 @@ const cloudinary = require('../../config/cloudinary');
 // Upload
 exports.upload = async (req, res) => {
     try {
-        console.log('Upload request received');
-        console.log('User:', req.user ? req.user._id : 'No user');
-        console.log('File:', req.file ? req.file.originalname : 'No file');
-        console.log('Title:', req.body.title);
-
+        console.log('=== UPLOAD REQUEST STARTED ===');
+        console.log('User authenticated:', req.user ? 'Yes' : 'No');
+        console.log('User ID:', req.user ? req.user._id : 'No user');
+        console.log('File received:', req.file ? 'Yes' : 'No');
+        
         if (!req.user) {
-            console.log('No user authenticated');
-            return res.status(401).json({ error: 'Authentication required' });
+            console.log('ERROR: No user authenticated');
+            return res.status(401).json({ 
+                success: false,
+                error: 'Authentication required' 
+            });
         }
 
         if (!req.file) {
-            console.log('No file uploaded');
-            return res.status(400).json({ error: 'No file uploaded' });
+            console.log('ERROR: No file uploaded');
+            return res.status(400).json({ 
+                success: false,
+                error: 'No file uploaded' 
+            });
         }
+
+        console.log('File details:', {
+            originalname: req.file.originalname,
+            filename: req.file.filename,
+            path: req.file.path,
+            size: req.file.size
+        });
+
         if (!req.body.title) {
-            console.log('No title provided');
-            if (req.file) {
+            console.log('ERROR: No title provided');
+            // Delete from Cloudinary if title is missing
+            try {
                 await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'raw' });
+                console.log('Deleted file from Cloudinary due to missing title');
+            } catch (deleteError) {
+                console.error('Error deleting file from Cloudinary:', deleteError);
             }
-            return res.status(400).json({ error: 'Title required' });
+            return res.status(400).json({ 
+                success: false,
+                error: 'Title is required' 
+            });
         }
 
         const fileType = req.file.originalname.split('.').pop().toLowerCase();
-        console.log('File type:', fileType);
+        console.log('File type detected:', fileType);
 
+        // Create material document
         const material = new Material({
             title: req.body.title,
             fileName: req.file.originalname,
-            fileType,
+            fileType: fileType,
             fileSize: req.file.size,
-            cloudinaryId: req.file.filename,
-            uploadedBy: req.user._id
+            cloudinaryId: req.file.filename, // This is the public_id
+            uploadedBy: req.user._id,
+            status: 'processing'
         });
 
         await material.save();
-        console.log('Material saved with ID:', material._id);
+        console.log('Material saved to database with ID:', material._id);
 
-        // Extract text in background
-        setTimeout(async () => {
+        // Extract text in background (don't wait for it)
+        // Use setImmediate instead of setTimeout for better performance
+        setImmediate(async () => {
             try {
-                const text = await extractText(req.file.path, fileType);
-                await Material.findByIdAndUpdate(material._id, { content: text, status: 'ready' });
+                console.log('Starting text extraction for material:', material._id);
+                const text = await extractText(req.file.path, fileType); // req.file.path is the Cloudinary URL
+                
+                await Material.findByIdAndUpdate(material._id, { 
+                    content: text, 
+                    status: 'ready' 
+                });
                 console.log('Text extraction completed for material:', material._id);
             } catch (err) {
                 console.error('Text extraction failed for material:', material._id, err);
-                await Material.findByIdAndUpdate(material._id, { status: 'error' });
+                await Material.findByIdAndUpdate(material._id, { 
+                    status: 'error' 
+                });
             }
-        }, 1000);
+        });
 
-        console.log('Upload successful, redirecting to:', `/upload/success/${material._id}`);
-        res.status(200).json({
+        console.log('=== UPLOAD SUCCESSFUL ===');
+        console.log('Sending response...');
+        
+        // Return response immediately
+        res.status(201).json({
             success: true,
             material: {
                 id: material._id,
                 title: material.title,
                 fileName: material.fileName,
+                fileType: material.fileType,
                 status: material.status
             },
             redirectUrl: `/upload/success/${material._id}`
         });
+
     } catch (error) {
-        console.error('Upload error:', error);
+        console.error('=== UPLOAD ERROR ===');
+        console.error('Error message:', error.message);
         console.error('Error stack:', error.stack);
-        if (req.file) {
+        
+        // Cleanup: Delete from Cloudinary if upload failed
+        if (req.file && req.file.filename) {
             try {
                 await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'raw' });
-            } catch (cloudError) {
-                console.error('Error deleting file from cloudinary:', cloudError);
+                console.log('Cleaned up file from Cloudinary after error');
+            } catch (deleteError) {
+                console.error('Error cleaning up file from Cloudinary:', deleteError);
             }
         }
-        res.status(500).json({ error: error.message });
+        
+        res.status(500).json({ 
+            success: false,
+            error: error.message || 'Upload failed'
+        });
     }
 };
 
@@ -85,6 +127,7 @@ exports.upload = async (req, res) => {
 exports.getAll = async (req, res) => {
     try {
         const { page = 1, limit = 20 } = req.query;
+        
         const materials = await Material.find({ uploadedBy: req.user._id })
             .select('-content')
             .sort('-createdAt')
@@ -93,20 +136,47 @@ exports.getAll = async (req, res) => {
 
         const total = await Material.countDocuments({ uploadedBy: req.user._id });
 
-        res.json({ materials, total, page: +page, pages: Math.ceil(total / limit) });
+        res.json({ 
+            success: true,
+            materials, 
+            total, 
+            page: +page, 
+            pages: Math.ceil(total / limit) 
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Get all materials error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 };
 
 // Get one
 exports.getOne = async (req, res) => {
     try {
-        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
-        if (!material) return res.status(404).json({ error: 'Not found' });
-        res.json(material);
+        const material = await Material.findOne({ 
+            _id: req.params.id, 
+            uploadedBy: req.user._id 
+        });
+        
+        if (!material) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Material not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true,
+            material 
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Get material error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 };
 
@@ -118,24 +188,63 @@ exports.update = async (req, res) => {
             { title: req.body.title },
             { new: true }
         );
-        if (!material) return res.status(404).json({ error: 'Not found' });
-        res.json(material);
+        
+        if (!material) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Material not found' 
+            });
+        }
+        
+        res.json({ 
+            success: true,
+            material 
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Update material error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 };
 
 // Delete
 exports.delete = async (req, res) => {
     try {
-        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
-        if (!material) return res.status(404).json({ error: 'Not found' });
+        const material = await Material.findOne({ 
+            _id: req.params.id, 
+            uploadedBy: req.user._id 
+        });
+        
+        if (!material) {
+            return res.status(404).json({ 
+                success: false,
+                error: 'Material not found' 
+            });
+        }
 
-        await cloudinary.uploader.destroy(material.cloudinaryId, { resource_type: 'raw' });
+        // Delete from Cloudinary
+        if (material.cloudinaryId) {
+            await cloudinary.uploader.destroy(material.cloudinaryId, { 
+                resource_type: 'raw' 
+            });
+            console.log('Deleted from Cloudinary:', material.cloudinaryId);
+        }
+
+        // Delete from database
         await material.deleteOne();
+        console.log('Deleted from database:', material._id);
 
-        res.json({ message: 'Deleted' });
+        res.json({ 
+            success: true,
+            message: 'Material deleted successfully' 
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Delete material error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 };

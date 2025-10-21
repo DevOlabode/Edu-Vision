@@ -3,19 +3,38 @@ const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
 exports.extractText = async (filePath, type) => {
-    const fs = require('fs');
-    const buffer = fs.readFileSync(filePath);
+    try {
+        console.log('Extracting text from file:', filePath);
+        console.log('File type:', type);
 
-    if (type === 'pdf') {
-        const pdf = await pdfParse(buffer);
-        return pdf.text;
+        const fs = require('fs');
+        const buffer = fs.readFileSync(filePath);
+        console.log('Read file, buffer size:', buffer.length);
+
+        if (type === 'pdf') {
+            console.log('Parsing PDF...');
+            const pdf = await pdfParse(buffer);
+            console.log('PDF parsed successfully, text length:', pdf.text.length);
+            return pdf.text;
+        }
+        
+        if (type === 'docx' || type === 'doc') {
+            console.log('Parsing DOCX...');
+            const result = await mammoth.extractRawText({ buffer });
+            console.log('DOCX parsed successfully, text length:', result.value.length);
+            return result.value;
+        }
+        
+        if (type === 'txt') {
+            console.log('Parsing TXT...');
+            const text = buffer.toString('utf-8');
+            console.log('TXT parsed successfully, text length:', text.length);
+            return text;
+        }
+        
+        throw new Error('Unsupported file type: ' + type);
+    } catch (error) {
+        console.error('Text extraction error:', error);
+        throw new Error(`Failed to extract text: ${error.message}`);
     }
-    if (type === 'docx' || type === 'doc') {
-        const result = await mammoth.extractRawText({ buffer });
-        return result.value;
-    }
-    if (type === 'txt') {
-        return buffer.toString('utf-8');
-    }
-    throw new Error('Unsupported file type');
 };

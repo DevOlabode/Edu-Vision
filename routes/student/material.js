@@ -6,7 +6,20 @@ const { isLoggedIn } = require('../../middleware');
 
 router.use(isLoggedIn);
 
-router.post('/upload', upload.single('file'), controller.upload);
+// Add error handler for multer
+router.post('/upload', (req, res, next) => {
+    upload.single('file')(req, res, (err) => {
+        if (err) {
+            console.error('Multer error:', err);
+            return res.status(400).json({ 
+                success: false,
+                error: err.message 
+            });
+        }
+        next();
+    });
+}, controller.upload);
+
 router.get('/', controller.getAll);
 router.get('/:id', controller.getOne);
 router.put('/:id', controller.update);

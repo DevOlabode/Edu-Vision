@@ -12,6 +12,8 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
+const methodOverride = require('method-override');
+
 require('./config/oauth')
 
 const User = require('./models/user'); // adjust path as needed
@@ -23,11 +25,17 @@ const connectDB = require('./config/database')
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/student/material');
 
+const materialController  = require('./controllers/student/material')
+
+const { isLoggedIn } = require('./middleware')
+
 app.use(express.urlencoded({extended : true}));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.engine('ejs', ejsMate);
+
+app.use(methodOverride('_method'))
 
 app.use(express.json());
 
@@ -98,11 +106,11 @@ app.get('/', (req, res)=>{
     res.render('shared/home');
 });
 
-app.get('/upload', (req, res)=>{
+app.get('/upload',isLoggedIn,   (req, res)=>{
     res.render('student/upload');
 });
 
-app.get('/upload/success/:id', async (req, res) => {
+app.get('/upload/success/:id', isLoggedIn, async (req, res) => {
     try {
         const Material = require('./models/student/material');
         const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
@@ -117,7 +125,7 @@ app.get('/upload/success/:id', async (req, res) => {
     }
 });
 
-app.get('/materials', async (req, res) => {
+app.get('/materials',isLoggedIn, async (req, res) => {
     try {
         const Material = require('./models/student/material');
         const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
@@ -128,7 +136,7 @@ app.get('/materials', async (req, res) => {
     }
 });
 
-app.get('/materials/:id', async (req, res) => {
+app.get('/materials/:id',isLoggedIn, async (req, res) => {
     try {
         const Material = require('./models/student/material');
         const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
@@ -142,6 +150,9 @@ app.get('/materials/:id', async (req, res) => {
         res.redirect('/materials');
     }
 });
+
+app.delete('/materials/:id', isLoggedIn,  materialController.delete);
+
 
 app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError('Page not found', 404))

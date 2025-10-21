@@ -225,8 +225,8 @@ exports.delete = async (req, res) => {
 
         // Delete from Cloudinary
         if (material.cloudinaryId) {
-            await cloudinary.uploader.destroy(material.cloudinaryId, { 
-                resource_type: 'auto' // Changed from 'raw' to 'auto'
+            await cloudinary.uploader.destroy(material.cloudinaryId, {
+                resource_type: 'raw'
             });
             console.log('Deleted from Cloudinary:', material.cloudinaryId);
         }
@@ -235,12 +235,11 @@ exports.delete = async (req, res) => {
         await material.deleteOne();
         console.log('Deleted from database:', material._id);
 
-        res.json({ 
-            success: true,
-            message: 'Material deleted successfully' 
-        });
+        req.flash('success', 'Deleted Material Successfully');
+        res.redirect('/materials')
     } catch (error) {
         console.error('Delete material error:', error);
+        req.flash('error', 'Encountered an error when trying to delete material')
         res.status(500).json({ 
             success: false,
             error: error.message 

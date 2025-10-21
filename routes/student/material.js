@@ -4,10 +4,10 @@ const controller = require('../../controllers/student/material');
 const upload = require('../../middleware/upload');
 const { isLoggedIn } = require('../../middleware');
 
-router.use(isLoggedIn);
+// router.use(isLoggedIn);
 
 // Add error handler for multer
-router.post('/upload', (req, res, next) => {
+router.post('/upload', isLoggedIn,  (req, res, next) => {
     upload.single('file')(req, res, (err) => {
         if (err) {
             console.error('Multer error:', err);
@@ -20,13 +20,12 @@ router.post('/upload', (req, res, next) => {
     });
 }, controller.upload);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getOne);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+router.get('/', isLoggedIn, controller.getAll);
+router.get('/:id', isLoggedIn, controller.getOne);
+router.put('/:id', isLoggedIn,  controller.update);
 
 // Add route for materials page
-router.get('/materials', async (req, res) => {
+router.get('/materials', isLoggedIn, async (req, res) => {
     try {
         const Material = require('../../models/student/material');
         const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');

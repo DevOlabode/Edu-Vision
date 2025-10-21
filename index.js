@@ -24,10 +24,9 @@ const catchAsync = require('./utils/catchAsync');
 const connectDB = require('./config/database')
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/student/material');
+const pagesRoutes = require('./routes/pages');
 
-const materialController  = require('./controllers/student/material')
 
-const { isLoggedIn } = require('./middleware')
 
 app.use(express.urlencoded({extended : true}));
 
@@ -76,6 +75,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 connectDB()
 
 app.use('/', authRoutes);
+app.use('/', pagesRoutes);
 app.use('/api/materials', materialRoutes);
 
 // Add middleware to log all API requests
@@ -102,56 +102,7 @@ app.get('/auth/google/callback',
   }
 );
 
-app.get('/', (req, res)=>{
-    res.render('shared/home');
-});
 
-app.get('/upload',isLoggedIn,   (req, res)=>{
-    res.render('student/upload');
-});
-
-app.get('/upload/success/:id', isLoggedIn, async (req, res) => {
-    try {
-        const Material = require('./models/student/material');
-        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
-        if (!material) {
-            req.flash('error', 'Material not found');
-            return res.redirect('/upload');
-        }
-        res.render('student/uploadSuccess', { material });
-    } catch (error) {
-        req.flash('error', 'Something went wrong');
-        res.redirect('/upload');
-    }
-});
-
-app.get('/materials',isLoggedIn, async (req, res) => {
-    try {
-        const Material = require('./models/student/material');
-        const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
-        res.render('student/materials', { materials });
-    } catch (error) {
-        req.flash('error', 'Something went wrong');
-        res.redirect('/');
-    }
-});
-
-app.get('/materials/:id',isLoggedIn, async (req, res) => {
-    try {
-        const Material = require('./models/student/material');
-        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
-        if (!material) {
-            req.flash('error', 'Material not found');
-            return res.redirect('/materials');
-        }
-        res.render('student/materialDetail', { material });
-    } catch (error) {
-        req.flash('error', 'Something went wrong');
-        res.redirect('/materials');
-    }
-});
-
-app.delete('/materials/:id', isLoggedIn,  materialController.delete);
 
 
 app.all(/(.*)/, (req, res, next) => {

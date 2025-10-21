@@ -2,22 +2,10 @@ const Material = require('../../models/student/material');
 const { extractText } = require('../../services/textExtractor');
 const cloudinary = require('../../config/cloudinary');
 
+const {summarizer} = require('../../AI/summarise')
+
 // Upload
 exports.upload = async (req, res) => {
-    try {
-        console.log('=== UPLOAD REQUEST STARTED ===');
-        console.log('User authenticated:', req.user ? 'Yes' : 'No');
-        console.log('User ID:', req.user ? req.user._id : 'No user');
-        console.log('File received:', req.file ? 'Yes' : 'No');
-        
-        if (!req.user) {
-            console.log('ERROR: No user authenticated');
-            return res.status(401).json({ 
-                success: false,
-                error: 'Authentication required' 
-            });
-        }
-
         if (!req.file) {
             console.log('ERROR: No file uploaded');
             return res.status(400).json({ 
@@ -26,16 +14,8 @@ exports.upload = async (req, res) => {
             });
         }
 
-        console.log('File details:', {
-            originalname: req.file.originalname,
-            filename: req.file.filename,
-            path: req.file.path,
-            size: req.file.size
-        });
-
         if (!req.body.title) {
             console.log('ERROR: No title provided');
-            // Delete from Cloudinary if title is missing
             try {
                 await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
                 console.log('Deleted file from Cloudinary due to missing title');
@@ -49,9 +29,7 @@ exports.upload = async (req, res) => {
         }
 
         const fileType = req.file.originalname.split('.').pop().toLowerCase();
-        console.log('File type detected:', fileType);
 
-        // Create material document
         const material = new Material({
             title: req.body.title,
             fileName: req.file.originalname,
@@ -63,29 +41,20 @@ exports.upload = async (req, res) => {
         });
 
         await material.save();
-        console.log('Material saved to database with ID:', material._id);
 
-        // Extract text in background (don't wait for it)
-        // Use setImmediate instead of setTimeout for better performance
         setImmediate(async () => {
-            try {
-                // Store the local file path before Cloudinary overwrites it
                 const localFilePath = req.file.path;
                 const text = await extractText(localFilePath, fileType);
+
+                const summary = summarizer(text);
+                console.log(summary)
 
                 await Material.findByIdAndUpdate(material._id, {
                     content: text,
                     status: 'ready'
                 });
-            } catch (err) {
-                await Material.findByIdAndUpdate(material._id, {
-                    status: 'error'
-                });
-            }
         });
-
-        console.log('=== UPLOAD SUCCESSFUL ===');
-        console.log('Sending response...');
+        
         
         // Return response immediately
         res.status(201).json({
@@ -99,27 +68,6 @@ exports.upload = async (req, res) => {
             },
             redirectUrl: `/upload/success/${material._id}`
         });
-
-    } catch (error) {
-        console.error('=== UPLOAD ERROR ===');
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-        
-        // Cleanup: Delete from Cloudinary if upload failed
-        if (req.file && req.file.filename) {
-            try {
-                await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
-                console.log('Cleaned up file from Cloudinary after error');
-            } catch (deleteError) {
-                console.error('Error cleaning up file from Cloudinary:', deleteError);
-            }
-        }
-        
-        res.status(500).json({ 
-            success: false,
-            error: error.message || 'Upload failed'
-        });
-    }
 };
 
 // Get all
@@ -153,30 +101,15 @@ exports.getAll = async (req, res) => {
 
 // Get one
 exports.getOne = async (req, res) => {
-    try {
         const material = await Material.findOne({ 
             _id: req.params.id, 
             uploadedBy: req.user._id 
         });
         
-        if (!material) {
-            return res.status(404).json({ 
-                success: false,
-                error: 'Material not found' 
-            });
-        }
-        
         res.json({ 
             success: true,
             material 
         });
-    } catch (error) {
-        console.error('Get material error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: error.message 
-        });
-    }
 };
 
 // Update

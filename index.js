@@ -21,7 +21,7 @@ const User = require('./models/user'); // adjust path as needed
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
 
-const connectDB = require('./config/database')
+const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/student/material');
 const pagesRoutes = require('./routes/pages');

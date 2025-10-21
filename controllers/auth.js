@@ -8,8 +8,8 @@ module.exports.registerForm = (req, res) =>{
 }
 
 module.exports.register = async(req, res, next) =>{
-    const {username, email, password, lastName, firstName, bio, role} = req.body;
-    const user = new User({ username, firstName, lastName, email, bio,role });
+    const {username, email, password, lastName, firstName, bio, role, studentType, grade} = req.body;
+    const user = new User({ username, firstName, lastName, email, bio, role, studentType, grade });
     const registeredUser = await User.register(user, password);
 
     sendWelcomeEmail(email, firstName)
@@ -112,11 +112,13 @@ module.exports.completeProfileForm = (req, res) => {
 };
 
 module.exports.completeProfile = async(req, res) => {
-    const { bio, role } = req.body;
+    const { bio, role, studentType, grade } = req.body;
     const user = await User.findById(req.user._id);
 
     user.bio = bio;
     user.role = role;
+    user.studentType = studentType;
+    user.grade = grade;
     await user.save();
 
     req.flash('success', 'Profile completed successfully! Welcome to EduVision AI!');

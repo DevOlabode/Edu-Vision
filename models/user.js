@@ -42,6 +42,15 @@ const userSchema = new Schema({
     googleId: {
         type: String,
         required: false
+    },
+    studentType: {
+        type: String,
+        enum: ['High School', 'University/College'],
+        required: false
+    },
+    grade: {
+        type: String,
+        required: false
     }
 }, { timestamps: true }
 );

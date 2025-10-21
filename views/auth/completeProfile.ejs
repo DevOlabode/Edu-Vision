@@ -21,6 +21,24 @@
                 <option value="Student">Student</option>
               </select>
             </div>
+            <div class="mb-3" id="studentTypeDiv" style="display: none;">
+              <label for="studentType" class="form-label">Student Type</label>
+              <select class="form-select" id="studentType" name="studentType">
+                <option value="">Select Type</option>
+                <option value="High School">High School</option>
+                <option value="University/College">University/College</option>
+              </select>
+            </div>
+            <div class="mb-3" id="gradeDiv" style="display: none;">
+              <label for="grade" class="form-label">Grade</label>
+              <select class="form-select" id="grade" name="grade">
+                <option value="">Select Grade</option>
+                <option value="9">9th Grade</option>
+                <option value="10">10th Grade</option>
+                <option value="11">11th Grade</option>
+                <option value="12">12th Grade</option>
+              </select>
+            </div>
             <button type="submit" class="btn btn-primary w-100">Complete Profile</button>
           </form>
         </div>
@@ -28,3 +46,35 @@
     </div>
   </div>
 </div>
+
+<script>
+document.getElementById('role').addEventListener('change', function() {
+  const studentTypeDiv = document.getElementById('studentTypeDiv');
+  const gradeDiv = document.getElementById('gradeDiv');
+  const studentType = document.getElementById('studentType');
+  const grade = document.getElementById('grade');
+
+  if (this.value === 'Student') {
+    studentTypeDiv.style.display = 'block';
+    studentType.required = true;
+  } else {
+    studentTypeDiv.style.display = 'none';
+    gradeDiv.style.display = 'none';
+    studentType.required = false;
+    grade.required = false;
+  }
+});
+
+document.getElementById('studentType').addEventListener('change', function() {
+  const gradeDiv = document.getElementById('gradeDiv');
+  const grade = document.getElementById('grade');
+
+  if (this.value === 'High School') {
+    gradeDiv.style.display = 'block';
+    grade.required = true;
+  } else {
+    gradeDiv.style.display = 'none';
+    grade.required = false;
+  }
+});
+</script>

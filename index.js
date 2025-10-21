@@ -66,13 +66,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 connectDB()
 
-// mongoose.connect(process.env.MONGO_URL)
-//     .then(() => {
-//         console.log("Mongo Connection Open")   
-//     }).catch((err) => {
-//         console.log("Error", err)
-//     });
-
 app.use('/', authRoutes);
 
 // Google OAuth routes

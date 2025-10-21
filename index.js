@@ -21,6 +21,7 @@ const catchAsync = require('./utils/catchAsync');
 
 const connectDB = require('./config/database')
 const authRoutes = require('./routes/auth');
+const materialRoutes = require('./routes/student/material');
 
 app.use(express.urlencoded({extended : true}));
 
@@ -67,6 +68,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 connectDB()
 
 app.use('/', authRoutes);
+app.use('/api/materials', materialRoutes);
 
 // Google OAuth routes
 app.get('/auth/google',
@@ -88,6 +90,10 @@ app.get('/auth/google/callback',
 
 app.get('/', (req, res)=>{
     res.render('home');
+});
+
+app.get('/upload', (req, res)=>{
+    res.render('upload');
 });
 
 app.all(/(.*)/, (req, res, next) => {

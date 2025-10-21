@@ -2,10 +2,10 @@ const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
-exports.extractText = async (url, type) => {
-    const { data } = await axios.get(url, { responseType: 'arraybuffer' });
-    const buffer = Buffer.from(data);
-    
+exports.extractText = async (filePath, type) => {
+    const fs = require('fs');
+    const buffer = fs.readFileSync(filePath);
+
     if (type === 'pdf') {
         const pdf = await pdfParse(buffer);
         return pdf.text;

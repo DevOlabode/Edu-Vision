@@ -8,7 +8,7 @@
           <h3 class="text-center">Upload Material</h3>
         </div>
         <div class="card-body">
-          <form id="uploadForm" enctype="multipart/form-data">
+          <form id="uploadForm" action="/api/materials/upload" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="title" class="form-label">Title</label>
               <input type="text" class="form-control" id="title" name="title" required>
@@ -25,11 +25,12 @@
   </div>
 </div>
 
-<!-- <script>
+<script>
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
-  const submitBtn = document.getElementById('submitBtn');
+  const submitBtn = document.getElementById('submitBtn')
+  
   submitBtn.disabled = true;
   submitBtn.textContent = 'Uploading...';
 
@@ -39,17 +40,22 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       body: formData
     });
     const result = await response.json();
+    console.log('Upload response:', response.status, result);
     if (result.success) {
       alert('Upload successful!');
       e.target.reset();
+      // Redirect to success page
+      window.location.href = result.redirectUrl;
     } else {
       alert('Error: ' + result.error);
+      console.error('Upload error:', result.error);
     }
   } catch (error) {
-    alert('Upload failed');
+    alert('Upload failed: ' + error.message);
+    console.error('Upload failed:', error);
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Upload';
   }
 });
-</script> -->
+</script>

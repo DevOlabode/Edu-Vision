@@ -70,6 +70,12 @@ connectDB()
 app.use('/', authRoutes);
 app.use('/api/materials', materialRoutes);
 
+// Add middleware to log all API requests
+app.use('/api', (req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
+
 // Google OAuth routes
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -94,6 +100,21 @@ app.get('/', (req, res)=>{
 
 app.get('/upload', (req, res)=>{
     res.render('upload');
+});
+
+app.get('/upload/success/:id', async (req, res) => {
+    try {
+        const Material = require('./models/student/material');
+        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
+        if (!material) {
+            req.flash('error', 'Material not found');
+            return res.redirect('/upload');
+        }
+        res.render('uploadSuccess', { material });
+    } catch (error) {
+        req.flash('error', 'Something went wrong');
+        res.redirect('/upload');
+    }
 });
 
 app.all(/(.*)/, (req, res, next) => {

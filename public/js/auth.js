@@ -1,5 +1,6 @@
 
 // COMPLETE PROFILE FRONTEND JAVASCRIPT
+
 document.getElementById('role').addEventListener('change', function() {
   const studentTypeDiv = document.getElementById('studentTypeDiv');
   const gradeDiv = document.getElementById('gradeDiv');

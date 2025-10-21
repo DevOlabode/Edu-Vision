@@ -14,7 +14,11 @@ const materialSchema = new Schema({
         required : true
     },
     summary :{
-        type : String
+        studyNotes : [String],
+        flashcards : [{
+            question : String,
+            answer : String
+        }]
     },
     fileType : {
         type : String,

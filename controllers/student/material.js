@@ -55,7 +55,7 @@ exports.upload = async (req, res) => {
 
                 await Material.findByIdAndUpdate(materialId, {
                     content: text,
-                    summary,
+                    summary: summary,
                     status: 'ready'
                 });
 

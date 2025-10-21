@@ -46,11 +46,12 @@ exports.upload = async (req, res) => {
                 const localFilePath = req.file.path;
                 const text = await extractText(localFilePath, fileType);
 
-                const summary = summarizer(text);
+                const summary = await summarizer(text);
                 console.log(summary)
 
                 await Material.findByIdAndUpdate(material._id, {
                     content: text,
+                    summary,
                     status: 'ready'
                 });
         });

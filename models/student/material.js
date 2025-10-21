@@ -13,6 +13,10 @@ const materialSchema = new Schema({
         type : String,
         required : true
     },
+    summary :{
+        type : String,
+        required : true
+    },
     fileType : {
         type : String,
         enum : ['pdf', 'doc', 'docx', 'txt'],

@@ -14,8 +14,7 @@ const materialSchema = new Schema({
         required : true
     },
     summary :{
-        type : String,
-        required : true
+        type : String
     },
     fileType : {
         type : String,

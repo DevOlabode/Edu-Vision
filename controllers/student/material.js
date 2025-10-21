@@ -6,11 +6,12 @@ const {summarizer} = require('../../AI/summarise')
 
 // Upload
 exports.upload = async (req, res) => {
+    try {
         if (!req.file) {
             console.log('ERROR: No file uploaded');
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: 'No file uploaded' 
+                error: 'No file uploaded'
             });
         }
 
@@ -22,9 +23,9 @@ exports.upload = async (req, res) => {
             } catch (deleteError) {
                 console.error('Error deleting file from Cloudinary:', deleteError);
             }
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: 'Title is required' 
+                error: 'Title is required'
             });
         }
 
@@ -42,21 +43,29 @@ exports.upload = async (req, res) => {
 
         await material.save();
 
+        const materialId = material._id;
+
         setImmediate(async () => {
+            try {
                 const localFilePath = req.file.path;
                 const text = await extractText(localFilePath, fileType);
 
                 const summary = await summarizer(text);
                 console.log(summary)
 
-                await Material.findByIdAndUpdate(material._id, {
+                await Material.findByIdAndUpdate(materialId, {
                     content: text,
                     summary,
                     status: 'ready'
                 });
+
+            } catch (error) {
+                console.error('Processing error:', error);
+                await Material.findByIdAndUpdate(materialId, { status: 'error' });
+            }
         });
-        
-        
+
+
         // Return response immediately
         res.status(201).json({
             success: true,
@@ -69,6 +78,10 @@ exports.upload = async (req, res) => {
             },
             redirectUrl: `/upload/success/${material._id}`
         });
+    } catch (error) {
+        console.error('Upload error:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
 };
 
 // Get all

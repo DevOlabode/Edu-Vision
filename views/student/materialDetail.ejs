@@ -49,13 +49,23 @@
 
               <% if (flashcards) { %>
                 <h5>Flashcards:</h5>
-                <div class="row">
-                  <% flashcards.split('\n').forEach(card => { %>
+                <div class="accordion" id="flashcardsAccordion">
+                  <% flashcards.split('\n').forEach((card, index) => { %>
                     <% if (card.trim() && /^\d+\./.test(card.trim())) { %>
-                      <div class="col-md-6 mb-3">
-                        <div class="card">
-                          <div class="card-body">
-                            <p class="card-text"><%= card.trim() %></p>
+                      <%
+                        const cardParts = card.trim().split('?');
+                        const question = cardParts[0].replace(/^\d+\.\s*/, '').trim() + '?';
+                        const answer = cardParts[1] ? cardParts[1].trim() : '';
+                      %>
+                      <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading<%= index %>">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="false" aria-controls="collapse<%= index %>">
+                            <%= question %>
+                          </button>
+                        </h2>
+                        <div id="collapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="heading<%= index %>" data-bs-parent="#flashcardsAccordion">
+                          <div class="accordion-body">
+                            <%= answer %>
                           </div>
                         </div>
                       </div>

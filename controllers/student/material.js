@@ -70,17 +70,19 @@ exports.upload = async (req, res) => {
         setImmediate(async () => {
             try {
                 console.log('Starting text extraction for material:', material._id);
-                const text = await extractText(req.file.path, fileType); // req.file.path is the Cloudinary URL
-                
-                await Material.findByIdAndUpdate(material._id, { 
-                    content: text, 
-                    status: 'ready' 
+                // Store the local file path before Cloudinary overwrites it
+                const localFilePath = req.file.path;
+                const text = await extractText(localFilePath, fileType);
+
+                await Material.findByIdAndUpdate(material._id, {
+                    content: text,
+                    status: 'ready'
                 });
                 console.log('Text extraction completed for material:', material._id);
             } catch (err) {
                 console.error('Text extraction failed for material:', material._id, err);
-                await Material.findByIdAndUpdate(material._id, { 
-                    status: 'error' 
+                await Material.findByIdAndUpdate(material._id, {
+                    status: 'error'
                 });
             }
         });

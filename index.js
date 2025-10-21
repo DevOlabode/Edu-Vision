@@ -117,6 +117,32 @@ app.get('/upload/success/:id', async (req, res) => {
     }
 });
 
+app.get('/materials', async (req, res) => {
+    try {
+        const Material = require('./models/student/material');
+        const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
+        res.render('materials', { materials });
+    } catch (error) {
+        req.flash('error', 'Something went wrong');
+        res.redirect('/');
+    }
+});
+
+app.get('/materials/:id', async (req, res) => {
+    try {
+        const Material = require('./models/student/material');
+        const material = await Material.findOne({ _id: req.params.id, uploadedBy: req.user._id });
+        if (!material) {
+            req.flash('error', 'Material not found');
+            return res.redirect('/materials');
+        }
+        res.render('materialDetail', { material });
+    } catch (error) {
+        req.flash('error', 'Something went wrong');
+        res.redirect('/materials');
+    }
+});
+
 app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError('Page not found', 404))
 });

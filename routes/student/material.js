@@ -25,4 +25,16 @@ router.get('/:id', controller.getOne);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.delete);
 
+// Add route for materials page
+router.get('/materials', async (req, res) => {
+    try {
+        const Material = require('../../models/student/material');
+        const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
+        res.render('materials', { materials });
+    } catch (error) {
+        req.flash('error', 'Something went wrong');
+        res.redirect('/');
+    }
+});
+
 module.exports = router;

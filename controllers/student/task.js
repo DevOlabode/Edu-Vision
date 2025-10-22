@@ -41,7 +41,6 @@ module.exports.showTask = async(req, res)=>{
         req.flash('error', 'Task not found');
         return res.redirect('/task');
     }
-    console.log(task.planner)
     res.render('student/task/show', {task});
 };
 

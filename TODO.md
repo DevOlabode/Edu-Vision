@@ -1,41 +1,19 @@
-# TODO: Improve Task Management Views and Add Milestone Functionality
+# TODO: Add Task Feature to Frontend
 
 ## Information Gathered
-- **Show Page (show.ejs)**: Currently displays task details in a basic card layout. Needs restyling for better visual appeal and addition of milestone management functionality (add new milestones).
-- **All Tasks Page (allTasks.ejs)**: Card-based layout exists but needs improved styling for better user experience.
-- **New Task Page (newTask.ejs)**: Form layout exists but needs enhanced styling and visual improvements.
-- **Milestone Addition**: Need to implement functionality to add new milestones to existing tasks, saving to database.
+- **Navbar Structure**: Located in `views/partials/navbar.ejs`, contains navigation links for Home, Upload, Materials for logged-in users.
+- **Task Routes**: Task management routes exist under `/task` (allTasks, newTask, show, etc.).
+- **Current Access**: Task features are backend-ready but not accessible from the frontend navigation.
 
 ## Plan
-- **Edit `views/student/task/show.ejs`**:
-  - Restyle the page with improved layout, colors, and spacing.
-  - Add a collapsible form section for adding new milestones.
-  - Include form with title and due date fields for new milestones.
-- **Add Milestone Addition Backend**:
-  - Add `addMilestone` method to `controllers/student/task.js`.
-  - Add POST route `/task/:id/milestone` in `routes/student/task.js`.
-- **Style `views/student/task/allTasks.ejs`**:
-  - Enhance card styling with better shadows, gradients, and hover effects.
-  - Improve badge styling and layout.
-- **Style `views/student/task/newTask.ejs`**:
-  - Improve form styling with better input designs, spacing, and visual hierarchy.
-  - Enhance milestone section with better UI for adding/removing milestones.
+- **Edit `views/partials/navbar.ejs`**:
+  - Add a "Tasks" navigation link between "Upload" and "Materials" for logged-in users.
+  - Use consistent styling with other nav links (icon, text, hover effects).
 
 ## Dependent Files to Edit
-- `views/student/task/show.ejs`: Restyle and add milestone addition form.
-- `controllers/student/task.js`: Add addMilestone method.
-- `routes/student/task.js`: Add POST route for milestones.
-- `views/student/task/allTasks.ejs`: Improve styling.
-- `views/student/task/newTask.ejs`: Enhance form styling.
+- `views/partials/navbar.ejs`: Add Tasks link to navigation menu.
 
 ## Followup Steps
-- Test milestone addition functionality.
-- Verify all pages render correctly with new styling.
-- Test form submissions and data persistence.
-
-## Progress
-- [x] Restyled `views/student/task/show.ejs` with modern design and added milestone addition form
-- [x] Added `addMilestone` and `toggleMilestone` methods to `controllers/student/task.js`
-- [x] Added POST routes for milestone operations in `routes/student/task.js`
-- [x] Enhanced styling for `views/student/task/allTasks.ejs` with improved card design and layout
-- [x] Completely redesigned `views/student/task/newTask.ejs` with sectioned form and better UX
+- Test the navbar by running the application and verifying the Tasks link appears for logged-in users.
+- Click the link to ensure it navigates to the task management page.
+- Check responsive design on mobile devices.

@@ -26,14 +26,9 @@ router.put('/:id', isLoggedIn,  controller.update);
 
 // Add route for materials page
 router.get('/materials', isLoggedIn, async (req, res) => {
-    try {
         const Material = require('../../models/student/material');
         const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
         res.render('materials', { materials });
-    } catch (error) {
-        req.flash('error', 'Something went wrong');
-        res.redirect('/');
-    }
 });
 
 module.exports = router;

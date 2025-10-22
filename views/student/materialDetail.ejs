@@ -111,61 +111,84 @@
 
               <!-- Study Notes Section -->
               <% if (material.studyNotes) { %>
-                <div class="card mb-5 shadow-lg border-0" style="border-radius: 20px; overflow: hidden; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
-                  <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 25px 30px; position: relative;">
-                    <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                      <i class="fas fa-book-open" style="font-size: 24px;"></i>
-                    </div>
-                    <h5 class="mb-1" style="font-weight: 700; font-size: 1.4rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
-                      📖 Study Notes
-                    </h5>
-                    <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Key concepts and important information</p>
-                  </div>
-                  <div class="card-body" style="padding: 30px;">
-                    <div class="study-notes-content" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; color: #2c3e50; font-size: 16px;">
-                      <%
-                        // Split the study notes into lines and format them
-                        const lines = material.studyNotes.split('\n').filter(line => line.trim());
-                        lines.forEach((line, index) => {
-                          const trimmedLine = line.trim();
-                          if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
-                            // Bullet point
-                      %>
-                        <div class="study-bullet" style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 12px 18px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.05) 100%); border-radius: 10px; border-left: 4px solid #667eea; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);">
-                          <span style="color: #667eea; font-weight: bold; margin-right: 12px; font-size: 18px;">•</span>
+                <div class="study-notes-section mb-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); padding: 25px; border-radius: 12px; border: 1px solid #e9ecef; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                  <h4 class="mb-4" style="color: #495057; font-weight: 700; font-size: 1.5rem; margin-bottom: 25px; display: flex; align-items: center;">
+                    <i class="fas fa-book-open" style="color: #6c757d; margin-right: 12px; font-size: 1.3rem;"></i>
+                    Study Notes
+                  </h4>
+                  <div class="study-notes-content" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; color: #2c3e50; font-size: 16px;">
+                    <%
+                      // Split the study notes into lines and format them
+                      const lines = material.studyNotes.split('\n').filter(line => line.trim());
+                      let inList = false;
+                      let listType = '';
+                      lines.forEach((line, index) => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
+                          // Bullet point
+                          if (!inList || listType !== 'ul') {
+                            if (inList) { %></ol><% }
+                            inList = true;
+                            listType = 'ul';
+                    %>
+                      <ul style="margin-bottom: 18px; padding-left: 25px; list-style: none;">
+                    <%
+                        }
+                    %>
+                        <li style="margin-bottom: 10px; color: #495057; display: flex; align-items: flex-start; padding: 8px 12px; border-radius: 6px; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='#f1f3f4'" onmouseout="this.style.backgroundColor='transparent'">
+                          <i class="fas fa-check-circle" style="color: #28a745; margin-right: 10px; margin-top: 2px; font-size: 0.9rem;"></i>
                           <span style="flex-grow: 1; font-weight: 500;"><%= trimmedLine.substring(2) %></span>
-                        </div>
-                      <%
-                          } else if (trimmedLine.match(/^\d+\./)) {
-                            // Numbered list
-                            const match = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
-                            if (match) {
-                      %>
-                        <div class="study-numbered" style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 12px 18px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(102, 126, 234, 0.03) 100%); border-radius: 10px; border-left: 4px solid #764ba2; box-shadow: 0 2px 8px rgba(118, 75, 162, 0.08);">
-                          <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;"><%= match[1] %></span>
-                          <span style="flex-grow: 1; font-weight: 500;"><%= match[2] %></span>
-                        </div>
-                      <%
-                            }
-                          } else if (trimmedLine.length < 50 && (trimmedLine.includes(':') || trimmedLine.toUpperCase() === trimmedLine)) {
-                            // Likely a heading or key term
-                      %>
-                        <div class="study-heading" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 700; font-size: 18px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                          <i class="fas fa-star" style="margin-right: 10px;"></i><%= trimmedLine %>
-                        </div>
-                      <%
-                          } else {
-                            // Regular paragraph
-                      %>
-                        <div class="study-paragraph" style="background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,249,255,0.9) 100%); padding: 18px 22px; border-radius: 12px; margin-bottom: 18px; border: 1px solid rgba(102, 126, 234, 0.1); box-shadow: 0 3px 12px rgba(102, 126, 234, 0.08); position: relative; overflow: hidden;">
-                          <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);"></div>
-                          <div style="margin-left: 15px; font-weight: 400; color: #34495e;"><%= trimmedLine %></div>
-                        </div>
-                      <%
+                        </li>
+                    <%
+                      } else if (trimmedLine.match(/^\d+\./)) {
+                        // Numbered list
+                        const match = trimmedLine.match(/^(\d+)\.\s*(.+)$/);
+                        if (match) {
+                          if (!inList || listType !== 'ol') {
+                            if (inList) { %></ul><% }
+                            inList = true;
+                            listType = 'ol';
+                    %>
+                      <ol style="margin-bottom: 18px; padding-left: 25px;">
+                    <%
                           }
-                        });
-                      %>
-                    </div>
+                    %>
+                          <li style="margin-bottom: 10px; color: #495057; padding: 8px 12px; border-radius: 6px; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='#f1f3f4'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span style="font-weight: 500;"><%= match[2] %></span>
+                          </li>
+                    <%
+                        }
+                      } else {
+                        // Close any open list
+                        if (inList) {
+                          if (listType === 'ul') { %></ul><% } else { %></ol><% }
+                          inList = false;
+                        }
+                        if (trimmedLine.length < 50 && (trimmedLine.includes(':') || trimmedLine.toUpperCase() === trimmedLine)) {
+                          // Likely a heading or key term
+                    %>
+                          <div class="study-heading" style="background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%); color: #495057; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; margin-top: 25px; font-weight: 700; font-size: 1.2rem; border-left: 4px solid #6c757d; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <i class="fas fa-star" style="color: #ffc107; margin-right: 8px;"></i>
+                            <%= trimmedLine %>
+                          </div>
+                    <%
+                        } else {
+                          // Regular paragraph
+                    %>
+                          <div class="study-paragraph" style="background: #ffffff; padding: 15px 20px; border-radius: 8px; margin-bottom: 18px; border: 1px solid #e9ecef; border-left: 4px solid #6c757d; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: box-shadow 0.2s ease;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'">
+                            <div style="font-weight: 400; color: #495057; line-height: 1.7;">
+                              <%= trimmedLine %>
+                            </div>
+                          </div>
+                    <%
+                        }
+                      }
+                    });
+                    // Close any remaining open list
+                    if (inList) {
+                      if (listType === 'ul') { %></ul><% } else { %></ol><% }
+                    }
+                  %>
                   </div>
                 </div>
               <% } %>

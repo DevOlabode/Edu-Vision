@@ -27,3 +27,19 @@ module.exports.newTask = async(req, res)=>{
     req.flash('success', 'Task created successfully!');
     res.redirect('/task');
 };
+
+module.exports.showTask = async(req, res)=>{
+    const {id} = req.params;
+    const task = await Task.findById(id);
+    if(!task){
+        req.flash('error', 'Task not found');
+        return res.redirect('/task');
+    }
+    res.render('student/task/show', {task});
+};
+
+
+module.exports.showPage = async(req, res)=>{
+    const task = await Task.findById(req.params.id);
+    res.render('student/task/show', {task})
+}

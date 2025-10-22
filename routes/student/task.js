@@ -12,4 +12,6 @@ router.get('/', isLoggedIn, controller.allTasks);
 
 router.post('/', isLoggedIn, catchAsync(controller.newTask));
 
+router.get('/:id', isLoggedIn, catchAsync(controller.showTask))
+
 module.exports = router;

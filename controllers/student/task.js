@@ -15,6 +15,8 @@ module.exports.newTask = async(req, res)=>{
 
     const plan = await taskPlanner(title, subject, type, dueDate, description, priority, difficulty, milestones);
 
+    console.log(plan)
+
     const task = new Task({
         title,
         subject,
@@ -25,7 +27,7 @@ module.exports.newTask = async(req, res)=>{
         difficulty,
         milestones: Array.isArray(milestones) ? milestones : [],
         createdBy: req.user._id,
-        plan
+        planner : plan
     });
     await task.save();
     req.flash('success', 'Task created successfully!');
@@ -39,6 +41,7 @@ module.exports.showTask = async(req, res)=>{
         req.flash('error', 'Task not found');
         return res.redirect('/task');
     }
+    console.log(task.planner)
     res.render('student/task/show', {task});
 };
 
@@ -73,4 +76,12 @@ module.exports.toggleMilestone = async(req, res)=>{
 module.exports.showPage = async(req, res)=>{
     const task = await Task.findById(req.params.id);
     res.render('student/task/show', {task})
+}
+
+module.exports.delete = async(req, res)=>{
+    const { id } = req.params;
+    const task = await Task.findByIdAndDelete(id);
+
+    req.flash('success', 'Deleted Task Successfully');
+    res.redirect('/task')
 }

@@ -62,6 +62,57 @@
                 </div>
               <% } %>
 
+              <!-- Planner Info Section -->
+              <% if (task.planner) { %>
+                <div class="mb-4">
+                  <h4 class="mb-3" style="color: #2c3e50; font-weight: 600;">
+                    <i class="fas fa-brain text-primary me-2"></i>Smart Planner
+                  </h4>
+                  <div class="card border-primary" style="border-radius: 10px; background: linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%);">
+                    <div class="card-body p-4">
+                      <% if (task.planner.overview) { %>
+                        <div class="mb-3">
+                          <h6 class="text-primary mb-2"><i class="fas fa-eye me-1"></i>Overview</h6>
+                          <p class="mb-0"><%= task.planner.overview %></p>
+                        </div>
+                      <% } %>
+                      <% if (task.planner.suggestedPlan && task.planner.suggestedPlan.length > 0) { %>
+                        <div class="mb-3">
+                          <h6 class="text-primary mb-2"><i class="fas fa-list-check me-1"></i>Suggested Plan</h6>
+                          <ul class="list-group list-group-flush">
+                            <% task.planner.suggestedPlan.forEach(step => { %>
+                              <li class="list-group-item border-0 px-0 py-1" style="background: transparent;"><%= step %></li>
+                            <% }); %>
+                          </ul>
+                        </div>
+                      <% } %>
+                      <% if (task.planner.studyTips && task.planner.studyTips.length > 0) { %>
+                        <div class="mb-3">
+                          <h6 class="text-primary mb-2"><i class="fas fa-lightbulb me-1"></i>Study Tips</h6>
+                          <ul class="list-group list-group-flush">
+                            <% task.planner.studyTips.forEach(tip => { %>
+                              <li class="list-group-item border-0 px-0 py-1" style="background: transparent;"><%= tip %></li>
+                            <% }); %>
+                          </ul>
+                        </div>
+                      <% } %>
+                      <% if (task.planner.estimatedTime) { %>
+                        <div class="mb-3">
+                          <h6 class="text-primary mb-2"><i class="fas fa-clock me-1"></i>Estimated Time</h6>
+                          <p class="mb-0"><%= task.planner.estimatedTime %></p>
+                        </div>
+                      <% } %>
+                      <% if (task.planner.motivation) { %>
+                        <div class="mb-3">
+                          <h6 class="text-primary mb-2"><i class="fas fa-fire me-1"></i>Motivation</h6>
+                          <p class="mb-0"><%= task.planner.motivation %></p>
+                        </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+
               <!-- Milestones Section -->
               <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">

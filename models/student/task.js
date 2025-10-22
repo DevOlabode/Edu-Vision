@@ -38,7 +38,7 @@ const assignmentSchema = new mongoose.Schema({
       dueDate: Date,
       completed: { type: Boolean, default: false },
     },
-  ],
+  ], 
 
   // For progress tracking
   status: {

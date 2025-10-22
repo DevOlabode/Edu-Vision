@@ -6,7 +6,7 @@ const controller = require('../../controllers/student/task');
 const {isLoggedIn} = require('../../middleware');
 const catchAsync = require('../../utils/catchAsync');
 
-router.get('/new', isLoggedIn, catchAsync(controller.newTaskForm));
+router.get('/new', isLoggedIn, controller.newTaskForm);
 
 router.get('/', isLoggedIn, controller.allTasks);
 

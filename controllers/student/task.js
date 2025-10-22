@@ -38,6 +38,33 @@ module.exports.showTask = async(req, res)=>{
     res.render('student/task/show', {task});
 };
 
+module.exports.addMilestone = async(req, res)=>{
+    const {id} = req.params;
+    const {title, dueDate} = req.body;
+    const task = await Task.findById(id);
+    if(!task){
+        req.flash('error', 'Task not found');
+        return res.redirect('/task');
+    }
+    task.milestones.push({title, dueDate, completed: false});
+    await task.save();
+    req.flash('success', 'Milestone added successfully!');
+    res.redirect(`/task/${id}`);
+};
+
+module.exports.toggleMilestone = async(req, res)=>{
+    const {id, milestoneIndex} = req.params;
+    const task = await Task.findById(id);
+    if(!task || !task.milestones[milestoneIndex]){
+        req.flash('error', 'Task or milestone not found');
+        return res.redirect('/task');
+    }
+    task.milestones[milestoneIndex].completed = !task.milestones[milestoneIndex].completed;
+    await task.save();
+    req.flash('success', 'Milestone status updated!');
+    res.redirect(`/task/${id}`);
+};
+
 
 module.exports.showPage = async(req, res)=>{
     const task = await Task.findById(req.params.id);

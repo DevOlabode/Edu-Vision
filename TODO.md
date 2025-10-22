@@ -32,3 +32,10 @@
 - Test milestone addition functionality.
 - Verify all pages render correctly with new styling.
 - Test form submissions and data persistence.
+
+## Progress
+- [x] Restyled `views/student/task/show.ejs` with modern design and added milestone addition form
+- [x] Added `addMilestone` and `toggleMilestone` methods to `controllers/student/task.js`
+- [x] Added POST routes for milestone operations in `routes/student/task.js`
+- [x] Enhanced styling for `views/student/task/allTasks.ejs` with improved card design and layout
+- [x] Completely redesigned `views/student/task/newTask.ejs` with sectioned form and better UX

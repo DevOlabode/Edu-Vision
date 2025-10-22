@@ -1,84 +1,221 @@
 <% layout('layout/boilerplate') %>
 
-<div class="container mt-5">
-  <div class="row">
+<div class="container-fluid mt-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
     <div class="col-12">
-      <h1 class="mb-4 text-center" style="color: #667eea; font-weight: 700;">All Tasks</h1>
+      <div class="text-center">
+        <h1 class="display-4 mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+          <i class="fas fa-tasks me-3"></i>My Tasks
+        </h1>
+        <p class="lead text-muted mb-4">Manage and track your academic assignments and projects</p>
+        <a href="/task/new" class="btn btn-gradient btn-lg px-4 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+          <i class="fas fa-plus me-2"></i>Create New Task
+        </a>
+      </div>
+    </div>
+  </div>
 
-      <% if (tasks && tasks.length > 0) { %>
-        <div class="row">
-          <% tasks.forEach(task => { %>
-            <div class="col-md-6 col-lg-4 mb-4">
-              <div class="card h-100 shadow-sm" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
-                <div class="card-body d-flex flex-column">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="card-title" style="color: #2c3e50; font-weight: 600;"><%= task.title %></h5>
-                    <span class="badge <%= task.priority === 'high' ? 'bg-danger' : task.priority === 'medium' ? 'bg-warning' : 'bg-success' %> text-white">
-                      <%= task.priority %>
-                    </span>
-                  </div>
+  <% if (tasks && tasks.length > 0) { %>
+    <!-- Tasks Grid -->
+    <div class="row g-4">
+      <% tasks.forEach(task => { %>
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+          <div class="task-card card h-100 border-0 shadow-lg" style="border-radius: 20px; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); transition: all 0.4s ease; overflow: hidden;">
+            <!-- Priority Indicator -->
+            <div class="priority-strip" style="height: 6px; background: <%= task.priority === 'high' ? '#dc3545' : task.priority === 'medium' ? '#ffc107' : '#28a745' %>;"></div>
 
-                  <p class="card-text text-muted mb-2"><strong>Subject:</strong> <%= task.subject %></p>
-                  <p class="card-text text-muted mb-2"><strong>Type:</strong> <%= task.type %></p>
-                  <p class="card-text text-muted mb-2"><strong>Due Date:</strong> <%= new Date(task.dueDate).toLocaleDateString() %></p>
-                  <p class="card-text text-muted mb-2"><strong>Status:</strong>
-                    <span class="badge <%= task.status === 'completed' ? 'bg-success' : task.status === 'in-progress' ? 'bg-primary' : task.status === 'overdue' ? 'bg-danger' : 'bg-secondary' %> text-white">
-                      <%= task.status %>
-                    </span>
-                  </p>
-                  <p class="card-text text-muted mb-2"><strong>Difficulty:</strong> <%= task.difficulty %></p>
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title text-truncate mb-0" style="color: #2c3e50; font-weight: 700; font-size: 1.1rem; line-height: 1.3;">
+                  <%= task.title %>
+                </h5>
+                <div class="status-badge">
+                  <span class="badge fs-7 px-2 py-1 <%= task.status === 'completed' ? 'bg-success' : task.status === 'in-progress' ? 'bg-primary' : task.status === 'overdue' ? 'bg-danger' : 'bg-secondary' %> text-white rounded-pill">
+                    <%= task.status %>
+                  </span>
+                </div>
+              </div>
 
-                  <% if (task.description) { %>
-                    <p class="card-text mb-3"><strong>Description:</strong> <%= task.description %></p>
-                  <% } %>
-
-                  <% if (task.milestones && task.milestones.length > 0) { %>
-                    <div class="mb-3">
-                      <strong>Milestones:</strong>
-                      <ul class="list-unstyled">
-                        <% task.milestones.forEach(milestone => { %>
-                          <li class="d-flex align-items-center">
-                            <i class="fas <%= milestone.completed ? 'fa-check-circle text-success' : 'fa-circle text-muted' %> me-2"></i>
-                            <%= milestone.title %> - <%= new Date(milestone.dueDate).toLocaleDateString() %>
-                          </li>
-                        <% }); %>
-                      </ul>
+              <!-- Task Meta -->
+              <div class="task-meta mb-3">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="meta-item d-flex align-items-center">
+                      <i class="fas fa-book text-primary me-2" style="font-size: 0.8rem;"></i>
+                      <small class="text-muted text-truncate"><%= task.subject %></small>
                     </div>
-                  <% } %>
-
-                  <div class="mt-auto d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Created: <%= new Date(task.createdAt).toLocaleDateString() %></small>
-                    <a href="/task/<%= task._id %>" class="btn btn-outline-primary btn-sm" style="border-radius: 20px;">
-                      <i class="fas fa-eye me-1"></i>View
-                    </a>
+                  </div>
+                  <div class="col-6">
+                    <div class="meta-item d-flex align-items-center">
+                      <i class="fas fa-tag text-info me-2" style="font-size: 0.8rem;"></i>
+                      <small class="text-muted"><%= task.type %></small>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Due Date -->
+              <div class="due-date mb-3 p-2 rounded-3" style="background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-calendar-alt text-primary me-2"></i>
+                  <div>
+                    <small class="text-muted d-block" style="font-size: 0.7rem;">Due Date</small>
+                    <span class="fw-semibold" style="color: #2c3e50; font-size: 0.85rem;">
+                      <%= new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Difficulty & Priority -->
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="difficulty-badge text-center p-1 rounded-2" style="background: rgba(118, 75, 162, 0.1);">
+                    <small class="text-purple fw-semibold" style="font-size: 0.7rem;"><%= task.difficulty %></small>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="priority-badge text-center p-1 rounded-2 <%= task.priority === 'high' ? 'bg-danger' : task.priority === 'medium' ? 'bg-warning' : 'bg-success' %> bg-opacity-10">
+                    <small class="fw-semibold" style="font-size: 0.7rem; color: <%= task.priority === 'high' ? '#dc3545' : task.priority === 'medium' ? '#ffc107' : '#28a745' %>;">
+                      <%= task.priority %>
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Milestones Preview -->
+              <% if (task.milestones && task.milestones.length > 0) { %>
+                <div class="milestones-preview mb-3">
+                  <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-flag text-warning me-2" style="font-size: 0.8rem;"></i>
+                    <small class="text-muted fw-semibold">Milestones</small>
+                  </div>
+                  <div class="milestone-indicators d-flex flex-wrap gap-1">
+                    <% task.milestones.slice(0, 4).forEach(milestone => { %>
+                      <div class="milestone-dot rounded-circle <%= milestone.completed ? 'bg-success' : 'bg-light border' %>" style="width: 8px; height: 8px;" title="<%= milestone.title %>"></div>
+                    <% }); %>
+                    <% if (task.milestones.length > 4) { %>
+                      <small class="text-muted ms-1">+<%= task.milestones.length - 4 %></small>
+                    <% } %>
+                  </div>
+                  <div class="mt-1">
+                    <small class="text-muted">
+                      <%= task.milestones.filter(m => m.completed).length %>/<%= task.milestones.length %> completed
+                    </small>
+                  </div>
+                </div>
+              <% } %>
+
+              <!-- Description Preview -->
+              <% if (task.description) { %>
+                <div class="description-preview mb-3">
+                  <p class="text-muted mb-0" style="font-size: 0.8rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    <%= task.description %>
+                  </p>
+                </div>
+              <% } %>
+
+              <!-- Card Footer -->
+              <div class="card-footer bg-transparent border-0 p-0 mt-auto">
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted" style="font-size: 0.7rem;">
+                    <i class="fas fa-clock me-1"></i><%= new Date(task.createdAt).toLocaleDateString() %>
+                  </small>
+                  <a href="/task/<%= task._id %>" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1" style="font-size: 0.8rem; border-width: 1.5px;">
+                    <i class="fas fa-eye me-1"></i>View
+                  </a>
+                </div>
+              </div>
             </div>
-          <% }); %>
+          </div>
         </div>
-      <% } else { %>
-        <div class="text-center mt-5">
-          <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
-          <h3 class="text-muted">No tasks found</h3>
-          <p class="text-muted">You haven't added any tasks yet. Start by creating your first task!</p>
-          <a href="/task/new" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 10px 30px;">
-            <i class="fas fa-plus me-2"></i>Add New Task
+      <% }); %>
+    </div>
+  <% } else { %>
+    <!-- Empty State -->
+    <div class="row">
+      <div class="col-12">
+        <div class="empty-state text-center py-5">
+          <div class="empty-icon mb-4">
+            <i class="fas fa-clipboard-list fa-5x text-muted opacity-50"></i>
+          </div>
+          <h2 class="text-muted mb-3">No Tasks Yet</h2>
+          <p class="text-muted mb-4 lead">Start organizing your academic journey by creating your first task</p>
+          <a href="/task/new" class="btn btn-gradient btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+            <i class="fas fa-plus-circle me-2 fa-lg"></i>Create Your First Task
           </a>
         </div>
-      <% } %>
+      </div>
     </div>
-  </div>
+  <% } %>
 </div>
 
 <style>
-.card:hover {
-  transform: translateY(-5px);
-  transition: transform 0.3s ease;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2) !important;
+.task-card {
+  position: relative;
 }
 
-.badge {
-  font-size: 0.75rem;
+.task-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15) !important;
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.text-purple {
+  color: #764ba2 !important;
+}
+
+.display-4 {
+  font-size: 2.8rem;
+}
+
+.milestone-dot {
+  flex-shrink: 0;
+}
+
+.empty-state {
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 20px;
+  padding: 4rem 2rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2.2rem;
+  }
+
+  .task-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .col-xl-3 {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .display-4 {
+    font-size: 1.8rem;
+  }
 }
 </style>

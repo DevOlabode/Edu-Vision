@@ -1,90 +1,195 @@
 <% layout('layout/boilerplate') %>
 
-<div class="container mt-5">
+<div class="container-fluid mt-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="text-center">
+        <div class="hero-icon mb-4">
+          <i class="fas fa-plus-circle fa-4x" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+        </div>
+        <h1 class="display-4 mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+          Create New Task
+        </h1>
+        <p class="lead text-muted">Organize your academic work with detailed task management</p>
+      </div>
+    </div>
+  </div>
+
   <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
+    <div class="col-lg-10">
+      <div class="card shadow-lg" style="border-radius: 25px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); overflow: hidden;">
+        <!-- Card Header -->
+        <div class="card-header text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+          <h3 class="mb-0 font-weight-bold">
+            <i class="fas fa-clipboard-list me-2"></i>Task Details
+          </h3>
+        </div>
+
         <div class="card-body p-5">
-          <h2 class="card-title text-center mb-4" style="color: #667eea; font-weight: 700;">Create New Task</h2>
-
           <form action="/task" method="POST" class="needs-validation" novalidate>
-            <!-- Title -->
-            <div class="mb-3">
-              <label for="title" class="form-label" style="font-weight: 600; color: #2c3e50;">Task Title *</label>
-              <input type="text" class="form-control" id="title" name="title" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-              <div class="invalid-feedback">Please provide a task title.</div>
+            <!-- Basic Information Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-info-circle text-primary me-2"></i>Basic Information
+              </h4>
+
+              <!-- Title -->
+              <div class="mb-4">
+                <label for="title" class="form-label fw-bold mb-3" style="color: #2c3e50; font-size: 1.1rem;">
+                  <i class="fas fa-heading text-primary me-2"></i>Task Title
+                </label>
+                <input type="text" class="form-control form-control-xl" id="title" name="title" required
+                       style="border-radius: 15px; border: 2px solid #e9ecef; padding: 16px 20px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
+                       placeholder="Enter a clear, descriptive title for your task">
+                <div class="invalid-feedback mt-2">
+                  Please provide a task title.
+                </div>
+              </div>
+
+              <!-- Subject and Type -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <label for="subject" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-book text-primary me-2"></i>Subject
+                  </label>
+                  <input type="text" class="form-control form-control-lg" id="subject" name="subject" required
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
+                         placeholder="e.g., Mathematics, Physics, History">
+                  <div class="invalid-feedback mt-2">
+                    Please provide a subject.
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="type" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-tag text-info me-2"></i>Task Type
+                  </label>
+                  <select class="form-select form-select-lg" id="type" name="type" required
+                          style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <option value="">Select task type</option>
+                    <option value="Assignment">📝 Assignment</option>
+                    <option value="Project">🚀 Project</option>
+                    <option value="Exam">📋 Exam</option>
+                    <option value="Quiz">❓ Quiz</option>
+                    <option value="Homework">📚 Homework</option>
+                    <option value="Presentation">🎤 Presentation</option>
+                    <option value="Research">🔍 Research</option>
+                    <option value="Lab">🧪 Lab Work</option>
+                  </select>
+                  <div class="invalid-feedback mt-2">
+                    Please select a task type.
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Subject -->
-            <div class="mb-3">
-              <label for="subject" class="form-label" style="font-weight: 600; color: #2c3e50;">Subject *</label>
-              <input type="text" class="form-control" id="subject" name="subject" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-              <div class="invalid-feedback">Please provide a subject.</div>
+            <!-- Schedule & Priority Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-calendar-alt text-success me-2"></i>Schedule & Priority
+              </h4>
+
+              <div class="row mb-4">
+                <!-- Due Date -->
+                <div class="col-md-6">
+                  <label for="dueDate" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-calendar-check text-success me-2"></i>Due Date
+                  </label>
+                  <input type="date" class="form-control form-control-lg" id="dueDate" name="dueDate" required
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                  <div class="invalid-feedback mt-2">
+                    Please select a due date.
+                  </div>
+                </div>
+
+                <!-- Priority -->
+                <div class="col-md-6">
+                  <label for="priority" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Priority Level
+                  </label>
+                  <select class="form-select form-select-lg" id="priority" name="priority" required
+                          style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <option value="">Select priority</option>
+                    <option value="low">🟢 Low - Can wait</option>
+                    <option value="medium">🟡 Medium - Important</option>
+                    <option value="high">🔴 High - Urgent</option>
+                  </select>
+                  <div class="invalid-feedback mt-2">
+                    Please select a priority level.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Difficulty -->
+              <div class="mb-4">
+                <label for="difficulty" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                  <i class="fas fa-chart-line text-purple me-2"></i>Difficulty Level
+                </label>
+                <select class="form-select form-select-lg" id="difficulty" name="difficulty" required
+                        style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                  <option value="">Select difficulty</option>
+                  <option value="easy">🟢 Easy - Straightforward</option>
+                  <option value="medium">🟡 Medium - Moderate challenge</option>
+                  <option value="hard">🔴 Hard - Complex work</option>
+                </select>
+                <div class="invalid-feedback mt-2">
+                  Please select a difficulty level.
+                </div>
+              </div>
             </div>
 
-            <!-- Type -->
-            <div class="mb-3">
-              <label for="type" class="form-label" style="font-weight: 600; color: #2c3e50;">Task Type *</label>
-              <select class="form-select" id="type" name="type" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-                <option value="">Select type</option>
-                <option value="homework">Homework</option>
-                <option value="project">Project</option>
-                <option value="exam">Exam</option>
-                <option value="quiz">Quiz</option>
-                <option value="assignment">Assignment</option>
-              </select>
-              <div class="invalid-feedback">Please select a task type.</div>
+            <!-- Description Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-align-left text-info me-2"></i>Description
+              </h4>
+              <div class="mb-4">
+                <textarea class="form-control" id="description" name="description" rows="5"
+                          style="border-radius: 15px; border: 2px solid #e9ecef; padding: 16px 20px; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); resize: vertical;"
+                          placeholder="Provide detailed instructions, requirements, or any additional context for this task. Include specific guidelines, resources needed, or special considerations."></textarea>
+                <small class="text-muted mt-2 d-block">
+                  <i class="fas fa-info-circle me-1"></i>Optional but recommended for better task understanding
+                </small>
+              </div>
             </div>
 
-            <!-- Due Date -->
-            <div class="mb-3">
-              <label for="dueDate" class="form-label" style="font-weight: 600; color: #2c3e50;">Due Date *</label>
-              <input type="date" class="form-control" id="dueDate" name="dueDate" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-              <div class="invalid-feedback">Please provide a due date.</div>
-            </div>
+            <!-- Milestones Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4 d-flex align-items-center justify-content-between">
+                <span>
+                  <i class="fas fa-flag text-warning me-2"></i>Milestones
+                  <small class="text-muted ms-2">(Optional)</small>
+                </span>
+                <button type="button" class="btn btn-gradient btn-sm px-3 py-2" id="addMilestoneBtn" style="border-radius: 20px; font-weight: 600;">
+                  <i class="fas fa-plus me-1"></i>Add Milestone
+                </button>
+              </h4>
 
-            <!-- Description -->
-            <div class="mb-3">
-              <label for="description" class="form-label" style="font-weight: 600; color: #2c3e50;">Description</label>
-              <textarea class="form-control" id="description" name="description" rows="3" style="border-radius: 10px; border: 2px solid #e9ecef;"></textarea>
-            </div>
+              <div class="milestones-info mb-4 p-3 rounded-3" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.2);">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
+                  <div>
+                    <strong class="text-warning">Break down your task!</strong>
+                    <p class="mb-0 text-muted small">Milestones help you track progress on larger projects. Add checkpoints with titles and due dates to stay organized.</p>
+                  </div>
+                </div>
+              </div>
 
-            <!-- Priority -->
-            <div class="mb-3">
-              <label for="priority" class="form-label" style="font-weight: 600; color: #2c3e50;">Priority</label>
-              <select class="form-select" id="priority" name="priority" style="border-radius: 10px; border: 2px solid #e9ecef;">
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-
-            <!-- Difficulty -->
-            <div class="mb-3">
-              <label for="difficulty" class="form-label" style="font-weight: 600; color: #2c3e50;">Difficulty</label>
-              <select class="form-select" id="difficulty" name="difficulty" style="border-radius: 10px; border: 2px solid #e9ecef;">
-                <option value="medium">Medium</option>
-                <option value="easy">Easy</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-
-            <!-- Milestones (for projects) -->
-            <div class="mb-3" id="milestonesSection" style="display: none;">
-              <label class="form-label" style="font-weight: 600; color: #2c3e50;">Milestones</label>
               <div id="milestonesContainer">
                 <!-- Milestones will be added here dynamically -->
               </div>
-              <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="addMilestone" style="border-radius: 20px;">
-                <i class="fas fa-plus me-1"></i>Add Milestone
-              </button>
             </div>
 
-            <!-- Submit Button -->
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 12px; font-weight: 600;">
-                <i class="fas fa-save me-2"></i>Create Task
-              </button>
+            <!-- Submit Section -->
+            <div class="text-center mt-5">
+              <div class="submit-actions d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/task" class="btn btn-outline-secondary btn-lg px-4 py-3" style="border-radius: 25px; font-weight: 600;">
+                  <i class="fas fa-arrow-left me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-gradient btn-lg px-5 py-3" style="border-radius: 25px; font-weight: 600; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                  <i class="fas fa-save me-2"></i>Create Task
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -94,50 +199,144 @@
 </div>
 
 <script>
-document.getElementById('type').addEventListener('change', function() {
-  const milestonesSection = document.getElementById('milestonesSection');
-  if (this.value === 'project') {
-    milestonesSection.style.display = 'block';
-  } else {
-    milestonesSection.style.display = 'none';
-  }
-});
-
-document.getElementById('addMilestone').addEventListener('click', function() {
+// Add milestone functionality
+document.getElementById('addMilestoneBtn').addEventListener('click', function() {
   const container = document.getElementById('milestonesContainer');
+  const milestoneCount = container.children.length + 1;
+
   const milestoneDiv = document.createElement('div');
-  milestoneDiv.className = 'milestone-item mb-2 p-3 border rounded';
+  milestoneDiv.className = 'milestone-item mb-4 p-4 border rounded-3';
+  milestoneDiv.style.background = 'linear-gradient(145deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)';
+  milestoneDiv.style.border = '2px solid rgba(102, 126, 234, 0.1)';
   milestoneDiv.innerHTML = `
-    <div class="row">
-      <div class="col-md-6">
-        <input type="text" class="form-control" name="milestones[][title]" placeholder="Milestone title" required style="border-radius: 8px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0 fw-bold" style="color: #2c3e50;">
+        <i class="fas fa-flag text-warning me-2"></i>Milestone ${milestoneCount}
+      </h6>
+      <button type="button" class="btn btn-outline-danger btn-sm remove-milestone" style="border-radius: 15px;" title="Remove milestone">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-7">
+        <input type="text" class="form-control" name="milestones[][title]" placeholder="What needs to be accomplished?" required
+               style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;">
       </div>
       <div class="col-md-5">
-        <input type="date" class="form-control" name="milestones[][dueDate]" required style="border-radius: 8px;">
-      </div>
-      <div class="col-md-1">
-        <button type="button" class="btn btn-outline-danger btn-sm remove-milestone" style="border-radius: 50%;">
-          <i class="fas fa-times"></i>
-        </button>
+        <input type="date" class="form-control" name="milestones[][dueDate]" required
+               style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;">
       </div>
     </div>
   `;
   container.appendChild(milestoneDiv);
 
-  // Add event listener to remove button
+  // Add remove functionality
   milestoneDiv.querySelector('.remove-milestone').addEventListener('click', function() {
     container.removeChild(milestoneDiv);
+    updateMilestoneNumbers();
   });
+
+  updateMilestoneNumbers();
+});
+
+function updateMilestoneNumbers() {
+  const milestones = document.querySelectorAll('.milestone-item');
+  milestones.forEach((milestone, index) => {
+    const title = milestone.querySelector('h6');
+    title.innerHTML = `<i class="fas fa-flag text-warning me-2"></i>Milestone ${index + 1}`;
+  });
+}
+
+// Enhanced form validation
+document.querySelector('.needs-validation').addEventListener('submit', function(event) {
+  if (!this.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  this.classList.add('was-validated');
 });
 </script>
 
 <style>
+.section-card {
+  background: rgba(102, 126, 234, 0.02);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.3rem;
+  border-bottom: 3px solid #667eea;
+  padding-bottom: 0.5rem;
+}
+
 .form-control:focus, .form-select:focus {
   border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.15);
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.text-purple {
+  color: #764ba2 !important;
+}
+
+.display-4 {
+  font-size: 2.8rem;
 }
 
 .milestone-item {
-  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.milestone-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2.2rem;
+  }
+
+  .section-card {
+    padding: 1.5rem;
+  }
+
+  .submit-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-lg {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .display-4 {
+    font-size: 1.8rem;
+  }
 }
 </style>

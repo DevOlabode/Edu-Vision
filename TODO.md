@@ -1,0 +1,5 @@
+- [ ] Analyze current study notes design in materialDetail.ejs
+- [ ] Plan design improvements: softer gradients, better typography, enhanced spacing, subtle animations
+- [ ] Edit the study notes section in materialDetail.ejs with new styles
+- [ ] Test the changes by running the app and viewing the page
+- [ ] Verify responsiveness and overall niceness

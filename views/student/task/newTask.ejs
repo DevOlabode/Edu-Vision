@@ -1,0 +1,143 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
+        <div class="card-body p-5">
+          <h2 class="card-title text-center mb-4" style="color: #667eea; font-weight: 700;">Create New Task</h2>
+
+          <form action="/tasks" method="POST" class="needs-validation" novalidate>
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label" style="font-weight: 600; color: #2c3e50;">Task Title *</label>
+              <input type="text" class="form-control" id="title" name="title" required style="border-radius: 10px; border: 2px solid #e9ecef;">
+              <div class="invalid-feedback">Please provide a task title.</div>
+            </div>
+
+            <!-- Subject -->
+            <div class="mb-3">
+              <label for="subject" class="form-label" style="font-weight: 600; color: #2c3e50;">Subject *</label>
+              <input type="text" class="form-control" id="subject" name="subject" required style="border-radius: 10px; border: 2px solid #e9ecef;">
+              <div class="invalid-feedback">Please provide a subject.</div>
+            </div>
+
+            <!-- Type -->
+            <div class="mb-3">
+              <label for="type" class="form-label" style="font-weight: 600; color: #2c3e50;">Task Type *</label>
+              <select class="form-select" id="type" name="type" required style="border-radius: 10px; border: 2px solid #e9ecef;">
+                <option value="">Select type</option>
+                <option value="homework">Homework</option>
+                <option value="project">Project</option>
+                <option value="exam">Exam</option>
+                <option value="quiz">Quiz</option>
+                <option value="assignment">Assignment</option>
+              </select>
+              <div class="invalid-feedback">Please select a task type.</div>
+            </div>
+
+            <!-- Due Date -->
+            <div class="mb-3">
+              <label for="dueDate" class="form-label" style="font-weight: 600; color: #2c3e50;">Due Date *</label>
+              <input type="date" class="form-control" id="dueDate" name="dueDate" required style="border-radius: 10px; border: 2px solid #e9ecef;">
+              <div class="invalid-feedback">Please provide a due date.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label" style="font-weight: 600; color: #2c3e50;">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3" style="border-radius: 10px; border: 2px solid #e9ecef;"></textarea>
+            </div>
+
+            <!-- Priority -->
+            <div class="mb-3">
+              <label for="priority" class="form-label" style="font-weight: 600; color: #2c3e50;">Priority</label>
+              <select class="form-select" id="priority" name="priority" style="border-radius: 10px; border: 2px solid #e9ecef;">
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <!-- Difficulty -->
+            <div class="mb-3">
+              <label for="difficulty" class="form-label" style="font-weight: 600; color: #2c3e50;">Difficulty</label>
+              <select class="form-select" id="difficulty" name="difficulty" style="border-radius: 10px; border: 2px solid #e9ecef;">
+                <option value="medium">Medium</option>
+                <option value="easy">Easy</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+
+            <!-- Milestones (for projects) -->
+            <div class="mb-3" id="milestonesSection" style="display: none;">
+              <label class="form-label" style="font-weight: 600; color: #2c3e50;">Milestones</label>
+              <div id="milestonesContainer">
+                <!-- Milestones will be added here dynamically -->
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="addMilestone" style="border-radius: 20px;">
+                <i class="fas fa-plus me-1"></i>Add Milestone
+              </button>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 12px; font-weight: 600;">
+                <i class="fas fa-save me-2"></i>Create Task
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('type').addEventListener('change', function() {
+  const milestonesSection = document.getElementById('milestonesSection');
+  if (this.value === 'project') {
+    milestonesSection.style.display = 'block';
+  } else {
+    milestonesSection.style.display = 'none';
+  }
+});
+
+document.getElementById('addMilestone').addEventListener('click', function() {
+  const container = document.getElementById('milestonesContainer');
+  const milestoneDiv = document.createElement('div');
+  milestoneDiv.className = 'milestone-item mb-2 p-3 border rounded';
+  milestoneDiv.innerHTML = `
+    <div class="row">
+      <div class="col-md-6">
+        <input type="text" class="form-control" name="milestones[][title]" placeholder="Milestone title" required style="border-radius: 8px;">
+      </div>
+      <div class="col-md-5">
+        <input type="date" class="form-control" name="milestones[][dueDate]" required style="border-radius: 8px;">
+      </div>
+      <div class="col-md-1">
+        <button type="button" class="btn btn-outline-danger btn-sm remove-milestone" style="border-radius: 50%;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  container.appendChild(milestoneDiv);
+
+  // Add event listener to remove button
+  milestoneDiv.querySelector('.remove-milestone').addEventListener('click', function() {
+    container.removeChild(milestoneDiv);
+  });
+});
+</script>
+
+<style>
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.milestone-item {
+  background: #f8f9fa;
+}
+</style>

@@ -24,23 +24,23 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     fileFilter: (req, file, cb) => {
-        console.log('File filter - checking file:', file.originalname);
-        console.log('File mimetype:', file.mimetype);
-        
+        // console.log('File filter - checking file:', file.originalname);
+        // console.log('File mimetype:', file.mimetype);
+
         const allowed = /pdf|doc|docx|txt/;
         const ext = allowed.test(path.extname(file.originalname).toLowerCase());
         const mime = [
-            'application/pdf', 
-            'application/msword', 
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'text/plain'
         ].includes(file.mimetype);
-        
+
         if (ext && mime) {
-            console.log('File accepted');
+            // console.log('File accepted');
             cb(null, true);
         } else {
-            console.log('File rejected - invalid type');
+            // console.log('File rejected - invalid type');
             cb(new Error('Invalid file type. Only PDF, DOC, DOCX, and TXT files are allowed.'));
         }
     }

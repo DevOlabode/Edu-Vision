@@ -13,10 +13,10 @@ const transporter = nodemailer.createTransport({
 
 // Verify transporter
 transporter.verify((error, success) => {
-  if (error) { 
-    console.log('Email transporter error:', error);
+  if (error) {
+    // console.log('Email transporter error:', error);
   } else {
-    console.log('Email transporter is ready');
+    // console.log('Email transporter is ready');
   }
 });
 
@@ -48,7 +48,7 @@ module.exports.sendWelcomeEmail = async (toEmail, firstName) => {
     };
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log('Contact Us email sent:', info.messageId);
+        // console.log('Contact Us email sent:', info.messageId);
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('Email sending error:', error);
@@ -85,7 +85,7 @@ module.exports.sendPasswordResetEmail = async (toEmail, firstName, resetCode) =>
 });
 
 
-    console.log(`✅ Password reset email sent to ${toEmail}`);
+    // console.log(`✅ Password reset email sent to ${toEmail}`);
   } catch (error) {
     console.error('❌ Failed to send password reset email:', error);
   }

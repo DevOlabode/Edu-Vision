@@ -17,10 +17,10 @@ ${extractedText}
       temperature: 0.7
     });
 
-    console.log('Full response:', JSON.stringify(response.data, null, 2));
+    // console.log('Full response:', JSON.stringify(response.data, null, 2));
     const content = response.data.choices[0].message.content;
-    console.log('Content type:', typeof content);
-    console.log('Content value:', content);
+    // console.log('Content type:', typeof content);
+    // console.log('Content value:', content);
 
     let summary;
     if (typeof content === 'string') {

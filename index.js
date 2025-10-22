@@ -80,7 +80,7 @@ app.use('/api/materials', materialRoutes);
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    // console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
 
@@ -119,5 +119,5 @@ app.use((err, req, res, next)=>{
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    // console.log(`Server is running on port ${PORT}`);
 });

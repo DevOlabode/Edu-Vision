@@ -59,8 +59,8 @@ exports.materialDetail = async (req, res) => {
 
         // Convert to plain object
         const materialPlain = material.toObject();
-        console.log('Material summary type:', typeof materialPlain.summary);
-        console.log('Material summary value:', materialPlain.summary);
+        // console.log('Material summary type:', typeof materialPlain.summary);
+        // console.log('Material summary value:', materialPlain.summary);
 
         // Handle summary data - it should be a string from the AI summarizer
         if (typeof materialPlain.summary !== 'string') {
@@ -95,7 +95,7 @@ exports.materialDetail = async (req, res) => {
             const parsedFlashcards = [];
             let currentCard = null;
 
-            console.log('Raw flashcards lines:', flashcards);
+            // console.log('Raw flashcards lines:', flashcards);
 
             flashcards.forEach((line, index) => {
                 const trimmedLine = line.trim();
@@ -143,7 +143,7 @@ exports.materialDetail = async (req, res) => {
                 parsedFlashcards.push(currentCard);
             }
 
-            console.log('Parsed flashcards:', parsedFlashcards);
+            // console.log('Parsed flashcards:', parsedFlashcards);
             materialPlain.flashcards = parsedFlashcards;
         }
 

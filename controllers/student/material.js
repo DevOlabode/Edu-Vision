@@ -8,7 +8,7 @@ const {summarizer} = require('../../AI/summarise')
 exports.upload = async (req, res) => {
     try {
         if (!req.file) {
-            console.log('ERROR: No file uploaded');
+            // console.log('ERROR: No file uploaded');
             return res.status(400).json({
                 success: false,
                 error: 'No file uploaded'
@@ -16,10 +16,10 @@ exports.upload = async (req, res) => {
         }
 
         if (!req.body.title) {
-            console.log('ERROR: No title provided');
+            // console.log('ERROR: No title provided');
             try {
                 await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
-                console.log('Deleted file from Cloudinary due to missing title');
+                // console.log('Deleted file from Cloudinary due to missing title');
             } catch (deleteError) {
                 console.error('Error deleting file from Cloudinary:', deleteError);
             }
@@ -51,8 +51,8 @@ exports.upload = async (req, res) => {
                 const text = await extractText(localFilePath, fileType);
 
                 const summary = await summarizer(text);
-                console.log('Summary type:', typeof summary);
-                console.log('Summary content:', summary);
+                // console.log('Summary type:', typeof summary);
+                // console.log('Summary content:', summary);
 
                 await Material.findByIdAndUpdate(materialId, {
                     content: text,
@@ -176,12 +176,12 @@ exports.delete = async (req, res) => {
             await cloudinary.uploader.destroy(material.cloudinaryId, {
                 resource_type: 'raw'
             });
-            console.log('Deleted from Cloudinary:', material.cloudinaryId);
+            // console.log('Deleted from Cloudinary:', material.cloudinaryId);
         }
 
         // Delete from database
         await material.deleteOne();
-        console.log('Deleted from database:', material._id);
+        // console.log('Deleted from database:', material._id);
 
         req.flash('success', 'Deleted Material Successfully');
         res.redirect('/materials')

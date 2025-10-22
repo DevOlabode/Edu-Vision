@@ -22,11 +22,11 @@ const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
 
 const connectDB = require('./config/database');
+
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/student/material');
 const pagesRoutes = require('./routes/pages');
-
-
+const taskRoutes  = require('./routes/student/task');
 
 app.use(express.urlencoded({extended : true}));
 
@@ -77,6 +77,7 @@ connectDB()
 app.use('/', authRoutes);
 app.use('/', pagesRoutes);
 app.use('/api/materials', materialRoutes);
+app.use('/task', taskRoutes);
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {

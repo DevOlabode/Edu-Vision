@@ -1,5 +1,5 @@
 const Task = require('../../models/student/task');
-const taskPlanner = require('../../AI/task');
+const {taskPlanner} = require('../../AI/task');
 
 module.exports.newTaskForm = (req, res)=>{
     res.render('student/task/newTask')
@@ -12,6 +12,9 @@ module.exports.allTasks = async(req, res)=>{
 
 module.exports.newTask = async(req, res)=>{
     const {title, subject, type, dueDate, description, priority, difficulty, milestones} = req.body;
+
+    const plan = await taskPlanner(title, subject, type, dueDate, description, priority, difficulty, milestones);
+
     const task = new Task({
         title,
         subject,
@@ -21,7 +24,8 @@ module.exports.newTask = async(req, res)=>{
         priority,
         difficulty,
         milestones: Array.isArray(milestones) ? milestones : [],
-        createdBy: req.user._id
+        createdBy: req.user._id,
+        plan
     });
     await task.save();
     req.flash('success', 'Task created successfully!');

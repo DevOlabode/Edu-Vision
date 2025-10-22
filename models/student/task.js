@@ -11,7 +11,7 @@ const assignmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['homework', 'project', 'exam', 'quiz', 'assignment'],
+    enum: ['Homework', 'Project', 'Exam', 'Quiz', 'Assignment'],
     required: true,
   },
   dueDate: {
@@ -52,6 +52,15 @@ const assignmentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+
+  // 🧠 Smart Planner Feature
+  planner: {
+    overview: String,
+    suggestedPlan: [String],
+    studyTips: [String],
+    estimatedTime: String,
+    motivation: String,
   },
 }, { timestamps: true });
 

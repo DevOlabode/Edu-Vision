@@ -2,34 +2,102 @@
 
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="text-center">Login</h3>
+    <div class="col-lg-5 col-md-6">
+      <!-- Login Header -->
+      <div class="login-header text-center mb-4">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px 30px; color: white; box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);">
+          <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.9;">
+            <i class="fas fa-sign-in-alt"></i>
+          </div>
+          <h2 style="font-weight: 700; margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+            Welcome Back
+          </h2>
+          <p style="opacity: 0.9; margin-bottom: 0; font-size: 1rem;">
+            Sign in to access your AI-powered study materials
+          </p>
         </div>
-        <div class="card-body">
+      </div>
+
+      <!-- Login Form -->
+      <div class="login-card" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 20px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15); overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.1);">
+        <div class="login-card-body" style="padding: 40px;">
           <form action="/login" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
+            <!-- Email Field -->
+            <div class="mb-4">
+              <label for="email" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                <i class="fas fa-envelope me-2" style="color: #667eea;"></i>Email Address
+              </label>
+              <input type="email" class="form-control form-control-lg" id="email" name="email" required
+                     style="border-radius: 12px; border: 2px solid #e9ecef; padding: 12px 16px; font-size: 1rem; transition: all 0.3s ease;"
+                     placeholder="Enter your email address">
+              <div class="invalid-feedback">
+                Please provide a valid email address.
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+              <label for="password" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                <i class="fas fa-lock me-2" style="color: #667eea;"></i>Password
+              </label>
+              <input type="password" class="form-control form-control-lg" id="password" name="password" required
+                     style="border-radius: 12px; border: 2px solid #e9ecef; padding: 12px 16px; font-size: 1rem; transition: all 0.3s ease;"
+                     placeholder="Enter your password">
+              <div class="invalid-feedback">
+                Please provide your password.
+              </div>
             </div>
-            <div class="mb-3 text-center">
-              <a href="/forgot-password" class="text-decoration-none">Forgot Password?</a>
+
+            <!-- Forgot Password -->
+            <div class="mb-4 text-end">
+              <a href="/forgot-password" class="text-decoration-none" style="color: #667eea; font-weight: 600; font-size: 0.95rem;">
+                <i class="fas fa-key me-1"></i>Forgot Password?
+              </a>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+
+            <!-- Login Button -->
+            <div class="d-grid mb-4">
+              <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 25px; font-weight: 700; font-size: 1.1rem; padding: 14px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+              </button>
+            </div>
           </form>
-          <hr>
+
+          <!-- Divider -->
+          <div class="divider mb-4" style="position: relative; text-align: center;">
+            <hr style="border: none; height: 1px; background: linear-gradient(90deg, transparent, #dee2e6, transparent);">
+            <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); padding: 0 15px; color: #6c757d; font-weight: 600; font-size: 0.9rem;">or continue with</span>
+          </div>
+
+          <!-- Google Login -->
           <div class="text-center">
-            <a href="/auth/google" class="btn btn-outline-danger w-100">
-              <i class="fab fa-google"></i> Login with Google
+            <a href="/auth/google" class="btn btn-outline-danger btn-lg w-100" style="border-radius: 25px; font-weight: 600; padding: 14px; border: 2px solid #dc3545; transition: all 0.3s ease;">
+              <i class="fab fa-google me-2"></i>Continue with Google
             </a>
           </div>
         </div>
       </div>
+
+      <!-- Sign Up Link -->
+      <div class="text-center mt-4">
+        <p style="color: #6c757d; margin-bottom: 10px;">
+          Don't have an account?
+          <a href="/register" class="text-decoration-none" style="color: #667eea; font-weight: 700;">
+            Create one here
+          </a>
+        </p>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+.login-card input:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+</style>

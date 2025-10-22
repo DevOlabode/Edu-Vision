@@ -3,26 +3,119 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-12">
-      <h2 class="mb-4">My Materials</h2>
+      <!-- Page Header -->
+      <div class="materials-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; margin-bottom: 30px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h1 class="mb-2" style="font-weight: 700; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+              <i class="fas fa-book-open me-3"></i>My Study Materials
+            </h1>
+            <p class="mb-0 opacity-75" style="font-size: 1.1rem;">Access and manage your uploaded documents</p>
+          </div>
+          <div class="text-end">
+            <a href="/upload" class="btn btn-light btn-lg px-4 py-3" style="border-radius: 15px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: all 0.3s ease;">
+              <i class="fas fa-plus me-2"></i>Upload New Material
+            </a>
+          </div>
+        </div>
+      </div>
 
       <% if (materials && materials.length > 0) { %>
-        <div class="list-group">
+        <!-- Materials Grid -->
+        <div class="materials-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px;">
           <% materials.forEach(material => { %>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="mb-1"><a href="/materials/<%= material._id %>" class="text-decoration-none"><%= material.title %></a></h5>
-                <p class="mb-1"><%= material.fileName %> (<%= material.fileType %>)</p>
-                <small class="text-muted">Status: <%= material.status %></small>
+            <div class="material-card" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1); transition: all 0.3s ease; border: 1px solid rgba(102, 126, 234, 0.1);">
+              <!-- Card Header with Status -->
+              <div class="material-card-header" style="background: linear-gradient(135deg, <%= material.status === 'ready' ? '#28a745 0%, #20c997 100%' : material.status === 'processing' ? '#ffc107 0%, #fd7e14 100%' : '#dc3545 0%, #e83e8c 100%' %>); padding: 20px; color: white; position: relative;">
+                <div style="position: absolute; top: -15px; right: -15px; width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-<%= material.status === 'ready' ? 'check-circle' : material.status === 'processing' ? 'clock' : 'exclamation-triangle' %>" style="font-size: 20px;"></i>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                  <div style="background: rgba(255,255,255,0.2); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                    <i class="fas fa-file-<%= material.fileType === 'pdf' ? 'pdf' : material.fileType === 'docx' ? 'word' : 'alt' %>" style="font-size: 16px;"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0" style="font-weight: 700; font-size: 1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);"><%= material.fileType.toUpperCase() %></h6>
+                    <small style="opacity: 0.9; font-size: 0.85rem;"><%= (material.fileSize / 1024).toFixed(2) %> KB</small>
+                  </div>
+                </div>
+                <div class="status-badge" style="display: inline-block; background: rgba(255,255,255,0.25); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize;">
+                  <%= material.status %>
+                </div>
               </div>
-              <form action="/materials/<%= material._id %>?_method=DELETE" method="POST" class="d-inline">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this material?')">Delete</button>
-              </form>
+
+              <!-- Card Body -->
+              <div class="material-card-body" style="padding: 25px;">
+                <h5 class="material-title mb-3" style="font-weight: 700; color: #2c3e50; font-size: 1.2rem; line-height: 1.4;">
+                  <a href="/materials/<%= material._id %>" class="text-decoration-none" style="color: #2c3e50; transition: color 0.3s ease;">
+                    <%= material.title %>
+                  </a>
+                </h5>
+
+                <div class="material-details mb-4">
+                  <div class="detail-item mb-2" style="display: flex; align-items: center; font-size: 0.9rem; color: #6c757d;">
+                    <i class="fas fa-file-signature me-2" style="width: 16px; color: #667eea;"></i>
+                    <span style="font-weight: 500;"><%= material.fileName %></span>
+                  </div>
+                  <div class="detail-item" style="display: flex; align-items: center; font-size: 0.9rem; color: #6c757d;">
+                    <i class="fas fa-calendar-alt me-2" style="width: 16px; color: #667eea;"></i>
+                    <span><%= new Date(material.createdAt).toLocaleDateString() %></span>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="material-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                  <a href="/materials/<%= material._id %>" class="btn btn-primary btn-sm flex-fill" style="border-radius: 25px; font-weight: 600; padding: 8px 16px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                    <i class="fas fa-eye me-1"></i>View
+                  </a>
+                  <form action="/materials/<%= material._id %>?_method=DELETE" method="POST" class="d-inline flex-fill">
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Are you sure you want to delete this material?')" style="border-radius: 25px; font-weight: 600; padding: 8px 16px; border: 2px solid #dc3545; transition: all 0.3s ease;">
+                      <i class="fas fa-trash-alt me-1"></i>Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
           <% }); %>
         </div>
+
+        <!-- Materials Count -->
+        <div class="materials-count mt-4 text-center">
+          <div style="display: inline-block; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px 30px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <span style="color: #2c3e50; font-weight: 700; font-size: 1.1rem;">
+              <i class="fas fa-layer-group me-2" style="color: #667eea;"></i>
+              <%= materials.length %> Material<%= materials.length !== 1 ? 's' : '' %> Total
+            </span>
+          </div>
+        </div>
       <% } else { %>
-        <p>No materials uploaded yet.</p>
+        <!-- Empty State -->
+        <div class="empty-state text-center" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 20px; padding: 60px 40px; margin-top: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.08); border: 2px dashed rgba(102, 126, 234, 0.2);">
+          <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px; opacity: 0.6;">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">No Materials Yet</h3>
+          <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 30px;">Start building your study library by uploading your first document</p>
+          <a href="/upload" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
+            <i class="fas fa-upload me-2"></i>Upload Your First Material
+          </a>
+        </div>
       <% } %>
     </div>
   </div>
 </div>
+
+<style>
+.material-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+}
+
+.material-title a:hover {
+  color: #667eea !important;
+}
+
+.material-actions .btn:hover {
+  transform: translateY(-2px);
+}
+</style>

@@ -2,23 +2,144 @@
 
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="text-center">Upload Material</h3>
+    <div class="col-lg-8">
+      <!-- Upload Header -->
+      <div class="upload-header text-center mb-5">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 25px; padding: 40px 30px; color: white; box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3); margin-bottom: 30px;">
+          <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.9;">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h1 style="font-weight: 700; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-bottom: 10px;">
+            Upload Study Material
+          </h1>
+          <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 0;">
+            Add documents to your AI-powered study library
+          </p>
         </div>
-        <div class="card-body">
-          <form id="uploadForm" action="/api/materials/upload" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label for="title" class="form-label">Title</label>
-              <input type="text" class="form-control" id="title" name="title" required>
+      </div>
+
+      <div class="row">
+        <!-- Upload Form -->
+        <div class="col-lg-8">
+          <div class="upload-card" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 20px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15); overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.1);">
+            <div class="upload-card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px 30px; color: white;">
+              <h4 class="mb-0" style="font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                <i class="fas fa-file-upload me-2"></i>Document Details
+              </h4>
             </div>
-            <div class="mb-3">
-              <label for="file" class="form-label">File (PDF, DOC, DOCX, TXT)</label>
-              <input type="file" class="form-control" id="file" name="file" accept=".pdf,.doc,.docx,.txt" required>
+            <div class="upload-card-body" style="padding: 35px;">
+              <form id="uploadForm" action="/api/materials/upload" method="POST" enctype="multipart/form-data">
+                <!-- Title Field -->
+                <div class="mb-4">
+                  <label for="title" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                    <i class="fas fa-heading me-2" style="color: #667eea;"></i>Document Title
+                  </label>
+                  <input type="text" class="form-control form-control-lg" id="title" name="title" required
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 12px 16px; font-size: 1rem; transition: all 0.3s ease;"
+                         placeholder="Enter a descriptive title for your document">
+                  <div class="form-text" style="color: #6c757d; font-size: 0.9rem; margin-top: 6px;">
+                    Choose a clear, descriptive title that represents your document's content
+                  </div>
+                </div>
+
+                <!-- File Upload Field -->
+                <div class="mb-4">
+                  <label for="file" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                    <i class="fas fa-file-alt me-2" style="color: #667eea;"></i>Select File
+                  </label>
+                  <div class="file-upload-area" style="border: 2px dashed #667eea; border-radius: 15px; padding: 40px 20px; text-align: center; background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(102, 126, 234, 0.05) 100%); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.borderColor='#764ba2'; this.style.background='linear-gradient(135deg, rgba(118, 75, 162, 0.05) 0%, rgba(118, 75, 162, 0.08) 100%)'" onmouseout="this.style.borderColor='#667eea'; this.style.background='linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(102, 126, 234, 0.05) 100%)'" onclick="document.getElementById('file').click()">
+                    <div style="font-size: 3rem; color: #667eea; margin-bottom: 15px;">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h5 style="color: #2c3e50; font-weight: 600; margin-bottom: 8px;">Drop your file here or click to browse</h5>
+                    <p style="color: #6c757d; margin-bottom: 0; font-size: 0.95rem;">
+                      Supported formats: PDF, DOC, DOCX, TXT (Max: 10MB)
+                    </p>
+                  </div>
+                  <input type="file" class="form-control form-control-lg d-none" id="file" name="file" accept=".pdf,.doc,.docx,.txt" required>
+                  <div class="selected-file mt-3" id="selectedFile" style="display: none; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border: 1px solid #c3e6cb; border-radius: 10px; padding: 15px; color: #155724;">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-check-circle me-3" style="font-size: 1.2rem;"></i>
+                      <div>
+                        <strong id="fileName"></strong>
+                        <div id="fileSize" style="font-size: 0.9rem; opacity: 0.8;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary btn-lg px-5 py-3" id="submitBtn" style="border-radius: 30px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; min-width: 200px;">
+                    <i class="fas fa-upload me-2"></i>Upload Document
+                  </button>
+                </div>
+              </form>
             </div>
-            <button type="submit" class="btn btn-primary w-100" id="submitBtn">Upload</button>
-          </form>
+          </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="col-lg-4">
+          <div class="info-sidebar">
+            <!-- Supported Formats -->
+            <div class="info-card mb-4" style="background: linear-gradient(145deg, #ffffff 0%, #fff8f8 100%); border-radius: 15px; padding: 25px; box-shadow: 0 6px 20px rgba(245, 87, 108, 0.1); border: 1px solid rgba(245, 87, 108, 0.1);">
+              <h6 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">
+                <i class="fas fa-file-alt me-2" style="color: #f5576c;"></i>Supported Formats
+              </h6>
+              <div class="format-list">
+                <div class="format-item d-flex align-items-center mb-2" style="color: #dc3545; font-weight: 600;">
+                  <i class="fas fa-file-pdf me-2"></i>PDF Documents
+                </div>
+                <div class="format-item d-flex align-items-center mb-2" style="color: #007bff; font-weight: 600;">
+                  <i class="fas fa-file-word me-2"></i>Word Documents (DOCX)
+                </div>
+                <div class="format-item d-flex align-items-center mb-2" style="color: #28a745; font-weight: 600;">
+                  <i class="fas fa-file-alt me-2"></i>Text Files (TXT)
+                </div>
+              </div>
+            </div>
+
+            <!-- What Happens Next -->
+            <div class="info-card mb-4" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 15px; padding: 25px; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.1);">
+              <h6 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">
+                <i class="fas fa-brain me-2" style="color: #667eea;"></i>What Happens Next?
+              </h6>
+              <div class="process-steps">
+                <div class="step d-flex mb-3">
+                  <div class="step-number" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 12px; flex-shrink: 0;">1</div>
+                  <div style="font-size: 0.9rem; color: #6c757d;">AI extracts content from your document</div>
+                </div>
+                <div class="step d-flex mb-3">
+                  <div class="step-number" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 12px; flex-shrink: 0;">2</div>
+                  <div style="font-size: 0.9rem; color: #6c757d;">Smart summaries are generated</div>
+                </div>
+                <div class="step d-flex mb-3">
+                  <div class="step-number" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 12px; flex-shrink: 0;">3</div>
+                  <div style="font-size: 0.9rem; color: #6c757d;">Flashcards are created for better learning</div>
+                </div>
+                <div class="step d-flex">
+                  <div class="step-number" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; margin-right: 12px; flex-shrink: 0;">4</div>
+                  <div style="font-size: 0.9rem; color: #6c757d;">Access your enhanced study material</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="info-card" style="background: linear-gradient(145deg, #ffffff 0%, #f8fff8 100%); border-radius: 15px; padding: 25px; box-shadow: 0 6px 20px rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.1);">
+              <h6 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">
+                <i class="fas fa-rocket me-2" style="color: #28a745;"></i>Quick Actions
+              </h6>
+              <div class="quick-actions">
+                <a href="/materials" class="btn btn-outline-primary btn-sm w-100 mb-2" style="border-radius: 25px; font-weight: 600;">
+                  <i class="fas fa-list me-2"></i>View My Materials
+                </a>
+                <a href="/" class="btn btn-outline-secondary btn-sm w-100" style="border-radius: 25px; font-weight: 600;">
+                  <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
     fileFilter: (req, file, cb) => {
         // console.log('File filter - checking file:', file.originalname);
         // console.log('File mimetype:', file.mimetype);

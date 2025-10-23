@@ -1,13 +1,19 @@
 const openrouter = require('../utils/openrouterClient');
 
-module.exports.summarizer = async (extractedText) => {
+module.exports.summarizer = async (extractedText, flashcardCount = 5) => {
+  // Limit input to 12000 characters to avoid token overflow
+  const maxLength = 12000;
+  let safeText = extractedText;
+  if (extractedText.length > maxLength) {
+    safeText = extractedText.slice(0, maxLength) + '\n[Content truncated for summary]';
+  }
   const prompt = `
 You are an academic assistant helping students study efficiently. Given the following document content, summarize it into clear, concise study notes.
 Highlight key concepts, definitions, and important facts. Use bullet points and simple language suitable for a high school or university student.
-If applicable, generate 3–5 flashcards at the end based on the content.
+At the end, generate ${flashcardCount} flashcards based on the content. Format flashcards as Q&A pairs, clearly separated from the notes.
 
 Document:
-${extractedText}
+${safeText}
   `;
 
   try {
@@ -17,11 +23,7 @@ ${extractedText}
       temperature: 0.7
     });
 
-    // console.log('Full response:', JSON.stringify(response.data, null, 2));
     const content = response.data.choices[0].message.content;
-    // console.log('Content type:', typeof content);
-    // console.log('Content value:', content);
-
     let summary;
     if (typeof content === 'string') {
       summary = content.trim();

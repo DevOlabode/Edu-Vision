@@ -5,10 +5,31 @@ module.exports.newTaskForm = (req, res)=>{
     res.render('student/task/newTask')
 };
 
-module.exports.allTasks = async(req, res)=>{
-    const tasks  = await Task.find();
-    res.render('student/task/allTasks', {tasks})
-}
+// module.exports.allTasks = async(req, res)=>{
+//     const tasks  = await Task.find();
+//     res.render('student/task/allTasks', {tasks})
+// }
+
+module.exports.allTasks = async(req, res) => {
+  const { status, priority, subject, sortBy } = req.query;
+  
+  let query = { createdBy: req.user._id };
+  
+  if (status) query.status = status;
+  if (priority) query.priority = priority;
+  if (subject) query.subject = new RegExp(subject, 'i');
+  
+  let sortOption = {};
+  switch(sortBy) {
+    case 'dueDate': sortOption = { dueDate: 1 }; break;
+    case 'priority': sortOption = { priority: -1 }; break;
+    case 'created': sortOption = { createdAt: -1 }; break;
+    default: sortOption = { dueDate: 1 };
+  }
+  
+  const tasks = await Task.find(query).sort(sortOption);
+  res.render('student/task/allTasks', { tasks });
+};
 
 module.exports.newTask = async(req, res)=>{
     const {title, subject, type, dueDate, description, priority, difficulty, milestones} = req.body;

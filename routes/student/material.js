@@ -11,14 +11,17 @@ router.post('/upload', isLoggedIn,  (req, res, next) => {
     upload.single('file')(req, res, (err) => {
         if (err) {
             console.error('Multer error:', err);
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: err.message 
+                error: err.message
             });
         }
         next();
     });
 }, controller.upload);
+
+// Google Drive upload route
+router.post('/upload/drive', isLoggedIn, controller.uploadFromDrive);
 
 router.get('/', isLoggedIn, controller.getAll);
 router.get('/:id', isLoggedIn, controller.getOne);

@@ -20,6 +20,10 @@ passport.use(
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
+          // Update tokens if user exists
+          user.googleAccessToken = accessToken;
+          user.googleRefreshToken = refreshToken;
+          await user.save();
           return done(null, user);
         }
 
@@ -29,6 +33,8 @@ passport.use(
         if (user) {
           // Link Google account to existing user
           user.googleId = profile.id;
+          user.googleAccessToken = accessToken;
+          user.googleRefreshToken = refreshToken;
           await user.save();
           return done(null, user);
         }
@@ -40,6 +46,8 @@ passport.use(
 
         user = new User({
           googleId: profile.id,
+          googleAccessToken: accessToken,
+          googleRefreshToken: refreshToken,
           email: profile.emails[0].value,
           firstName: firstName,
           lastName: lastName,

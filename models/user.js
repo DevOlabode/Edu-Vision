@@ -43,6 +43,14 @@ const userSchema = new Schema({
         type: String,
         required: false
     },
+    googleAccessToken: {
+        type: String,
+        required: false
+    },
+    googleRefreshToken: {
+        type: String,
+        required: false
+    },
     studentType: {
         type: String,
         enum: ['High School', 'University/College'],

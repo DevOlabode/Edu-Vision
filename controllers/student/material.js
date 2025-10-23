@@ -1,6 +1,7 @@
 const Material = require('../../models/student/material');
 const { extractText } = require('../../services/textExtractor');
 const cloudinary = require('../../config/cloudinary');
+const { google } = require('googleapis');
 
 const {summarizer} = require('../../AI/summarise')
 
@@ -155,18 +156,144 @@ exports.update = async (req, res) => {
     }
 };
 
+// Upload from Google Drive
+exports.uploadFromDrive = async (req, res) => {
+    try {
+        const { title, fileId } = req.body;
+
+        if (!title || !fileId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Title and file ID are required'
+            });
+        }
+
+        // Check if user has Google tokens
+        if (!req.user.googleAccessToken) {
+            return res.status(401).json({
+                success: false,
+                error: 'Google Drive access not authorized'
+            });
+        }
+
+        // Set up Google Drive API
+        const oauth2Client = new google.auth.OAuth2();
+        oauth2Client.setCredentials({
+            access_token: req.user.googleAccessToken,
+            refresh_token: req.user.googleRefreshToken
+        });
+
+        const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+        // Get file metadata
+        const fileMetadata = await drive.files.get({
+            fileId: fileId,
+            fields: 'name, size, mimeType'
+        });
+
+        const mimeType = fileMetadata.data.mimeType;
+        let fileType;
+
+        if (mimeType === 'application/pdf') {
+            fileType = 'pdf';
+        } else if (mimeType === 'text/plain') {
+            fileType = 'txt';
+        } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            fileType = 'docx';
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: 'Unsupported file type'
+            });
+        }
+
+        // Download file from Google Drive
+        const response = await drive.files.get({
+            fileId: fileId,
+            alt: 'media'
+        }, { responseType: 'stream' });
+
+        // Upload to Cloudinary
+        const cloudinaryUpload = cloudinary.uploader.upload_stream(
+            {
+                resource_type: 'raw',
+                public_id: `drive_${fileId}_${Date.now()}`,
+                folder: 'materials'
+            },
+            async (error, result) => {
+                if (error) {
+                    console.error('Cloudinary upload error:', error);
+                    return res.status(500).json({ success: false, error: 'Upload failed' });
+                }
+
+                // Save material to database
+                const material = new Material({
+                    title: title,
+                    fileName: fileMetadata.data.name,
+                    fileType: fileType,
+                    fileSize: parseInt(fileMetadata.data.size),
+                    cloudinaryId: result.public_id,
+                    uploadedBy: req.user._id,
+                    status: 'processing'
+                });
+
+                await material.save();
+                const materialId = material._id;
+
+                // Process file asynchronously
+                setImmediate(async () => {
+                    try {
+                        // Extract text from Cloudinary URL
+                        const cloudinaryUrl = result.secure_url;
+                        const text = await extractText(cloudinaryUrl, fileType);
+                        const summary = await summarizer(text);
+
+                        await Material.findByIdAndUpdate(materialId, {
+                            content: text,
+                            summary: summary,
+                            status: 'ready'
+                        });
+                    } catch (error) {
+                        console.error('Processing error:', error);
+                        await Material.findByIdAndUpdate(materialId, { status: 'error' });
+                    }
+                });
+
+                // Return response
+                res.status(201).json({
+                    success: true,
+                    material: {
+                        id: material._id,
+                        title: material.title,
+                        fileName: material.fileName,
+                        fileType: material.fileType,
+                        status: material.status
+                    },
+                    redirectUrl: `/upload/success/${material._id}`
+                });
+            }
+        );
+
+        response.data.pipe(cloudinaryUpload);
+
+    } catch (error) {
+        console.error('Google Drive upload error:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 // Delete
 exports.delete = async (req, res) => {
     try {
-        const material = await Material.findOne({ 
-            _id: req.params.id, 
-            uploadedBy: req.user._id 
+        const material = await Material.findOne({
+            _id: req.params.id,
+            uploadedBy: req.user._id
         });
-        
+
         if (!material) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
-                error: 'Material not found' 
+                error: 'Material not found'
             });
         }
 
@@ -187,9 +314,9 @@ exports.delete = async (req, res) => {
     } catch (error) {
         console.error('Delete material error:', error);
         req.flash('error', 'Encountered an error when trying to delete material')
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 };

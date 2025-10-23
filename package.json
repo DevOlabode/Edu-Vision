@@ -20,6 +20,7 @@
     "ejs-mate": "^4.0.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "googleapis": "^164.1.0",
     "groq-sdk": "^0.33.0",
     "joi": "^18.0.1",
     "mammoth": "^1.11.0",

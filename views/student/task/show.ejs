@@ -227,16 +227,91 @@
                               </small>
                             </div>
                           </div>
-                          <div class="milestone-actions">
+                          <div class="milestone-actions d-flex gap-2">
                             <form action="/task/<%= task._id %>/milestone/<%= index %>/toggle" method="POST" class="d-inline">
                               <button type="submit" class="btn btn-sm <%= milestone.completed ? 'btn-outline-success' : 'btn-outline-primary' %>" style="border-radius: 15px;">
                                 <i class="fas <%= milestone.completed ? 'fa-undo' : 'fa-check' %>"></i>
                               </button>
                             </form>
+                            <button type="button" class="btn btn-info btn-sm" style="border-radius: 15px;" onclick="openMilestoneSidebar('<%= index %>')">
+                              <i class="fas fa-sticky-note"></i> Notes
+                            </button>
                           </div>
                         </div>
                       <% }); %>
                     </div>
+                    <!-- Milestone Sidebar -->
+                    <div id="milestoneSidebar" class="milestone-sidebar" style="display:none; position:fixed; top:0; right:0; width:400px; max-width:100vw; height:100vh; background:#fff; box-shadow:-4px 0 32px rgba(102,126,234,0.15); z-index:9999; transition:right 0.3s;">
+                      <div style="padding:32px 28px; border-bottom:1px solid #e9ecef; display:flex; justify-content:space-between; align-items:center;">
+                        <h4 id="milestoneSidebarTitle" style="margin:0; font-weight:700; color:#2c3e50;"><i class="fas fa-sticky-note me-2"></i>Milestone Notes</h4>
+                        <button type="button" class="btn btn-light btn-sm" onclick="closeMilestoneSidebar()" style="border-radius:50%;"><i class="fas fa-times"></i></button>
+                      </div>
+                      <div id="milestoneNotePad" style="padding:28px; height:calc(100vh - 110px); display:flex; flex-direction:column;">
+                        <div id="milestoneNoteDisplay" style="flex:1; overflow-y:auto; background:#f8f9ff; border-radius:12px; border:1.5px solid #e9ecef; padding:18px; font-size:1.08rem; color:#2c3e50; margin-bottom:18px; white-space:pre-wrap;"></div>
+                        <form id="milestoneNoteForm" method="POST" style="display:none; flex:1; flex-direction:column;">
+                          <textarea id="milestoneNoteTextarea" name="note" rows="12" class="form-control mb-3" style="border-radius:12px; font-size:1.08rem; background:#f8f9ff; border:1.5px solid #e9ecef; padding:18px; height:100%; resize:vertical;"></textarea>
+                          <button type="submit" class="btn btn-success px-4 py-2 align-self-end" style="border-radius:20px; font-weight:600;">Save Notes</button>
+                        </form>
+                        <button id="milestoneNoteEditBtn" type="button" class="btn btn-outline-primary px-4 py-2 align-self-end" style="border-radius:20px; font-weight:600;">Edit</button>
+                      </div>
+                    </div>
+                    <script>
+                      let currentMilestoneIndex = null;
+                      let currentMilestoneNote = '';
+                      function openMilestoneSidebar(index) {
+                        currentMilestoneIndex = index;
+                        document.getElementById('milestoneSidebar').style.display = 'block';
+                        document.getElementById('milestoneSidebarTitle').innerText = 'Milestone Notes: ' + document.querySelectorAll('.milestone-item h6')[index].innerText;
+                        document.getElementById('milestoneNoteForm').action = '/task/<%= task._id %>/milestone/' + index + '/note';
+                        // Fetch note via AJAX
+                        fetch(`/task/<%= task._id %>/milestone/${index}/note`)
+                          .then(res => res.json())
+                          .then(data => {
+                            currentMilestoneNote = data.note || '';
+                            document.getElementById('milestoneNoteDisplay').innerText = currentMilestoneNote || 'No notes yet.';
+                            document.getElementById('milestoneNoteTextarea').value = currentMilestoneNote;
+                            document.getElementById('milestoneNoteDisplay').style.display = 'block';
+                            document.getElementById('milestoneNoteForm').style.display = 'none';
+                            document.getElementById('milestoneNoteEditBtn').style.display = 'inline-block';
+                          });
+                      }
+                      function closeMilestoneSidebar() {
+                        document.getElementById('milestoneSidebar').style.display = 'none';
+                        document.getElementById('milestoneNoteTextarea').value = '';
+                        document.getElementById('milestoneNoteDisplay').innerText = '';
+                      }
+                      document.getElementById('milestoneNoteEditBtn').onclick = function() {
+                        document.getElementById('milestoneNoteDisplay').style.display = 'none';
+                        document.getElementById('milestoneNoteForm').style.display = 'flex';
+                        document.getElementById('milestoneNoteEditBtn').style.display = 'none';
+                        document.getElementById('milestoneNoteTextarea').focus();
+                      };
+                      document.getElementById('milestoneNoteForm').onsubmit = function(e) {
+                        e.preventDefault();
+                        const note = document.getElementById('milestoneNoteTextarea').value;
+                        fetch(this.action, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                          body: 'note=' + encodeURIComponent(note)
+                        })
+                        .then(res => res.ok ? res : Promise.reject(res))
+                        .then(() => {
+                          document.getElementById('milestoneNoteDisplay').innerText = note;
+                          document.getElementById('milestoneNoteDisplay').style.display = 'block';
+                          document.getElementById('milestoneNoteForm').style.display = 'none';
+                          document.getElementById('milestoneNoteEditBtn').style.display = 'inline-block';
+                        });
+                      };
+                    </script>
+                    <style>
+                      .milestone-sidebar {
+                        animation: slideInSidebar 0.3s ease;
+                      }
+                      @keyframes slideInSidebar {
+                        from { right:-400px; opacity:0; }
+                        to { right:0; opacity:1; }
+                      }
+                    </style>
                   <% } else { %>
                     <div class="text-center py-4">
                       <i class="fas fa-flag fa-2x text-muted mb-2"></i>

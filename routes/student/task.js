@@ -18,6 +18,9 @@ router.post('/:id/milestone', isLoggedIn, catchAsync(controller.addMilestone));
 
 router.post('/:id/milestone/:milestoneIndex/toggle', isLoggedIn, catchAsync(controller.toggleMilestone));
 
+router.get('/:id/milestone/:milestoneIndex/note', isLoggedIn, catchAsync(controller.getMilestoneNote));
+router.post('/:id/milestone/:milestoneIndex/note', isLoggedIn, catchAsync(controller.saveMilestoneNote));
+
 router.get('/:id/edit', isLoggedIn, controller.editForm);
 
 router.put('/:id', isLoggedIn, catchAsync(controller.edit));

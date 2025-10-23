@@ -69,6 +69,27 @@ module.exports.toggleMilestone = async(req, res)=>{
     res.redirect(`/task/${id}`);
 };
 
+module.exports.getMilestoneNote = async (req, res) => {
+    const { id, milestoneIndex } = req.params;
+    const task = await Task.findById(id);
+    if (!task || !task.milestones[milestoneIndex]) {
+        return res.status(404).json({ error: 'Milestone not found' });
+    }
+    res.json({ note: task.milestones[milestoneIndex].note || '' });
+};
+
+module.exports.saveMilestoneNote = async (req, res) => {
+    const { id, milestoneIndex } = req.params;
+    const { note } = req.body;
+    const task = await Task.findById(id);
+    if (!task || !task.milestones[milestoneIndex]) {
+        return res.status(404).json({ error: 'Milestone not found' });
+    }
+    task.milestones[milestoneIndex].note = note;
+    await task.save();
+    req.flash('success', 'Milestone note saved!');
+    res.redirect(`/task/${id}`);
+};
 
 module.exports.showPage = async(req, res)=>{
     const task = await Task.findById(req.params.id);

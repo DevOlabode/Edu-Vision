@@ -5,7 +5,7 @@ exports.home = (req, res)=>{
 };
 
 exports.upload = (req, res)=>{
-    res.render('student/upload');
+    res.render('student/upload/upload');
 };
 
 exports.uploadSuccess = async (req, res) => {
@@ -29,7 +29,7 @@ exports.uploadSuccess = async (req, res) => {
             materialPlain.summary = { studyNotes: [], flashcards: [] };
         }
 
-        res.render('student/uploadSuccess', { material: materialPlain });
+        res.render('student/upload/uploadSuccess', { material: materialPlain });
     } catch (error) {
         console.error('Upload success page error:', error);
         req.flash('error', 'Something went wrong');
@@ -41,7 +41,7 @@ exports.materials = async (req, res) => {
     try {
         const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
 
-        res.render('student/materials', { materials });
+        res.render('student/material/materials', { materials });
     } catch (error) {
         console.error('Materials page error:', error);
         req.flash('error', 'Something went wrong');
@@ -59,8 +59,6 @@ exports.materialDetail = async (req, res) => {
 
         // Convert to plain object
         const materialPlain = material.toObject();
-        // console.log('Material summary type:', typeof materialPlain.summary);
-        // console.log('Material summary value:', materialPlain.summary);
 
         // Handle summary data - it should be a string from the AI summarizer
         if (typeof materialPlain.summary !== 'string') {
@@ -147,7 +145,7 @@ exports.materialDetail = async (req, res) => {
             materialPlain.flashcards = parsedFlashcards;
         }
 
-        res.render('student/materialDetail', { material: materialPlain });
+        res.render('student/material/materialDetail', { material: materialPlain });
     } catch (error) {
         console.error('Material detail error:', error);
         req.flash('error', 'Something went wrong');

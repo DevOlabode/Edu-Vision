@@ -1,53 +1,287 @@
 <% layout('layout/boilerplate.ejs') %>
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="content-card mb-4" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 25px; padding: 60px 40px; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15); position: relative; overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.1);">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
-        <div class="card-header mb-4">
-          <div class="d-flex align-items-center">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
-              <i class="fas fa-user-circle" style="color: white; font-size: 24px;"></i>
+
+<div class="container mt-5 mb-5">
+  <!-- Hero Header -->
+  <div class="material-hero mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 25px; padding: 50px 40px; color: white; box-shadow: 0 20px 50px rgba(102, 126, 234, 0.4); position: relative; overflow: hidden;">
+    <!-- Animated Background Elements -->
+    <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+    <div style="position: absolute; bottom: -80px; left: -80px; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; animation: float 8s ease-in-out infinite reverse;"></div>
+    
+    <div style="position: relative; z-index: 1;">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div class="flex-grow-1">
+          <div class="mb-3">
+            <span class="badge" style="background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+              <i class="fas fa-file-<%= material.fileType === 'pdf' ? 'pdf' : material.fileType === 'docx' ? 'word' : 'alt' %> me-2"></i>
+              <%= material.fileType.toUpperCase() %>
+            </span>
+          </div>
+          <h1 style="font-weight: 800; font-size: 2.8rem; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); line-height: 1.2;">
+            <%= material.title %>
+          </h1>
+          <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 25px; max-width: 700px;">
+            <i class="fas fa-file-signature me-2"></i><%= material.fileName %>
+          </p>
+          <div class="d-flex gap-4 flex-wrap" style="font-size: 0.95rem;">
+            <div>
+              <i class="fas fa-weight-hanging me-2"></i>
+              <strong><%= (material.fileSize / 1024).toFixed(2) %> KB</strong>
             </div>
             <div>
-              <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 5px; font-size: 1.8rem;">
-                <%= material.title %>
-              </h2>
-              <p style="color: #6c757d; margin: 0; font-size: 1rem;">Uploaded <%= new Date(material.createdAt).toLocaleDateString() %></p>
+              <i class="fas fa-calendar-alt me-2"></i>
+              <strong><%= new Date(material.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></strong>
+            </div>
+            <div>
+              <span class="badge" style="background: <%= material.status === 'ready' ? 'rgba(40, 255, 149, 0.3)' : material.status === 'processing' ? 'rgba(255, 193, 7, 0.3)' : 'rgba(255, 77, 77, 0.3)' %>; padding: 6px 14px; border-radius: 20px;">
+                <i class="fas fa-<%= material.status === 'ready' ? 'check-circle' : material.status === 'processing' ? 'sync fa-spin' : 'exclamation-triangle' %> me-1"></i>
+                <%= material.status.charAt(0).toUpperCase() + material.status.slice(1) %>
+              </span>
             </div>
           </div>
         </div>
-        <div class="card-content">
-          <p style="color: #495057; font-size: 1.1rem; line-height: 1.7; margin: 0;">
-            <%= material.description || 'No description provided.' %>
-          </p>
-          <div class="material-meta mt-4 mb-4">
-            <span style="display: inline-block; background: #f8f9fa; color: #667eea; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Type: <%= material.fileType.toUpperCase() %></span>
-            <span style="display: inline-block; background: #f8f9fa; color: #764ba2; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Size: <%= (material.fileSize / 1024).toFixed(2) %> KB</span>
-            <span style="display: inline-block; background: #f8f9fa; color: #28a745; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600;">Status: <%= material.status %></span>
-          </div>
-          <div class="material-actions" style="display: flex; gap: 15px;">
-            <a href="<%= material.fileUrl %>" target="_blank" class="btn btn-primary flex-fill" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
-              <i class="fas fa-download me-2"></i>Download
-            </a>
-            <form action="/materials/<%= material._id %>?_method=DELETE" method="POST" class="d-inline flex-fill">
-              <button type="submit" class="btn btn-outline-danger flex-fill" onclick="return confirm('Are you sure you want to delete this material?')" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; border: 2px solid #dc3545; transition: all 0.3s ease;">
-                <i class="fas fa-trash-alt me-2"></i>Delete
-              </button>
-            </form>
-          </div>
+        
+        <!-- Action Button -->
+        <div style="min-width: 180px;">
+          <form action="/materials/<%= material._id %>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-danger btn-lg w-100" onclick="return confirm('Are you sure you want to delete this material?')" style="border-radius: 50px; font-weight: 600; padding: 14px 30px; box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4); border: none; transition: all 0.3s ease;">
+              <i class="fas fa-trash-alt me-2"></i>Delete Material
+            </button>
+          </form>
         </div>
       </div>
     </div>
   </div>
+
+  <% if (material.summary) { %>
+    <!-- AI Content Section -->
+    <div class="ai-content-wrapper">
+      <!-- Section Header -->
+      <div class="text-center mb-5">
+        <div class="d-inline-block" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px 50px; border-radius: 30px; box-shadow: 0 15px 40px rgba(240, 147, 251, 0.4); position: relative;">
+          <div style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: pulse 2s infinite;"></div>
+          <h2 style="color: white; font-weight: 800; margin: 0; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+            <i class="fas fa-robot me-3"></i>AI Study Assistant
+          </h2>
+        </div>
+      </div>
+
+      <!-- Study Notes Section -->
+      <% if (material.studyNotes) { %>
+        <div class="study-notes-section mb-5">
+          <div class="card" style="background: #fff; border-radius: 22px; box-shadow: 0 6px 32px rgba(102,126,234,0.10); border: 1px solid #e9ecef;">
+            <div class="card-header" style="background: #f8f9fa; border-bottom: 1px solid #e9ecef; border-radius: 22px 22px 0 0; padding: 36px 40px;">
+              <div class="d-flex align-items-center">
+                <div style="width: 54px; height: 54px; background: #667eea; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-right: 22px;">
+                  <i class="fas fa-book-open" style="color: white; font-size: 26px;"></i>
+                </div>
+                <h2 style="margin: 0; font-weight: 800; font-size: 2rem; color: #2c3e50; letter-spacing: -1px;">Study Notes</h2>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 44px 40px;">
+              <div style="font-size: 1.15rem; color: #374151; line-height: 2; font-family: 'Inter', 'Segoe UI', sans-serif;">
+                <% material.studyNotes.split('\n').filter(line => line.trim()).forEach(function(note) { %>
+                  <p style="margin-bottom: 28px; background: #f8f9ff; border-radius: 10px; padding: 18px 24px; box-shadow: 0 2px 8px rgba(102,126,234,0.04); font-weight: 500;">
+                    <%= note.trim() %>
+                  </p>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Flashcards Section -->
+      <% if (material.flashcards && material.flashcards.length > 0) { %>
+        <div class="flashcards-container">
+          <div class="section-card" style="background: linear-gradient(145deg, #ffffff 0%, #fff5f8 100%); border-radius: 25px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.08); border: 1px solid rgba(240, 147, 251, 0.1);">
+            <!-- Card Header - Collapsible -->
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 30px 40px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease;" data-bs-toggle="collapse" data-bs-target="#flashcardsContent" aria-expanded="true" onmouseover="this.style.background='linear-gradient(135deg, #f5576c 0%, #f093fb 100%)'" onmouseout="this.style.background='linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'">
+              <div style="position: absolute; top: -30px; right: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+              <div class="d-flex justify-content-between align-items-center" style="position: relative; z-index: 1;">
+                <div class="d-flex align-items-center">
+                  <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
+                    <i class="fas fa-brain" style="font-size: 30px; color: white;"></i>
+                  </div>
+                  <div>
+                    <h3 style="color: white; font-weight: 700; margin: 0; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                      Flashcards
+                    </h3>
+                    <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 1rem;">
+                      Test your knowledge with <%= material.flashcards.length %> interactive cards
+                    </p>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <div class="mb-2">
+                    <span class="badge" style="background: rgba(255,255,255,0.3); color: white; padding: 8px 18px; border-radius: 20px; font-size: 1rem; font-weight: 600;">
+                      <%= material.flashcards.length %> Cards
+                    </span>
+                  </div>
+                  <i class="fas fa-chevron-down" style="font-size: 1.5rem; color: white; transition: transform 0.3s ease;" id="flashcardChevron"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcards Content -->
+            <div class="collapse show" id="flashcardsContent">
+              <div style="padding: 45px;">
+                <div class="row g-4">
+                  <% material.flashcards.forEach((card, index) => { %>
+                    <div class="col-md-6">
+                      <div class="flashcard-wrapper" style="perspective: 1000px; height: 280px;">
+                        <div class="flashcard" id="card-<%= index %>" style="width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; border-radius: 20px; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.2);" onclick="this.style.transform = this.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)'">
+                          <!-- Front of Card (Question) -->
+                          <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%); border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #f093fb; box-shadow: 0 8px 25px rgba(240, 147, 251, 0.2);">
+                            <div>
+                              <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);">
+                                  <%= index + 1 %>
+                                </div>
+                                <span style="background: rgba(240, 147, 251, 0.1); color: #f5576c; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                  <i class="fas fa-question-circle me-1"></i>Question
+                                </span>
+                              </div>
+                              <p style="color: #2c3e50; font-size: 17px; font-weight: 600; line-height: 1.6; margin: 0;">
+                                <%= card.question %>
+                              </p>
+                            </div>
+                            <div class="text-center" style="color: #6c757d; font-size: 0.9rem; margin-top: 15px;">
+                              <i class="fas fa-sync-alt me-2"></i>
+                              <span style="font-weight: 600;">Click to reveal answer</span>
+                            </div>
+                          </div>
+
+                          <!-- Back of Card (Answer) -->
+                          <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; transform: rotateY(180deg); box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);">
+                            <div>
+                              <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div style="background: rgba(255,255,255,0.3); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                                  <%= index + 1 %>
+                                </div>
+                                <span style="background: rgba(255,255,255,0.3); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                  <i class="fas fa-lightbulb me-1"></i>Answer
+                                </span>
+                              </div>
+                              <p style="color: white; font-size: 16px; line-height: 1.7; margin: 0; font-weight: 500;">
+                                <%= card.answer || 'No answer available' %>
+                              </p>
+                            </div>
+                            <div class="text-center" style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-top: 15px;">
+                              <i class="fas fa-sync-alt me-2"></i>
+                              <span style="font-weight: 600;">Click to see question</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+
+                <!-- Study Tips -->
+                <div class="study-tips mt-5" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.05) 100%); border-radius: 20px; padding: 30px; border: 2px dashed rgba(240, 147, 251, 0.3);">
+                  <div class="text-center">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);">
+                      <i class="fas fa-graduation-cap" style="font-size: 24px; color: white;"></i>
+                    </div>
+                    <h5 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">💡 Study Tip</h5>
+                    <p style="color: #6c757d; margin: 0; font-size: 1rem; line-height: 1.6;">
+                      Review these flashcards regularly for better retention. Try to answer each question before flipping the card!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
 </div>
 
 <style>
-.content-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(20px, -20px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-15px, 10px) rotate(-5deg);
+  }
 }
-.material-actions .btn:hover {
-  transform: translateY(-2px);
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(20px, -20px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-15px, 10px) rotate(-5deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3) !important;
+}
+
+/* Flashcard hover effect */
+.flashcard-wrapper:hover .flashcard {
+  box-shadow: 0 15px 40px rgba(240, 147, 251, 0.35) !important;
+}
+
+/* Smooth chevron rotation for collapse */
+#flashcardsContent.show ~ div #flashcardChevron {
+  transform: rotate(180deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .material-hero {
+    padding: 35px 25px !important;
+  }
+  
+  .material-hero h1 {
+    font-size: 2rem !important;
+  }
+  
+  .section-card {
+    margin-bottom: 30px;
+  }
+  
+  .flashcard-wrapper {
+    height: 320px !important;
+  }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const flashcardsContent = document.getElementById('flashcardsContent');
+  const chevron = document.getElementById('flashcardChevron');
+  
+  if (flashcardsContent && chevron) {
+    flashcardsContent.addEventListener('shown.bs.collapse', function() {
+      chevron.style.transform = 'rotate(180deg)';
+    });
+    
+    flashcardsContent.addEventListener('hidden.bs.collapse', function() {
+      chevron.style.transform = 'rotate(0deg)';
+    });
+  }
+});
+</script>

@@ -18,6 +18,10 @@ router.post('/:id/milestone', isLoggedIn, catchAsync(controller.addMilestone));
 
 router.post('/:id/milestone/:milestoneIndex/toggle', isLoggedIn, catchAsync(controller.toggleMilestone));
 
+router.get('/:id/edit', isLoggedIn, controller.editForm);
+
+router.put('/:id', isLoggedIn, catchAsync(controller.edit));
+
 router.delete('/:id', isLoggedIn, catchAsync(controller.delete));
 
 module.exports = router;

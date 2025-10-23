@@ -15,8 +15,6 @@ module.exports.newTask = async(req, res)=>{
 
     const plan = await taskPlanner(title, subject, type, dueDate, description, priority, difficulty, milestones);
 
-    console.log(plan)
-
     const task = new Task({
         title,
         subject,
@@ -83,4 +81,42 @@ module.exports.delete = async(req, res)=>{
 
     req.flash('success', 'Deleted Task Successfully');
     res.redirect('/task')
+}
+
+module.exports.editForm = async(req, res)=>{
+    const task = await Task.findById(req. params.id);
+    res.render('student/task/edit', { task })
+}
+
+module.exports.edit = async(req, res)=>{
+    const { id } = req.params;
+    const {title, subject, type, dueDate, description, priority, difficulty, milestones} = req.body;
+
+    const task = await Task.findById(id);
+
+    if(!task){
+        req.flash('error', 'Task Not Found');
+        res.redirect('/task')
+    }
+
+    if (task.createdBy && task.createdBy.toString() !== req.user._id.toString()) {
+        req.flash('error', 'You do not have permission to edit this product');
+        return res.redirect('/form/all-products');
+    }
+    
+    const plan = await taskPlanner(title, subject, type, dueDate, description, priority, difficulty, milestones);
+
+    const update = await Task.findByIdAndUpdate(req.params.id,
+        {
+            ...req.body,
+            planner : plan
+        },
+        {
+            runValidators: true,
+            new: true,
+        }
+    );
+
+    req.flash('success', 'Updated Task Successfully');
+    res.redirect(`/task/${update._id}`)
 }

@@ -1,0 +1,378 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container-fluid mt-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="text-center">
+        <div class="hero-icon mb-4">
+          <i class="fas fa-edit fa-4x" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+        </div>
+        <h1 class="display-4 mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+          Edit Task
+        </h1>
+        <p class="lead text-muted">Update details for the task</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg" style="border-radius: 25px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); overflow: hidden;">
+        <!-- Card Header -->
+        <div class="card-header text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+          <h3 class="mb-0 font-weight-bold">
+            <i class="fas fa-clipboard-list me-2"></i>Task Details
+          </h3>
+        </div>
+
+        <div class="card-body p-5">
+          <form action="/task/<%= task._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+            <!-- Basic Information Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-info-circle text-primary me-2"></i>Basic Information
+              </h4>
+
+              <!-- Title -->
+              <div class="mb-4">
+                <label for="title" class="form-label fw-bold mb-3" style="color: #2c3e50; font-size: 1.1rem;">
+                  <i class="fas fa-heading text-primary me-2"></i>Task Title
+                </label>
+                <input type="text" class="form-control form-control-xl" id="title" name="title" required
+                       style="border-radius: 15px; border: 2px solid #e9ecef; padding: 16px 20px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
+                       placeholder="Enter a clear, descriptive title for your task" value="<%= task.title %>">
+                <div class="invalid-feedback mt-2">
+                  Please provide a task title.
+                </div>
+              </div>
+
+              <!-- Subject and Type -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <label for="subject" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-book text-primary me-2"></i>Subject
+                  </label>
+                  <input type="text" class="form-control form-control-lg" id="subject" name="subject" required
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
+                         placeholder="e.g., Mathematics, Physics, History" value="<%= task.subject %>">
+                  <div class="invalid-feedback mt-2">
+                    Please provide a subject.
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="type" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-tag text-info me-2"></i>Task Type
+                  </label>
+                  <select class="form-select form-select-lg" id="type" name="type" required
+                          style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <option value="">Select task type</option>
+                    <option value="Assignment" <%= task.type === 'Assignment' ? 'selected' : '' %>>📝 Assignment</option>
+                    <option value="Project" <%= task.type === 'Project' ? 'selected' : '' %>>🚀 Project</option>
+                    <option value="Exam" <%= task.type === 'Exam' ? 'selected' : '' %>>📋 Exam</option>
+                    <option value="Quiz" <%= task.type === 'Quiz' ? 'selected' : '' %>>❓ Quiz</option>
+                    <option value="Homework" <%= task.type === 'Homework' ? 'selected' : '' %>>📚 Homework</option>
+                    <option value="Presentation" <%= task.type === 'Presentation' ? 'selected' : '' %>>🎤 Presentation</option>
+                    <option value="Research" <%= task.type === 'Research' ? 'selected' : '' %>>🔍 Research</option>
+                    <option value="Lab" <%= task.type === 'Lab' ? 'selected' : '' %>>🧪 Lab Work</option>
+                  </select>
+                  <div class="invalid-feedback mt-2">
+                    Please select a task type.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Schedule & Priority Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-calendar-alt text-success me-2"></i>Schedule & Priority
+              </h4>
+
+              <div class="row mb-4">
+                <!-- Due Date -->
+                <div class="col-md-6">
+                  <label for="dueDate" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-calendar-check text-success me-2"></i>Due Date
+                  </label>
+                  <input type="date" class="form-control form-control-lg" id="dueDate" name="dueDate" required
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
+                         value="<%= task.dueDate ? task.dueDate.toISOString().slice(0,10) : '' %>">
+                  <div class="invalid-feedback mt-2">
+                    Please select a due date.
+                  </div>
+                </div>
+
+                <!-- Priority -->
+                <div class="col-md-6">
+                  <label for="priority" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Priority Level
+                  </label>
+                  <select class="form-select form-select-lg" id="priority" name="priority" required
+                          style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <option value="">Select priority</option>
+                    <option value="low" <%= task.priority === 'low' ? 'selected' : '' %>>🟢 Low - Can wait</option>
+                    <option value="medium" <%= task.priority === 'medium' ? 'selected' : '' %>>🟡 Medium - Important</option>
+                    <option value="high" <%= task.priority === 'high' ? 'selected' : '' %>>🔴 High - Urgent</option>
+                  </select>
+                  <div class="invalid-feedback mt-2">
+                    Please select a priority level.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Difficulty -->
+              <div class="mb-4">
+                <label for="difficulty" class="form-label fw-bold mb-3" style="color: #2c3e50;">
+                  <i class="fas fa-chart-line text-purple me-2"></i>Difficulty Level
+                </label>
+                <select class="form-select form-select-lg" id="difficulty" name="difficulty" required
+                        style="border-radius: 12px; border: 2px solid #e9ecef; padding: 14px 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                  <option value="">Select difficulty</option>
+                  <option value="easy" <%= task.difficulty === 'easy' ? 'selected' : '' %>>🟢 Easy - Straightforward</option>
+                  <option value="medium" <%= task.difficulty === 'medium' ? 'selected' : '' %>>🟡 Medium - Moderate challenge</option>
+                  <option value="hard" <%= task.difficulty === 'hard' ? 'selected' : '' %>>🔴 Hard - Complex work</option>
+                </select>
+                <div class="invalid-feedback mt-2">
+                  Please select a difficulty level.
+                </div>
+              </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4">
+                <i class="fas fa-align-left text-info me-2"></i>Description
+              </h4>
+              <div class="mb-4">
+                <textarea class="form-control" id="description" name="description" rows="5"
+                          style="border-radius: 15px; border: 2px solid #e9ecef; padding: 16px 20px; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); resize: vertical;"
+                          placeholder="Provide detailed instructions, requirements, or any additional context for this task. Include specific guidelines, resources needed, or special considerations."><%= task.description %></textarea>
+                <small class="text-muted mt-2 d-block">
+                  <i class="fas fa-info-circle me-1"></i>Optional but recommended for better task understanding
+                </small>
+              </div>
+            </div>
+
+            <!-- Milestones Section -->
+            <div class="section-card mb-5">
+              <h4 class="section-title mb-4 d-flex align-items-center justify-content-between">
+                <span>
+                  <i class="fas fa-flag text-warning me-2"></i>Milestones
+                  <small class="text-muted ms-2">(Optional)</small>
+                </span>
+                <button type="button" class="btn btn-gradient btn-sm px-3 py-2" id="addMilestoneBtn" style="border-radius: 20px; font-weight: 600;">
+                  <i class="fas fa-plus me-1"></i>Add Milestone
+                </button>
+              </h4>
+
+              <div class="milestones-info mb-4 p-3 rounded-3" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.2);">
+                <div class="d-flex align-items-start">
+                  <i class="fas fa-lightbulb text-warning me-3 mt-1"></i>
+                  <div>
+                    <strong class="text-warning">Break down your task!</strong>
+                    <p class="mb-0 text-muted small">Milestones help you track progress on larger projects. Add checkpoints with titles and due dates to stay organized.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="milestonesContainer">
+                <% if (Array.isArray(task.milestones) && task.milestones.length) { %>
+                  <% task.milestones.forEach(function(milestone, idx) { %>
+                    <div class="milestone-item mb-4 p-4 border rounded-3" style="background: linear-gradient(145deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%); border: 2px solid rgba(102, 126, 234, 0.1);">
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 fw-bold" style="color: #2c3e50;">
+                          <i class="fas fa-flag text-warning me-2"></i>Milestone <%= idx + 1 %>
+                        </h6>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-milestone" style="border-radius: 15px;" title="Remove milestone">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                      <div class="row g-3">
+                        <div class="col-md-7">
+                          <input type="text" class="form-control" name="milestones[][title]" placeholder="What needs to be accomplished?" required
+                                 style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;" value="<%= milestone.title %>">
+                        </div>
+                        <div class="col-md-5">
+                          <input type="date" class="form-control" name="milestones[][dueDate]" required
+                                 style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;" value="<%= milestone.dueDate ? (new Date(milestone.dueDate)).toISOString().slice(0,10) : '' %>">
+                        </div>
+                      </div>
+                    </div>
+                  <% }) %>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="text-center mt-5">
+              <div class="submit-actions d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/task/<%= task._id %>" class="btn btn-outline-secondary btn-lg px-4 py-3" style="border-radius: 25px; font-weight: 600;">
+                  <i class="fas fa-arrow-left me-2"></i>Back
+                </a>
+                <button type="submit" class="btn btn-gradient btn-lg px-5 py-3" style="border-radius: 25px; font-weight: 600; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                  <i class="fas fa-save me-2"></i>Update Task
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Add milestone functionality
+document.getElementById('addMilestoneBtn').addEventListener('click', function() {
+  const container = document.getElementById('milestonesContainer');
+  const milestoneCount = container.children.length + 1;
+
+  const milestoneDiv = document.createElement('div');
+  milestoneDiv.className = 'milestone-item mb-4 p-4 border rounded-3';
+  milestoneDiv.style.background = 'linear-gradient(145deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)';
+  milestoneDiv.style.border = '2px solid rgba(102, 126, 234, 0.1)';
+  milestoneDiv.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0 fw-bold" style="color: #2c3e50;">
+        <i class="fas fa-flag text-warning me-2"></i>Milestone ${milestoneCount}
+      </h6>
+      <button type="button" class="btn btn-outline-danger btn-sm remove-milestone" style="border-radius: 15px;" title="Remove milestone">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-7">
+        <input type="text" class="form-control" name="milestones[][title]" placeholder="What needs to be accomplished?" required
+               style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;">
+      </div>
+      <div class="col-md-5">
+        <input type="date" class="form-control" name="milestones[][dueDate]" required
+               style="border-radius: 10px; border: 2px solid #e9ecef; padding: 12px 16px;">
+      </div>
+    </div>
+  `;
+  container.appendChild(milestoneDiv);
+
+  // Add remove functionality
+  milestoneDiv.querySelector('.remove-milestone').addEventListener('click', function() {
+    container.removeChild(milestoneDiv);
+    updateMilestoneNumbers();
+  });
+
+  updateMilestoneNumbers();
+});
+
+function updateMilestoneNumbers() {
+  const milestones = document.querySelectorAll('.milestone-item');
+  milestones.forEach((milestone, index) => {
+    const title = milestone.querySelector('h6');
+    if (title) title.innerHTML = `<i class="fas fa-flag text-warning me-2"></i>Milestone ${index + 1}`;
+  });
+}
+
+// Remove buttons for pre-rendered milestones
+document.querySelectorAll('.remove-milestone').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const container = document.getElementById('milestonesContainer');
+    const item = this.closest('.milestone-item');
+    if (item) {
+      container.removeChild(item);
+      updateMilestoneNumbers();
+    }
+  });
+});
+
+// Enhanced form validation
+document.querySelector('.needs-validation').addEventListener('submit', function(event) {
+  if (!this.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  this.classList.add('was-validated');
+});
+</script>
+
+<style>
+.section-card {
+  background: rgba(102, 126, 234, 0.02);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.3rem;
+  border-bottom: 3px solid #667eea;
+  padding-bottom: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.15);
+}
+
+.btn-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.text-purple {
+  color: #764ba2 !important;
+}
+
+.display-4 {
+  font-size: 2.8rem;
+}
+
+.milestone-item {
+  transition: all 0.3s ease;
+}
+
+.milestone-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2.2rem;
+  }
+
+  .section-card {
+    padding: 1.5rem;
+  }
+
+  .submit-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-lg {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .display-4 {
+    font-size: 1.8rem;
+  }
+}
+</style>

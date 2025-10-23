@@ -5,11 +5,6 @@ module.exports.newTaskForm = (req, res)=>{
     res.render('student/task/newTask')
 };
 
-// module.exports.allTasks = async(req, res)=>{
-//     const tasks  = await Task.find();
-//     res.render('student/task/allTasks', {tasks})
-// }
-
 module.exports.allTasks = async(req, res) => {
   const { status, priority, subject, sortBy } = req.query;
   

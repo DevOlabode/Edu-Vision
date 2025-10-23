@@ -27,4 +27,14 @@ router.put('/:id', isLoggedIn, catchAsync(controller.edit));
 
 router.delete('/:id', isLoggedIn, catchAsync(controller.delete));
 
+router.post('/:id/description', isLoggedIn, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+    const task = await controller.Task.findById(id);
+    if (!task) return res.status(404).send('Task not found');
+    task.description = description;
+    await task.save();
+    res.status(200).send('Description updated');
+}));
+
 module.exports = router;

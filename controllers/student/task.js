@@ -149,3 +149,5 @@ module.exports.edit = async(req, res)=>{
     req.flash('success', 'Updated Task Successfully');
     res.redirect(`/task/${update._id}`)
 }
+
+module.exports.Task = Task;

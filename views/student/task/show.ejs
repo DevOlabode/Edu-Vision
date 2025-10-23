@@ -56,8 +56,16 @@
                   <h4 class="mb-3" style="color: #2c3e50; font-weight: 600;">
                     <i class="fas fa-align-left text-primary me-2"></i>Description
                   </h4>
-                  <div class="description-box p-3 rounded-3" style="background: #f8f9fa; border-left: 4px solid #667eea;">
-                    <p class="mb-0 fs-6"><%= task.description %></p>
+                  <div class="description-box p-3 rounded-3" style="background: #f8f9fa; border-left: 4px solid #667eea; position:relative;">
+                    <form id="editDescriptionForm" style="display:none;">
+                      <textarea id="editDescriptionTextarea" class="form-control mb-2" style="border-radius:8px;" rows="4"><%= task.description %></textarea>
+                      <button type="submit" class="btn btn-success btn-sm" style="border-radius:20px;">Save</button>
+                      <button type="button" class="btn btn-secondary btn-sm ms-2" style="border-radius:20px;" onclick="toggleDescriptionEdit(false)">Cancel</button>
+                    </form>
+                    <div id="descriptionDisplay">
+                      <p class="mb-0 fs-6"><%= task.description %></p>
+                      <button id="editDescriptionBtn" type="button" class="btn btn-outline-primary btn-sm mt-2" style="border-radius:20px; position:absolute; top:10px; right:10px;">Edit</button>
+                    </div>
                   </div>
                 </div>
               <% } %>
@@ -378,6 +386,34 @@
     </div>
   </div>
 </div>
+
+<script>
+function toggleDescriptionEdit(editing) {
+  document.getElementById('editDescriptionForm').style.display = editing ? 'block' : 'none';
+  document.getElementById('descriptionDisplay').style.display = editing ? 'none' : 'block';
+  if(editing) document.getElementById('editDescriptionTextarea').focus();
+}
+document.getElementById('editDescriptionBtn').onclick = function() {
+  toggleDescriptionEdit(true);
+};
+document.getElementById('editDescriptionForm').onsubmit = function(e) {
+  e.preventDefault();
+  const newDesc = document.getElementById('editDescriptionTextarea').value;
+  fetch('/task/<%= task._id %>/description', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'description=' + encodeURIComponent(newDesc)
+  })
+  .then(res => res.ok ? res : Promise.reject(res))
+  .then(() => {
+    document.querySelector('#descriptionDisplay p').innerText = newDesc;
+    toggleDescriptionEdit(false);
+  })
+  .catch(() => {
+    alert('Failed to update description.');
+  });
+};
+</script>
 
 <style>
 .info-card:hover {

@@ -37,6 +37,7 @@ const assignmentSchema = new mongoose.Schema({
       title: String,
       dueDate: Date,
       completed: { type: Boolean, default: false },
+      notes : String
     },
   ], 
 

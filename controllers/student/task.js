@@ -70,22 +70,30 @@ module.exports.toggleMilestone = async(req, res)=>{
 };
 
 module.exports.getMilestoneNote = async (req, res) => {
-    const { id, milestoneIndex } = req.params;
+    const { id, milestoneId } = req.params;
     const task = await Task.findById(id);
-    if (!task || !task.milestones[milestoneIndex]) {
+    if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+    }
+    const milestone = task.milestones.id(milestoneId);
+    if (!milestone) {
         return res.status(404).json({ error: 'Milestone not found' });
     }
-    res.json({ note: task.milestones[milestoneIndex].note || '' });
+    res.json({ note: milestone.notes || '' });
 };
 
 module.exports.saveMilestoneNote = async (req, res) => {
-    const { id, milestoneIndex } = req.params;
+    const { id, milestoneId } = req.params;
     const { note } = req.body;
     const task = await Task.findById(id);
-    if (!task || !task.milestones[milestoneIndex]) {
+    if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+    }
+    const milestone = task.milestones.id(milestoneId);
+    if (!milestone) {
         return res.status(404).json({ error: 'Milestone not found' });
     }
-    task.milestones[milestoneIndex].note = note;
+    milestone.notes = note;
     await task.save();
     req.flash('success', 'Milestone note saved!');
     res.redirect(`/task/${id}`);

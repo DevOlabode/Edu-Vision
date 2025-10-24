@@ -1,14 +1,14 @@
 const openrouter = require('../utils/openrouterClient');
 
-module.exports.goalPlanner = async (goalText, milestoneCount = 6) => {
+module.exports.goalPlanner = async (description, title, category, motivation, milestoneCount = 6) => {
   const maxLength = 6000;
-  let safeGoal = goalText;
-  if (goalText.length > maxLength) {
-    safeGoal = goalText.slice(0, maxLength) + '\n[Goal description truncated]';
+  let safeGoal = description;
+  if (description.length > maxLength) {
+    safeGoal = description.slice(0, maxLength) + '\n[Goal description truncated]';
   }
 
   const prompt = `
-You are an academic assistant helping students plan and achieve their goals. Given the following goal description, return a JSON object with the following structure:
+You are an academic assistant helping students plan and achieve their goals. Given the goal title, goal description, category and motivation, return a JSON object with the following structure:
 
 {
   "overview": "Brief summary of the goal",
@@ -29,6 +29,9 @@ Use simple, motivating language suitable for high school or university students.
 
 Goal:
 ${safeGoal}
+${title}
+${category}
+${motivation}
 `;
 
   try {

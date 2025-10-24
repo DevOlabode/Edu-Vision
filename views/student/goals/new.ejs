@@ -1,0 +1,205 @@
+<% layout('layout/boilerplate.ejs') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg" style="border-radius: 20px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-body p-5">
+          <h1 class="display-4 font-weight-bold mb-3">Create New Goal</h1>
+          <p class="lead opacity-75">Set your goals and let AI help you achieve them!</p>
+        </div>
+      </div>
+
+      <div class="card shadow mt-4" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
+        <div class="card-body p-4">
+          <form action="/goals" method="POST" id="goalForm">
+            <!-- Goal Title -->
+            <div class="mb-4">
+              <label for="title" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-bullseye text-primary me-2"></i>Goal Title
+              </label>
+              <input type="text" class="form-control form-control-lg" id="title" name="title" required
+                     placeholder="Enter your goal title" style="border-radius: 10px; border: 2px solid #e9ecef;">
+            </div>
+
+            <!-- Category -->
+            <div class="mb-4">
+              <label for="category" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-tags text-primary me-2"></i>Category
+              </label>
+              <select class="form-select form-select-lg" id="category" name="category" required
+                      style="border-radius: 10px; border: 2px solid #e9ecef;">
+                <option value="Academic">Academic</option>
+                <option value="Personal">Personal</option>
+                <option value="Career">Career</option>
+                <option value="Health">Health</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+              <label for="description" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-align-left text-primary me-2"></i>Description
+              </label>
+              <textarea class="form-control" id="description" name="description" rows="4" required
+                        placeholder="Describe your goal in detail..." style="border-radius: 10px; border: 2px solid #e9ecef;"></textarea>
+            </div>
+
+            <!-- Target Date -->
+            <div class="mb-4">
+              <label for="targetDate" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-calendar-alt text-primary me-2"></i>Target Date
+              </label>
+              <input type="date" class="form-control form-control-lg" id="targetDate" name="targetDate" required
+                     style="border-radius: 10px; border: 2px solid #e9ecef;">
+            </div>
+
+            <!-- Motivation -->
+            <div class="mb-4">
+              <label for="motivation" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-fire text-primary me-2"></i>Motivation
+              </label>
+              <textarea class="form-control" id="motivation" name="motivation" rows="3"
+                        placeholder="What motivates you to achieve this goal?" style="border-radius: 10px; border: 2px solid #e9ecef;"></textarea>
+            </div>
+
+            <!-- Initial Progress -->
+            <div class="mb-4">
+              <label for="progress" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-chart-line text-primary me-2"></i>Initial Progress (%)
+              </label>
+              <input type="number" class="form-control form-control-lg" id="progress" name="progress" min="0" max="100" value="0"
+                     style="border-radius: 10px; border: 2px solid #e9ecef;">
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4">
+              <label for="status" class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-info-circle text-primary me-2"></i>Status
+              </label>
+              <select class="form-select form-select-lg" id="status" name="status"
+                      style="border-radius: 10px; border: 2px solid #e9ecef;">
+                <option value="not-started">Not Started</option>
+                <option value="in-progress" selected>In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="abandoned">Abandoned</option>
+              </select>
+            </div>
+
+            <!-- Milestones -->
+            <div class="mb-4">
+              <label class="form-label fw-bold" style="color: #2c3e50; font-size: 1.1rem;">
+                <i class="fas fa-flag text-primary me-2"></i>Milestones
+              </label>
+              <div id="milestonesContainer">
+                <!-- Milestones will be added here dynamically -->
+              </div>
+              <button type="button" class="btn btn-outline-primary mt-3" id="addMilestoneBtn" style="border-radius: 20px;">
+                <i class="fas fa-plus me-2"></i>Add Milestone
+              </button>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-3 mt-5">
+              <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center"
+                      style="border-radius: 25px; padding: 15px; transition: all 0.3s ease; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <i class="fas fa-rocket me-2"></i>Create Goal & Generate Plan
+              </button>
+              <a href="/goals" class="btn btn-outline-secondary btn-lg d-flex align-items-center justify-content-center"
+                 style="border-radius: 25px; padding: 15px; transition: all 0.3s ease;">
+                <i class="fas fa-arrow-left me-2"></i>Back to Goals
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let milestoneCount = 0;
+
+document.getElementById('addMilestoneBtn').addEventListener('click', function() {
+  addMilestone();
+});
+
+function addMilestone(title = '', dueDate = '') {
+  milestoneCount++;
+  const container = document.getElementById('milestonesContainer');
+
+  const milestoneDiv = document.createElement('div');
+  milestoneDiv.className = 'milestone-item card mb-3';
+  milestoneDiv.style.borderRadius = '10px';
+  milestoneDiv.style.border = '1px solid #e9ecef';
+
+  milestoneDiv.innerHTML = `
+    <div class="card-body p-3">
+      <div class="row g-3">
+        <div class="col-md-7">
+          <input type="text" class="form-control" name="milestones[${milestoneCount}][title]" placeholder="Milestone title" value="${title}" required
+                 style="border-radius: 8px;">
+        </div>
+        <div class="col-md-4">
+          <input type="date" class="form-control" name="milestones[${milestoneCount}][dueDate]" value="${dueDate}" required
+                 style="border-radius: 8px;">
+        </div>
+        <div class="col-md-1">
+          <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeMilestone(this)" style="border-radius: 8px;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(milestoneDiv);
+}
+
+function removeMilestone(button) {
+  button.closest('.milestone-item').remove();
+}
+
+// Add one milestone by default
+addMilestone();
+
+// Form validation
+document.getElementById('goalForm').addEventListener('submit', function(e) {
+  const targetDate = new Date(document.getElementById('targetDate').value);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (targetDate < today) {
+    e.preventDefault();
+    alert('Target date cannot be in the past.');
+    return;
+  }
+
+  // Show loading state
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Goal...';
+});
+</script>
+
+<style>
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.milestone-item {
+  transition: all 0.3s ease;
+}
+
+.milestone-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+</style>

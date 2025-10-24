@@ -14,6 +14,7 @@ router.post('/', isLoggedIn, catchAsync(controller.newTask));
 
 router.get('/:id', isLoggedIn, catchAsync(controller.showTask));
 
+
 router.post('/:id/milestone', isLoggedIn, catchAsync(controller.addMilestone));
 
 router.post('/:id/milestone/:milestoneIndex/toggle', isLoggedIn, catchAsync(controller.toggleMilestone));

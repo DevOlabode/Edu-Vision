@@ -121,6 +121,8 @@ module.exports.showPage = async(req, res)=>{
     res.render('student/task/show', {task})
 }
 
+
+
 module.exports.delete = async(req, res)=>{
     const { id } = req.params;
     const task = await Task.findByIdAndDelete(id);

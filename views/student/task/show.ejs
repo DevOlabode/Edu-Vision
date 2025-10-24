@@ -383,6 +383,8 @@
                   <i class="fas fa-clock me-1"></i>Last updated: <%= new Date(task.updatedAt || task.createdAt).toLocaleDateString() %>
                 </small>
               </div>
+
+
             </div>
           </div>
         </div>
@@ -417,6 +419,8 @@ document.getElementById('editDescriptionForm').onsubmit = function(e) {
     alert('Failed to update description.');
   });
 };
+
+
 </script>
 
 <style>

@@ -14,6 +14,11 @@ router.get('/', isLoggedIn, catchAsync(controller.allGoals));
 
 router.get('/:id', isLoggedIn, catchAsync(controller.showGoal));
 
+router.get('/:id/edit', isLoggedIn, catchAsync(controller.editForm))
+
+router.put('/:id', isLoggedIn, catchAsync(controller.edit))
+
+
 // API endpoints for functionality
 router.put('/:id/progress', isLoggedIn, catchAsync(controller.updateProgress));
 router.post('/:id/milestones', isLoggedIn, catchAsync(controller.addMilestone));

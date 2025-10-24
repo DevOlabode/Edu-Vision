@@ -8,7 +8,6 @@ module.exports.newForm = (req, res)=>{
 module.exports.savegoals = async(req, res)=>{
     const {title, description, category, targetDate, progress, status, milestones, motivation} = req.body;
     const plan = await goalPlanner(description, title, category,motivation,milestones);
-    console.log(plan)
     const goals = new Goals({
         title,
         description,
@@ -46,10 +45,38 @@ module.exports.editForm = async(req, res) =>{
 
     if(!goal) {
         req.flash('error', 'Goal Not Found!')
-        res.redirect('/goals')
+        return res.redirect('/goals')
     }
 
-    res.render('student/goals/edit')
+    res.render('student/goals/edit', { goal })
+};
+
+module.exports.edit = async(req, res)=>{
+    const {title, description, category, targetDate, progress, status, milestones, motivation} = req.body;
+    const goal = await Goals.findById(req.params.id);
+
+    if(!goal){
+        req.flash('error', 'Goal Not Found');
+        res.redirect(`/goals/${goal._id}`)
+    };
+
+    const plan = await goalPlanner(description, title, category,motivation,milestones);
+
+    const update = await Goals.findByIdAndUpdate(req.params.id, 
+        {
+            ...req.body,
+            createdBy : req.user._id,
+            tips : plan.studyTips,
+            aiSuggestion : plan.suggestedPlan
+        },
+        {
+            runValidators: true,
+            new: true,
+        }
+    );
+
+    req.flash('success', 'Updated Goals Successfully');
+    res.redirect(`/goals/${update._id}`)
 }
 
 // API endpoints for functionality

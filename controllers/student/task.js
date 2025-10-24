@@ -150,12 +150,7 @@ module.exports.edit = async(req, res)=>{
 
     if(!task){
         req.flash('error', 'Task Not Found');
-        res.redirect('/task')
-    }
-
-    if (task.createdBy && task.createdBy.toString() !== req.user._id.toString()) {
-        req.flash('error', 'You do not have permission to edit this product');
-        return res.redirect('/form/all-products');
+        res.redirect(`/task/${task._id}`)
     }
     
     const plan = await taskPlanner(title, subject, type, dueDate, description, priority, difficulty, milestones);

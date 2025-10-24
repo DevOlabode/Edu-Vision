@@ -16,7 +16,9 @@ router.get('/:id', isLoggedIn, catchAsync(controller.showGoal));
 
 router.get('/:id/edit', isLoggedIn, catchAsync(controller.editForm))
 
-router.put('/:id', isLoggedIn, catchAsync(controller.edit))
+router.put('/:id', isLoggedIn, catchAsync(controller.edit));
+
+router.delete('/:id', isLoggedIn, catchAsync(controller.deleteGoal));
 
 
 // API endpoints for functionality

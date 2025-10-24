@@ -1,227 +1,225 @@
 <% layout('layout/boilerplate.ejs') %>
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <!-- Goal Header Card -->
-      <div class="card shadow-lg mb-4 animate__animated animate__fadeIn" style="border-radius: 20px; border: none; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #2c3e50;">
-        <div class="card-body p-5">
-          <div class="d-flex justify-content-between align-items-start">
+<div class="container-fluid py-4">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+      <!-- Goal Header -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
             <div>
-              <h1 class="display-4 font-weight-bold mb-2"><%= goal.title %></h1>
-              <p class="lead mb-0 opacity-75"><%= goal.category || 'General' %> • <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %></p>
+              <h1 class="h2 mb-2"><%= goal.title %></h1>
+              <p class="text-muted mb-1"><%= goal.category || 'General' %> • <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %></p>
+              <small class="text-muted">Created <%= new Date(goal.createdAt).toLocaleDateString() %></small>
             </div>
-            <div class="text-end">
-              <span id="statusBadge" class="badge fs-6 px-3 py-2 mb-2 <%= goal.status === 'completed' ? 'bg-success' : goal.status === 'in-progress' ? 'bg-primary' : goal.status === 'overdue' ? 'bg-danger' : 'bg-secondary' %>">
-                <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %>
-              </span>
-              <br>
-              <small class="text-white-50">Created <%= new Date(goal.createdAt).toLocaleDateString() %></small>
+            <span id="statusBadge" class="badge fs-6 px-3 py-2 <%= goal.status === 'completed' ? 'bg-success' : goal.status === 'in-progress' ? 'bg-primary' : goal.status === 'overdue' ? 'bg-danger' : 'bg-secondary' %>">
+              <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %>
+            </span>
+          </div>
+
+          <% if (goal.description) { %>
+            <p class="lead"><%= goal.description %></p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Progress</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="h6 mb-0">Current Progress</span>
+            <div class="d-flex align-items-center gap-3">
+              <span id="progressValue" class="fw-bold"><%= goal.progress || 0 %>%</span>
+              <button id="updateProgressBtn" class="btn btn-outline-secondary btn-sm">Update</button>
             </div>
+          </div>
+          <div class="progress mb-3" style="height: 10px;">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: <%= goal.progress || 0 %>%;" aria-valuenow="<%= goal.progress || 0 %>" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+
+          <!-- Progress Update Form (hidden by default) -->
+          <div id="progressUpdateForm" style="display: none;">
+            <form id="progressForm" class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label">Progress (%)</label>
+                <input type="range" class="form-range" id="progressRange" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>">
+              </div>
+              <div class="col-md-3">
+                <input type="number" class="form-control" id="progressNumber" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>">
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary me-2">Save</button>
+                <button type="button" class="btn btn-secondary" id="cancelProgressBtn">Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
 
-      <div class="row">
-        <!-- Goal Details -->
-        <div class="col-lg-8">
-          <div class="card shadow" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
-            <div class="card-body p-4">
-              <!-- Progress Section -->
-              <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h4 class="mb-0" style="color: #2c3e50; font-weight: 600;">
-                    <i class="fas fa-chart-line text-primary me-2"></i>Progress
-                  </h4>
+      <!-- Milestones Section -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Milestones</h5>
+          <button id="addMilestoneBtn" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-plus me-1"></i>Add Milestone
+          </button>
+        </div>
+        <div class="card-body">
+          <ul id="milestonesList" class="list-group list-group-flush">
+            <% if (goal.milestones && goal.milestones.length > 0) { %>
+              <% goal.milestones.forEach(function(ms, idx) { %>
+                <li class="list-group-item d-flex align-items-center justify-content-between" data-index="<%= idx %>">
                   <div class="d-flex align-items-center gap-3">
-                    <span id="progressValue" class="fs-4 fw-bold" style="color: #667eea;"><%= goal.progress || 0 %>%</span>
-                    <button id="updateProgressBtn" class="btn btn-outline-primary btn-sm" style="border-radius: 20px;">Update</button>
+                    <input class="form-check-input milestone-checkbox" type="checkbox" style="width: 18px; height: 18px;" <% if (ms.completed) { %>checked<% } %> />
+                    <div>
+                      <div class="milestone-title fw-medium" contenteditable="false" data-original="<%= ms.title %>"><%= ms.title %></div>
+                      <% if (ms.dueDate) { %>
+                        <small class="text-muted">Due: <%= new Date(ms.dueDate).toLocaleDateString() %></small>
+                      <% } %>
+                    </div>
                   </div>
-                </div>
-                <div class="progress mb-3" style="height: 12px; border-radius: 6px;">
-                  <div id="progressBar" class="progress-bar" role="progressbar" style="width: <%= goal.progress || 0 %>%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 6px;" aria-valuenow="<%= goal.progress || 0 %>" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <!-- Progress Update Form (hidden by default) -->
-                <div id="progressUpdateForm" style="display: none;">
-                  <form id="progressForm" class="d-flex gap-2 align-items-center">
-                    <input type="range" class="form-range flex-grow-1" id="progressRange" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>">
-                    <input type="number" class="form-control" id="progressNumber" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>" style="width: 80px; border-radius: 8px;">
-                    <button type="submit" class="btn btn-success btn-sm" style="border-radius: 20px;">Save</button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="cancelProgressBtn" style="border-radius: 20px;">Cancel</button>
-                  </form>
-                </div>
-              </div>
-
-              <!-- Description -->
-              <% if (goal.description) { %>
-                <div class="mb-4">
-                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-file-alt text-primary me-2"></i>Description</h5>
-                  <p class="text-muted" style="line-height: 1.6;"><%= goal.description %></p>
-                </div>
-              <% } %>
-
-              <!-- Milestones -->
-              <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-flag text-warning me-2"></i>Milestones</h5>
-                  <div>
-                    <button id="addMilestoneBtn" class="btn btn-outline-primary btn-sm" style="border-radius: 20px;">
-                      <i class="fas fa-plus me-1"></i>Add Milestone
-                    </button>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary edit-milestone-btn">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger delete-milestone-btn">Delete</button>
                   </div>
-                </div>
+                </li>
+              <% }); %>
+            <% } else { %>
+              <li class="list-group-item text-center text-muted py-4">
+                No milestones yet. Add one to break this goal into smaller steps.
+              </li>
+            <% } %>
+          </ul>
 
-                <ul id="milestonesList" class="list-group list-group-flush">
-                  <% if (goal.milestones && goal.milestones.length > 0) { %>
-                    <% goal.milestones.forEach(function(ms, idx) { %>
-                      <li class="list-group-item d-flex align-items-center justify-content-between" data-index="<%= idx %>">
-                        <div class="d-flex align-items-center gap-3">
-                          <input class="form-check-input milestone-checkbox" type="checkbox" style="width: 18px; height: 18px;" <% if (ms.completed) { %>checked<% } %> />
-                          <div>
-                            <div class="milestone-title" contenteditable="false" data-original="<%= ms.title %>"><%= ms.title %></div>
-                            <% if (ms.dueDate) { %>
-                              <small class="text-muted">Due: <%= new Date(ms.dueDate).toLocaleDateString() %></small>
-                            <% } %>
-                          </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                          <button class="btn btn-sm btn-outline-secondary edit-milestone-btn" title="Edit milestone">Edit</button>
-                          <button class="btn btn-sm btn-outline-danger delete-milestone-btn" title="Delete milestone">Delete</button>
-                        </div>
-                      </li>
-                    <% }); %>
-                  <% } else { %>
-                    <li class="list-group-item text-muted">No milestones yet. Add one to break this goal into small steps.</li>
-                  <% } %>
-                </ul>
-
-                <!-- Add milestone form (hidden) -->
-                <div id="addMilestoneForm" class="mt-3" style="display: none;">
-                  <form id="addMilestone" class="d-flex gap-2">
-                    <input id="newMilestoneTitle" class="form-control" placeholder="Milestone title" required>
-                    <input id="newMilestoneDue" type="date" class="form-control" style="max-width: 180px;">
-                    <button class="btn btn-primary btn-sm" type="submit">Add</button>
-                    <button class="btn btn-secondary btn-sm" type="button" id="cancelAddMilestone">Cancel</button>
-                  </form>
-                </div>
+          <!-- Add milestone form (hidden) -->
+          <div id="addMilestoneForm" class="mt-3" style="display: none;">
+            <form id="addMilestone" class="row g-3">
+              <div class="col-md-6">
+                <input id="newMilestoneTitle" class="form-control" placeholder="Milestone title" required>
               </div>
-
-              <!-- Countdown & Meta -->
-              <div class="mb-4 d-flex justify-content-between align-items-center">
-                <div>
-                  <h6 class="mb-1" style="color: #2c3e50; font-weight: 600;"><i class="fas fa-calendar-alt text-primary me-2"></i>Target Date</h6>
-                  <p class="mb-0 text-muted"><strong><%= new Date(goal.targetDate).toLocaleDateString() %></strong></p>
-                </div>
-                <div class="text-end">
-                  <div id="countdownBadge" class="badge fs-6 px-3 py-2">
-                    <!-- filled by JS -->
-                  </div>
-                  <div><small class="text-muted">Last updated <%= new Date(goal.updatedAt || goal.createdAt).toLocaleDateString() %></small></div>
-                </div>
+              <div class="col-md-4">
+                <input id="newMilestoneDue" type="date" class="form-control">
               </div>
-
-              <!-- AI Plan -->
-              <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-robot text-info me-2"></i>AI Study Plan</h5>
-                  <div>
-                    <button id="regeneratePlanBtn" class="btn btn-outline-info btn-sm" style="border-radius: 20px;">
-                      <i class="fas fa-sync-alt me-1"></i>Regenerate Plan
-                    </button>
-                  </div>
-                </div>
-
-                <div id="aiPlanContainer">
-                  <% if (goal.tips && goal.tips.length) { %>
-                    <h6 style="font-weight: 600;">Study Tips</h6>
-                    <ul class="list-group list-group-flush mb-3">
-                      <% goal.tips.forEach(function(tip) { %>
-                        <li class="list-group-item"><%= tip %></li>
-                      <% }) %>
-                    </ul>
-                  <% } %>
-
-                  <% if (goal.aiSuggestions && goal.aiSuggestions.length) { %>
-                    <h6 style="font-weight: 600;">Suggested Plan</h6>
-                    <ol class="ps-3">
-                      <% goal.aiSuggestions.forEach(function(step) { %>
-                        <li class="mb-2"><%= step %></li>
-                      <% }) %>
-                    </ol>
-                  <% } %>
-                </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit">Add</button>
               </div>
-
-              <!-- Action Buttons -->
-              <div class="d-flex gap-2">
-                <a href="/goals/<%= goal._id %>/edit" class="btn btn-outline-secondary">Edit</a>
-
-                <form id="markCompleteForm" class="d-inline">
-                  <button type="button" id="markCompleteBtn" class="btn btn-success">Mark Complete</button>
-                </form>
-
-                <form id="deleteForm" action="/goals/<%= goal._id %>?_method=DELETE" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-              </div>
-            </div> <!-- card-body -->
-          </div> <!-- card -->
-        </div> <!-- col-lg-8 -->
-
-        <!-- Right Column: Quick Stats & AI Summary -->
-        <div class="col-lg-4">
-          <div class="card shadow-sm p-3" style="border-radius: 15px;">
-            <div class="card-body">
-              <h6 class="mb-3" style="font-weight: 700; color: #2c3e50;"><i class="fas fa-info-circle me-2 text-primary"></i>Quick Stats</h6>
-              <div class="mb-3">
-                <small class="text-muted">Progress</small>
-                <div class="d-flex justify-content-between align-items-center">
-                  <strong><%= goal.progress || 0 %>%</strong>
-                  <small class="text-muted"><%= goal.status || 'in-progress' %></small>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <small class="text-muted">Priority</small>
-                <div class="d-flex justify-content-between align-items-center">
-                  <strong><%= goal.priority || 'medium' %></strong>
-                  <small class="text-muted">Difficulty: <%= goal.difficulty || 'medium' %></small>
-                </div>
-              </div>
-
-              <hr>
-
-              <% if (goal.motivation) { %>
-                <div class="mb-3">
-                  <h6 style="font-weight: 700;">Motivation</h6>
-                  <p class="mb-0 text-muted"><%= goal.motivation %></p>
-                </div>
-              <% } %>
-
-              <div class="mt-3">
-                <small class="text-muted">Created</small>
-                <div><strong><%= new Date(goal.createdAt).toLocaleDateString() %></strong></div>
-              </div>
-            </div>
+            </form>
           </div>
+        </div>
+      </div>
 
-          <!-- Optional: compact AI summary card -->
-          <div class="card shadow-sm p-3 mt-3" style="border-radius: 15px;">
-            <div class="card-body">
-              <h6 style="font-weight: 700;">AI Snapshot</h6>
-              <% if (goal.aiSuggestions && goal.aiSuggestions.length) { %>
-                <p class="text-muted mb-2"><%= (goal.aiSuggestions[0].length > 120 ? goal.aiSuggestions[0].slice(0, 120) + '...' : goal.aiSuggestions[0]) %></p>
-                <a href="#aiPlanContainer" class="small">View full plan</a>
-              <% } else { %>
-                <p class="text-muted mb-2">No AI plan generated yet.</p>
-              <% } %>
-            </div>
+      <!-- AI Plan Section -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">AI Study Plan</h5>
+          <button id="regeneratePlanBtn" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-sync-alt me-1"></i>Regenerate
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="aiPlanContainer">
+            <% if (goal.tips && goal.tips.length) { %>
+              <h6>Study Tips</h6>
+              <ul class="mb-3">
+                <% goal.tips.forEach(function(tip) { %>
+                  <li><%= tip %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+
+            <% if (goal.aiSuggestions && goal.aiSuggestions.length) { %>
+              <h6>Suggested Plan</h6>
+              <ol>
+                <% goal.aiSuggestions.forEach(function(step) { %>
+                  <li class="mb-2"><%= step %></li>
+                <% }) %>
+              </ol>
+            <% } %>
+
+            <% if ((!goal.tips || !goal.tips.length) && (!goal.aiSuggestions || !goal.aiSuggestions.length)) { %>
+              <p class="text-muted text-center py-3">No AI plan generated yet. Click "Regenerate" to get suggestions.</p>
+            <% } %>
           </div>
-        </div> <!-- col-lg-4 -->
-      </div> <!-- row -->
-    </div> <!-- col-lg-10 -->
-  </div> <!-- row justify-center -->
-</div> <!-- container -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Quick Actions -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">Actions</h6>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/goals/<%= goal._id %>/edit" class="btn btn-outline-primary">Edit Goal</a>
+            <button type="button" id="markCompleteBtn" class="btn btn-success">Mark Complete</button>
+            <form id="deleteForm" action="/goals/<%= goal._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+              <button type="submit" class="btn btn-outline-danger w-100">Delete Goal</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goal Details -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">Details</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <small class="text-muted d-block">Target Date</small>
+            <strong><%= new Date(goal.targetDate).toLocaleDateString() %></strong>
+          </div>
+          <div class="mb-3">
+            <small class="text-muted d-block">Priority</small>
+            <strong><%= goal.priority || 'Medium' %></strong>
+          </div>
+          <div class="mb-3">
+            <small class="text-muted d-block">Difficulty</small>
+            <strong><%= goal.difficulty || 'Medium' %></strong>
+          </div>
+          <div class="mb-3">
+            <small class="text-muted d-block">Time Remaining</small>
+            <strong id="countdownBadge"></strong>
+          </div>
+          <% if (goal.motivation) { %>
+            <div>
+              <small class="text-muted d-block">Motivation</small>
+              <p class="mb-0"><%= goal.motivation %></p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Progress Summary -->
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Total Milestones</span>
+            <span class="fw-bold"><%= goal.milestones ? goal.milestones.length : 0 %></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Completed</span>
+            <span class="fw-bold text-success"><%= goal.milestones ? goal.milestones.filter(m => m.completed).length : 0 %></span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Remaining</span>
+            <span class="fw-bold text-warning"><%= goal.milestones ? goal.milestones.filter(m => !m.completed).length : 0 %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   // Helper: get base endpoint for this goal
@@ -236,26 +234,19 @@
     const badge = document.getElementById('countdownBadge');
 
     if (isNaN(target.getTime())) {
-      badge.className = 'badge bg-secondary';
       badge.innerText = 'No target date';
       return;
     }
 
     const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     if (diffMs < 0) {
-      badge.className = 'badge bg-danger';
       badge.innerText = `Overdue by ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''}`;
-      // also mark status UI if not completed
-      const status = document.getElementById('statusBadge');
-      if (status && status.innerText.toLowerCase() !== 'completed') {
-        status.className = 'badge fs-6 px-3 py-2 bg-danger';
-      }
+      badge.className = 'text-danger';
     } else if (days <= 3) {
-      badge.className = 'badge bg-warning text-dark';
-      badge.innerText = `Due in ${days} day${days !== 1 ? 's' : ''}`;
+      badge.innerText = `${days} day${days !== 1 ? 's' : ''} left`;
+      badge.className = 'text-warning';
     } else {
-      badge.className = 'badge bg-primary';
-      badge.innerText = `Due in ${days} day${days !== 1 ? 's' : ''}`;
+      badge.innerText = `${days} day${days !== 1 ? 's' : ''} left`;
     }
   })();
 
@@ -310,7 +301,6 @@
       if (data.status) {
         const statusBadge = document.getElementById('statusBadge');
         statusBadge.innerText = (data.status || '').replace('-', ' ').toUpperCase();
-        // adjust classes lightly
         statusBadge.className = 'badge fs-6 px-3 py-2 ' + (data.status === 'completed' ? 'bg-success' : data.status === 'in-progress' ? 'bg-primary' : data.status === 'overdue' ? 'bg-danger' : 'bg-secondary');
       }
     } catch (err) {
@@ -319,26 +309,17 @@
     }
   });
 
-  // ---------- Milestones (editable) ----------
+  // ---------- Milestones ----------
   const milestonesList = document.getElementById('milestonesList');
   const addMilestoneBtn = document.getElementById('addMilestoneBtn');
   const addMilestoneForm = document.getElementById('addMilestoneForm');
   const addMilestoneEl = document.getElementById('addMilestone');
   const newMilestoneTitle = document.getElementById('newMilestoneTitle');
   const newMilestoneDue = document.getElementById('newMilestoneDue');
-  const cancelAddMilestone = document.getElementById('cancelAddMilestone');
 
   addMilestoneBtn.addEventListener('click', () => {
     addMilestoneForm.style.display = 'block';
     addMilestoneBtn.style.display = 'none';
-    newMilestoneTitle.focus();
-  });
-
-  cancelAddMilestone.addEventListener('click', () => {
-    addMilestoneForm.style.display = 'none';
-    addMilestoneBtn.style.display = 'inline-block';
-    newMilestoneTitle.value = '';
-    newMilestoneDue.value = '';
   });
 
   // Add milestone submit
@@ -356,9 +337,6 @@
       });
       if (!res.ok) throw new Error('Failed to add milestone');
       const data = await res.json();
-
-      // Re-render milestones list (simple approach: reload page or re-fetch partial)
-      // Here we'll simply reload to keep logic straightforward
       location.reload();
     } catch (err) {
       console.error(err);
@@ -366,7 +344,7 @@
     }
   });
 
-  // Delegate milestone interactions (toggle, edit, delete)
+  // Delegate milestone interactions
   milestonesList.addEventListener('click', async (e) => {
     const li = e.target.closest('li[data-index]');
     if (!li) return;
@@ -383,7 +361,6 @@
         });
         if (!res.ok) throw new Error('Failed to toggle milestone');
         const data = await res.json();
-        // optionally update partial UI
         location.reload();
       } catch (err) {
         console.error(err);
@@ -397,7 +374,6 @@
       const titleDiv = li.querySelector('.milestone-title');
       const original = titleDiv.getAttribute('data-original') || titleDiv.innerText;
       if (titleDiv.isContentEditable) {
-        // Save
         const newTitle = titleDiv.innerText.trim();
         titleDiv.contentEditable = "false";
         e.target.innerText = 'Edit';
@@ -455,7 +431,6 @@
       });
       if (!res.ok) throw new Error('Failed to mark complete');
       const data = await res.json();
-      // update UI and reload
       location.reload();
     } catch (err) {
       console.error(err);
@@ -487,39 +462,28 @@
 
       if (!res.ok) throw new Error('Failed to generate plan');
       const data = await res.json();
-
-      // Best approach: reload to show new AI data from server
       location.reload();
     } catch (err) {
       console.error(err);
       alert('Could not generate AI plan.');
       regenerateBtn.disabled = false;
-      regenerateBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i>Regenerate Plan';
+      regenerateBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i>Regenerate';
     }
   });
 </script>
 
 <style>
   .milestone-title[contenteditable="true"] {
-    border-bottom: 1px dashed rgba(0,0,0,0.08);
+    border-bottom: 1px dashed #dee2e6;
     padding-bottom: 2px;
   }
 
   .list-group-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    border: none;
+    border-bottom: 1px solid #f8f9fa;
   }
 
-  .milestone-title {
-    min-width: 180px;
-    max-width: 420px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media (max-width: 768px) {
-    .milestone-title { max-width: 220px; }
+  .list-group-item:last-child {
+    border-bottom: none;
   }
 </style>

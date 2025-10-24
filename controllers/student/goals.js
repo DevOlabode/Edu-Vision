@@ -77,6 +77,13 @@ module.exports.edit = async(req, res)=>{
 
     req.flash('success', 'Updated Goals Successfully');
     res.redirect(`/goals/${update._id}`)
+};
+
+module.exports.deleteGoal = async(req, res)=>{
+    const goal = await Goals.findByIdAndDelete(req.params.id);
+
+    req.flash('success', 'Deleted Goal Successfully');
+    res.redirect('/goals')
 }
 
 // API endpoints for functionality

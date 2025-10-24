@@ -27,6 +27,7 @@ const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/student/material');
 const pagesRoutes = require('./routes/pages');
 const taskRoutes  = require('./routes/student/task');
+const goalRoutes = require('./routes/student/goals');
 
 app.use(express.urlencoded({extended : true}));
 
@@ -78,6 +79,7 @@ app.use('/', authRoutes);
 app.use('/', pagesRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/task', taskRoutes);
+app.use('/goals', goalRoutes)
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {

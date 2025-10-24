@@ -177,6 +177,13 @@
                   <% }); %>
                 </div>
 
+                <!-- Load More Button -->
+                <div class="text-center mt-4">
+                  <button id="loadMoreFlashcardsBtn" class="btn btn-outline-primary" style="border-radius:20px; padding: 10px 30px; font-weight: 600;">
+                    <i class="fas fa-plus me-2"></i>Load More Flashcards
+                  </button>
+                </div>
+
                 <!-- Study Tips -->
                 <div class="study-tips mt-5" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.05) 100%); border-radius: 20px; padding: 30px; border: 2px dashed rgba(240, 147, 251, 0.3);">
                   <div class="text-center">
@@ -273,14 +280,116 @@
 document.addEventListener('DOMContentLoaded', function() {
   const flashcardsContent = document.getElementById('flashcardsContent');
   const chevron = document.getElementById('flashcardChevron');
-  
+
   if (flashcardsContent && chevron) {
     flashcardsContent.addEventListener('shown.bs.collapse', function() {
       chevron.style.transform = 'rotate(180deg)';
     });
-    
+
     flashcardsContent.addEventListener('hidden.bs.collapse', function() {
       chevron.style.transform = 'rotate(0deg)';
+    });
+  }
+
+  // Load More Flashcards functionality
+  let loadedFlashcards = <%= material.flashcards ? material.flashcards.length : 0 %>;
+  const flashcardsPerLoad = 5;
+  const loadMoreBtn = document.getElementById('loadMoreFlashcardsBtn');
+
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', function() {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+
+      fetch(`/materials/<%= material._id %>/flashcards?count=${flashcardsPerLoad}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && Array.isArray(data.flashcards) && data.flashcards.length > 0) {
+            renderFlashcards(data.flashcards);
+            loadedFlashcards += data.flashcards.length;
+          } else {
+            loadMoreBtn.innerHTML = '<i class="fas fa-check me-2"></i>All flashcards loaded';
+            loadMoreBtn.disabled = true;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading flashcards:', error);
+          loadMoreBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error loading';
+          setTimeout(() => {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Load More Flashcards';
+          }, 2000);
+        })
+        .finally(() => {
+          if (!loadMoreBtn.disabled) {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Load More Flashcards';
+          }
+        });
+    });
+  }
+
+  function renderFlashcards(cards) {
+    const container = document.querySelector('.row.g-4');
+    if (!container) return;
+
+    cards.forEach((card, index) => {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'col-md-6';
+
+      const [q, a] = card.split('A:');
+      const question = q.replace('Q:', '').trim();
+      const answer = a ? a.trim() : 'No answer available';
+
+      colDiv.innerHTML = `
+        <div class="flashcard-wrapper" style="perspective: 1000px; height: 280px;">
+          <div class="flashcard" style="width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; border-radius: 20px; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.2);" onclick="this.style.transform = this.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)'">
+            <!-- Front of Card (Question) -->
+            <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%); border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #f093fb; box-shadow: 0 8px 25px rgba(240, 147, 251, 0.2);">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                  <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);">
+                    ${loadedFlashcards + index + 1}
+                  </div>
+                  <span style="background: rgba(240, 147, 251, 0.1); color: #f5576c; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-question-circle me-1"></i>Question
+                  </span>
+                </div>
+                <p style="color: #2c3e50; font-size: 17px; font-weight: 600; line-height: 1.6; margin: 0;">
+                  ${question}
+                </p>
+              </div>
+              <div class="text-center" style="color: #6c757d; font-size: 0.9rem; margin-top: 15px;">
+                <i class="fas fa-sync-alt me-2"></i>
+                <span style="font-weight: 600;">Click to reveal answer</span>
+              </div>
+            </div>
+
+            <!-- Back of Card (Answer) -->
+            <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; transform: rotateY(180deg); box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                  <div style="background: rgba(255,255,255,0.3); color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                    ${loadedFlashcards + index + 1}
+                  </div>
+                  <span style="background: rgba(255,255,255,0.3); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-lightbulb me-1"></i>Answer
+                  </span>
+                </div>
+                <p style="color: white; font-size: 16px; line-height: 1.7; margin: 0; font-weight: 500;">
+                  ${answer}
+                </p>
+              </div>
+              <div class="text-center" style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-top: 15px;">
+                <i class="fas fa-sync-alt me-2"></i>
+                <span style="font-weight: 600;">Click to see question</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(colDiv);
     });
   }
 });

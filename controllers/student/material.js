@@ -282,6 +282,54 @@ exports.uploadFromDrive = async (req, res) => {
     }
 };
 
+// Get Flashcards
+exports.getFlashcards = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { count = 5 } = req.query;
+
+        const material = await Material.findOne({
+            _id: id,
+            uploadedBy: req.user._id
+        });
+
+        if (!material) {
+            return res.status(404).json({
+                success: false,
+                error: 'Material not found'
+            });
+        }
+
+        // Use summary for flashcard generation
+        const text = material.summary || '';
+        if (!text || text.trim().length === 0) {
+            return res.json({
+                success: true,
+                flashcards: []
+            });
+        }
+
+        const flashcards = await summarizer(text, parseInt(count));
+
+        // Extract flashcards from summary (assume Q&A pairs)
+        const flashcardSection = flashcards.split(/flashcards/i)[1] || flashcards;
+        const extractedFlashcards = flashcardSection.match(/Q:.*?A:.*?(?=Q:|$)/gs) || [];
+
+        console.log('Generated flashcards:', extractedFlashcards.length, 'cards');
+
+        res.json({
+            success: true,
+            flashcards: extractedFlashcards
+        });
+    } catch (error) {
+        console.error('Get flashcards error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to generate flashcards. Please try again later.'
+        });
+    }
+};
+
 // Delete
 exports.delete = async (req, res) => {
     try {

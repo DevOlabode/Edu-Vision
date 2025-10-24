@@ -37,6 +37,6 @@ router.post('/:id/description', isLoggedIn, catchAsync(async (req, res) => {
     res.status(200).send('Description updated');
 }));
 
-router.get('/:id/flashcards', isLoggedIn, catchAsync(controller.getFlashcards));
+
 
 module.exports = router;

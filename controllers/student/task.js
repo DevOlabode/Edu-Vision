@@ -167,23 +167,6 @@ module.exports.edit = async(req, res)=>{
     res.redirect(`/task/${update._id}`)
 }
 
-module.exports.getFlashcards = async (req, res) => {
-  const { id } = req.params;
-  const { count = 5 } = req.query;
-  const task = await Task.findById(id);
-  if (!task) return res.status(404).json({ error: 'Task not found' });
-  // Use description or other text for flashcard generation
-  const text = task.description || '';
-  try {
-    const summary = await summarizer(text, count);
-    // Extract flashcards from summary (assume Q&A pairs at end)
-    const flashcardSection = summary.split(/flashcards/i)[1] || summary;
-    // Simple Q&A extraction (improve as needed)
-    const flashcards = flashcardSection.match(/Q:.*?A:.*?(?=Q:|$)/gs) || [];
-    res.json({ flashcards });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to generate flashcards.' });
-  }
-};
+
 
 module.exports.Task = Task;

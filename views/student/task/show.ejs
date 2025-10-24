@@ -180,44 +180,7 @@
                 </div>
               <% } %>
 
-              <!-- Flashcard Section -->
-              <div class="mb-4" id="flashcard-section">
-                <h4 class="mb-3" style="color: #2c3e50; font-weight: 600;">
-                  <i class="fas fa-clone text-primary me-2"></i>Flashcards
-                </h4>
-                <div id="flashcard-list"></div>
-                <button id="loadMoreFlashcardsBtn" class="btn btn-outline-primary mt-3" style="border-radius:20px;">Load More Flashcards</button>
-              </div>
-              <script>
-                let loadedFlashcards = 0;
-                const flashcardsPerLoad = 5;
-                function renderFlashcards(cards) {
-                  const list = document.getElementById('flashcard-list');
-                  cards.forEach(card => {
-                    const div = document.createElement('div');
-                    div.className = 'card mb-2';
-                    const [q, a] = card.split('A:');
-                    div.innerHTML = `<div class='card-body'><strong>${q || ''}</strong><br><span>${a || ''}</span></div>`;
-                    list.appendChild(div);
-                  });
-                }
-                function loadFlashcards(count) {
-                  fetch(`/task/<%= task._id %>/flashcards?count=${count}`)
-                    .then(res => res.json())
-                    .then(data => {
-                      if (Array.isArray(data.flashcards)) {
-                        renderFlashcards(data.flashcards);
-                        loadedFlashcards += data.flashcards.length;
-                      }
-                    });
-                }
-                document.getElementById('loadMoreFlashcardsBtn').onclick = function() {
-                  loadFlashcards(flashcardsPerLoad);
-                };
-                window.addEventListener('DOMContentLoaded', () => {
-                  loadFlashcards(flashcardsPerLoad);
-                });
-              </script>
+
 
               <!-- Milestones Section -->
               <div class="card shadow mt-4" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">

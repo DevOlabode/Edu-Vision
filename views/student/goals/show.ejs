@@ -1,0 +1,525 @@
+<% layout('layout/boilerplate.ejs') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Goal Header Card -->
+      <div class="card shadow-lg mb-4" style="border-radius: 20px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-body p-5">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h1 class="display-4 font-weight-bold mb-2"><%= goal.title %></h1>
+              <p class="lead mb-0 opacity-75"><%= goal.category || 'General' %> • <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %></p>
+            </div>
+            <div class="text-end">
+              <span id="statusBadge" class="badge fs-6 px-3 py-2 mb-2 <%= goal.status === 'completed' ? 'bg-success' : goal.status === 'in-progress' ? 'bg-primary' : goal.status === 'overdue' ? 'bg-danger' : 'bg-secondary' %>">
+                <%= (goal.status || 'in-progress').replace('-', ' ').toUpperCase() %>
+              </span>
+              <br>
+              <small class="text-white-50">Created <%= new Date(goal.createdAt).toLocaleDateString() %></small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Goal Details -->
+        <div class="col-lg-8">
+          <div class="card shadow" style="border-radius: 15px; border: none; background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);">
+            <div class="card-body p-4">
+              <!-- Progress Section -->
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h4 class="mb-0" style="color: #2c3e50; font-weight: 600;">
+                    <i class="fas fa-chart-line text-primary me-2"></i>Progress
+                  </h4>
+                  <div class="d-flex align-items-center gap-3">
+                    <span id="progressValue" class="fs-4 fw-bold" style="color: #667eea;"><%= goal.progress || 0 %>%</span>
+                    <button id="updateProgressBtn" class="btn btn-outline-primary btn-sm" style="border-radius: 20px;">Update</button>
+                  </div>
+                </div>
+                <div class="progress mb-3" style="height: 12px; border-radius: 6px;">
+                  <div id="progressBar" class="progress-bar" role="progressbar" style="width: <%= goal.progress || 0 %>%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 6px;" aria-valuenow="<%= goal.progress || 0 %>" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <!-- Progress Update Form (hidden by default) -->
+                <div id="progressUpdateForm" style="display: none;">
+                  <form id="progressForm" class="d-flex gap-2 align-items-center">
+                    <input type="range" class="form-range flex-grow-1" id="progressRange" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>">
+                    <input type="number" class="form-control" id="progressNumber" name="progress" min="0" max="100" value="<%= goal.progress || 0 %>" style="width: 80px; border-radius: 8px;">
+                    <button type="submit" class="btn btn-success btn-sm" style="border-radius: 20px;">Save</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="cancelProgressBtn" style="border-radius: 20px;">Cancel</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <% if (goal.description) { %>
+                <div class="mb-4">
+                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-file-alt text-primary me-2"></i>Description</h5>
+                  <p class="text-muted" style="line-height: 1.6;"><%= goal.description %></p>
+                </div>
+              <% } %>
+
+              <!-- Milestones -->
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-flag text-warning me-2"></i>Milestones</h5>
+                  <div>
+                    <button id="addMilestoneBtn" class="btn btn-outline-primary btn-sm" style="border-radius: 20px;">
+                      <i class="fas fa-plus me-1"></i>Add Milestone
+                    </button>
+                  </div>
+                </div>
+
+                <ul id="milestonesList" class="list-group list-group-flush">
+                  <% if (goal.milestones && goal.milestones.length > 0) { %>
+                    <% goal.milestones.forEach(function(ms, idx) { %>
+                      <li class="list-group-item d-flex align-items-center justify-content-between" data-index="<%= idx %>">
+                        <div class="d-flex align-items-center gap-3">
+                          <input class="form-check-input milestone-checkbox" type="checkbox" style="width: 18px; height: 18px;" <% if (ms.completed) { %>checked<% } %> />
+                          <div>
+                            <div class="milestone-title" contenteditable="false" data-original="<%= ms.title %>"><%= ms.title %></div>
+                            <% if (ms.dueDate) { %>
+                              <small class="text-muted">Due: <%= new Date(ms.dueDate).toLocaleDateString() %></small>
+                            <% } %>
+                          </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <button class="btn btn-sm btn-outline-secondary edit-milestone-btn" title="Edit milestone">Edit</button>
+                          <button class="btn btn-sm btn-outline-danger delete-milestone-btn" title="Delete milestone">Delete</button>
+                        </div>
+                      </li>
+                    <% }); %>
+                  <% } else { %>
+                    <li class="list-group-item text-muted">No milestones yet. Add one to break this goal into small steps.</li>
+                  <% } %>
+                </ul>
+
+                <!-- Add milestone form (hidden) -->
+                <div id="addMilestoneForm" class="mt-3" style="display: none;">
+                  <form id="addMilestone" class="d-flex gap-2">
+                    <input id="newMilestoneTitle" class="form-control" placeholder="Milestone title" required>
+                    <input id="newMilestoneDue" type="date" class="form-control" style="max-width: 180px;">
+                    <button class="btn btn-primary btn-sm" type="submit">Add</button>
+                    <button class="btn btn-secondary btn-sm" type="button" id="cancelAddMilestone">Cancel</button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Countdown & Meta -->
+              <div class="mb-4 d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1" style="color: #2c3e50; font-weight: 600;"><i class="fas fa-calendar-alt text-primary me-2"></i>Target Date</h6>
+                  <p class="mb-0 text-muted"><strong><%= new Date(goal.targetDate).toLocaleDateString() %></strong></p>
+                </div>
+                <div class="text-end">
+                  <div id="countdownBadge" class="badge fs-6 px-3 py-2">
+                    <!-- filled by JS -->
+                  </div>
+                  <div><small class="text-muted">Last updated <%= new Date(goal.updatedAt || goal.createdAt).toLocaleDateString() %></small></div>
+                </div>
+              </div>
+
+              <!-- AI Plan -->
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 style="color: #2c3e50; font-weight: 600;"><i class="fas fa-robot text-info me-2"></i>AI Study Plan</h5>
+                  <div>
+                    <button id="regeneratePlanBtn" class="btn btn-outline-info btn-sm" style="border-radius: 20px;">
+                      <i class="fas fa-sync-alt me-1"></i>Regenerate Plan
+                    </button>
+                  </div>
+                </div>
+
+                <div id="aiPlanContainer">
+                  <% if (goal.tips && goal.tips.length) { %>
+                    <h6 style="font-weight: 600;">Study Tips</h6>
+                    <ul class="list-group list-group-flush mb-3">
+                      <% goal.tips.forEach(function(tip) { %>
+                        <li class="list-group-item"><%= tip %></li>
+                      <% }) %>
+                    </ul>
+                  <% } %>
+
+                  <% if (goal.aiSuggestions && goal.aiSuggestions.length) { %>
+                    <h6 style="font-weight: 600;">Suggested Plan</h6>
+                    <ol class="ps-3">
+                      <% goal.aiSuggestions.forEach(function(step) { %>
+                        <li class="mb-2"><%= step %></li>
+                      <% }) %>
+                    </ol>
+                  <% } %>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex gap-2">
+                <a href="/task/<%= goal._id %>/edit" class="btn btn-outline-secondary">Edit</a>
+
+                <form id="markCompleteForm" class="d-inline">
+                  <button type="button" id="markCompleteBtn" class="btn btn-success">Mark Complete</button>
+                </form>
+
+                <form id="deleteForm" action="/task/<%= goal._id %>?_method=DELETE" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </div> <!-- card-body -->
+          </div> <!-- card -->
+        </div> <!-- col-lg-8 -->
+
+        <!-- Right Column: Quick Stats & AI Summary -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm p-3" style="border-radius: 15px;">
+            <div class="card-body">
+              <h6 class="mb-3" style="font-weight: 700; color: #2c3e50;"><i class="fas fa-info-circle me-2 text-primary"></i>Quick Stats</h6>
+              <div class="mb-3">
+                <small class="text-muted">Progress</small>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong><%= goal.progress || 0 %>%</strong>
+                  <small class="text-muted"><%= goal.status || 'in-progress' %></small>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <small class="text-muted">Priority</small>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong><%= goal.priority || 'medium' %></strong>
+                  <small class="text-muted">Difficulty: <%= goal.difficulty || 'medium' %></small>
+                </div>
+              </div>
+
+              <hr>
+
+              <% if (goal.motivation) { %>
+                <div class="mb-3">
+                  <h6 style="font-weight: 700;">Motivation</h6>
+                  <p class="mb-0 text-muted"><%= goal.motivation %></p>
+                </div>
+              <% } %>
+
+              <div class="mt-3">
+                <small class="text-muted">Created</small>
+                <div><strong><%= new Date(goal.createdAt).toLocaleDateString() %></strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional: compact AI summary card -->
+          <div class="card shadow-sm p-3 mt-3" style="border-radius: 15px;">
+            <div class="card-body">
+              <h6 style="font-weight: 700;">AI Snapshot</h6>
+              <% if (goal.aiSuggestions && goal.aiSuggestions.length) { %>
+                <p class="text-muted mb-2"><%= (goal.aiSuggestions[0].length > 120 ? goal.aiSuggestions[0].slice(0, 120) + '...' : goal.aiSuggestions[0]) %></p>
+                <a href="#aiPlanContainer" class="small">View full plan</a>
+              <% } else { %>
+                <p class="text-muted mb-2">No AI plan generated yet.</p>
+              <% } %>
+            </div>
+          </div>
+        </div> <!-- col-lg-4 -->
+      </div> <!-- row -->
+    </div> <!-- col-lg-10 -->
+  </div> <!-- row justify-center -->
+</div> <!-- container -->
+
+<script>
+  // Helper: get base endpoint for this goal
+  const TASK_ID = "<%= goal._id %>";
+  const API_BASE = `/task/${TASK_ID}`;
+
+  // ---------- Countdown ----------
+  (function initCountdown() {
+    const target = new Date("<%= goal.targetDate %>");
+    const now = new Date();
+    const diffMs = target - now;
+    const badge = document.getElementById('countdownBadge');
+
+    if (isNaN(target.getTime())) {
+      badge.className = 'badge bg-secondary';
+      badge.innerText = 'No target date';
+      return;
+    }
+
+    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (diffMs < 0) {
+      badge.className = 'badge bg-danger';
+      badge.innerText = `Overdue by ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''}`;
+      // also mark status UI if not completed
+      const status = document.getElementById('statusBadge');
+      if (status && status.innerText.toLowerCase() !== 'completed') {
+        status.className = 'badge fs-6 px-3 py-2 bg-danger';
+      }
+    } else if (days <= 3) {
+      badge.className = 'badge bg-warning text-dark';
+      badge.innerText = `Due in ${days} day${days !== 1 ? 's' : ''}`;
+    } else {
+      badge.className = 'badge bg-primary';
+      badge.innerText = `Due in ${days} day${days !== 1 ? 's' : ''}`;
+    }
+  })();
+
+  // ---------- Progress Update ----------
+  const updateBtn = document.getElementById('updateProgressBtn');
+  const progressFormWrapper = document.getElementById('progressUpdateForm');
+  const progressForm = document.getElementById('progressForm');
+  const progressRange = document.getElementById('progressRange');
+  const progressNumber = document.getElementById('progressNumber');
+  const progressValue = document.getElementById('progressValue');
+  const progressBar = document.getElementById('progressBar');
+  const cancelProgressBtn = document.getElementById('cancelProgressBtn');
+
+  function toggleProgressUpdate(show) {
+    progressFormWrapper.style.display = show ? 'block' : 'none';
+  }
+
+  updateBtn.addEventListener('click', () => toggleProgressUpdate(true));
+  cancelProgressBtn.addEventListener('click', () => toggleProgressUpdate(false));
+
+  // sync slider and number
+  progressRange.addEventListener('input', (e) => {
+    progressNumber.value = e.target.value;
+  });
+  progressNumber.addEventListener('input', (e) => {
+    let v = parseInt(e.target.value || 0, 10);
+    if (v < 0) v = 0;
+    if (v > 100) v = 100;
+    progressRange.value = v;
+  });
+
+  progressForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newProgress = parseInt(progressNumber.value, 10) || 0;
+
+    try {
+      const res = await fetch(`${API_BASE}/progress`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ progress: newProgress })
+      });
+      if (!res.ok) throw new Error('Failed to update progress');
+      const data = await res.json();
+
+      // Update UI
+      progressValue.innerText = `${data.progress}%`;
+      progressBar.style.width = `${data.progress}%`;
+      progressBar.setAttribute('aria-valuenow', data.progress);
+      toggleProgressUpdate(false);
+
+      // update status badge if server returned new status
+      if (data.status) {
+        const statusBadge = document.getElementById('statusBadge');
+        statusBadge.innerText = (data.status || '').replace('-', ' ').toUpperCase();
+        // adjust classes lightly
+        statusBadge.className = 'badge fs-6 px-3 py-2 ' + (data.status === 'completed' ? 'bg-success' : data.status === 'in-progress' ? 'bg-primary' : data.status === 'overdue' ? 'bg-danger' : 'bg-secondary');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Could not update progress. Check console for details.');
+    }
+  });
+
+  // ---------- Milestones (editable) ----------
+  const milestonesList = document.getElementById('milestonesList');
+  const addMilestoneBtn = document.getElementById('addMilestoneBtn');
+  const addMilestoneForm = document.getElementById('addMilestoneForm');
+  const addMilestoneEl = document.getElementById('addMilestone');
+  const newMilestoneTitle = document.getElementById('newMilestoneTitle');
+  const newMilestoneDue = document.getElementById('newMilestoneDue');
+  const cancelAddMilestone = document.getElementById('cancelAddMilestone');
+
+  addMilestoneBtn.addEventListener('click', () => {
+    addMilestoneForm.style.display = 'block';
+    addMilestoneBtn.style.display = 'none';
+    newMilestoneTitle.focus();
+  });
+
+  cancelAddMilestone.addEventListener('click', () => {
+    addMilestoneForm.style.display = 'none';
+    addMilestoneBtn.style.display = 'inline-block';
+    newMilestoneTitle.value = '';
+    newMilestoneDue.value = '';
+  });
+
+  // Add milestone submit
+  addMilestoneEl.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = newMilestoneTitle.value.trim();
+    const dueDate = newMilestoneDue.value || null;
+    if (!title) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/milestones`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, dueDate })
+      });
+      if (!res.ok) throw new Error('Failed to add milestone');
+      const data = await res.json();
+
+      // Re-render milestones list (simple approach: reload page or re-fetch partial)
+      // Here we'll simply reload to keep logic straightforward
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Could not add milestone.');
+    }
+  });
+
+  // Delegate milestone interactions (toggle, edit, delete)
+  milestonesList.addEventListener('click', async (e) => {
+    const li = e.target.closest('li[data-index]');
+    if (!li) return;
+    const index = parseInt(li.getAttribute('data-index'), 10);
+
+    // Toggle checkbox
+    if (e.target.classList.contains('milestone-checkbox')) {
+      const checked = e.target.checked;
+      try {
+        const res = await fetch(`${API_BASE}/milestones/toggle`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index, completed: checked })
+        });
+        if (!res.ok) throw new Error('Failed to toggle milestone');
+        const data = await res.json();
+        // optionally update partial UI
+        location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('Could not update milestone.');
+      }
+      return;
+    }
+
+    // Edit milestone
+    if (e.target.classList.contains('edit-milestone-btn')) {
+      const titleDiv = li.querySelector('.milestone-title');
+      const original = titleDiv.getAttribute('data-original') || titleDiv.innerText;
+      if (titleDiv.isContentEditable) {
+        // Save
+        const newTitle = titleDiv.innerText.trim();
+        titleDiv.contentEditable = "false";
+        e.target.innerText = 'Edit';
+        try {
+          const res = await fetch(`${API_BASE}/milestones`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ index, title: newTitle })
+          });
+          if (!res.ok) throw new Error('Failed to update milestone');
+          const data = await res.json();
+          location.reload();
+        } catch (err) {
+          console.error(err);
+          titleDiv.innerText = original;
+          alert('Could not save milestone.');
+        }
+      } else {
+        titleDiv.contentEditable = "true";
+        titleDiv.focus();
+        e.target.innerText = 'Save';
+      }
+      return;
+    }
+
+    // Delete milestone
+    if (e.target.classList.contains('delete-milestone-btn')) {
+      if (!confirm('Delete this milestone?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/milestones`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index })
+        });
+        if (!res.ok) throw new Error('Failed to delete milestone');
+        const data = await res.json();
+        location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('Could not delete milestone.');
+      }
+      return;
+    }
+  });
+
+  // ---------- Mark Complete ----------
+  const markCompleteBtn = document.getElementById('markCompleteBtn');
+  markCompleteBtn.addEventListener('click', async () => {
+    if (!confirm('Mark this task as completed?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/complete`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed', progress: 100 })
+      });
+      if (!res.ok) throw new Error('Failed to mark complete');
+      const data = await res.json();
+      // update UI and reload
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Could not mark complete.');
+    }
+  });
+
+  // ---------- Regenerate AI Plan ----------
+  const regenerateBtn = document.getElementById('regeneratePlanBtn');
+  regenerateBtn.addEventListener('click', async () => {
+    if (!confirm('Regenerate AI plan? This will overwrite existing AI suggestions.')) return;
+    try {
+      regenerateBtn.disabled = true;
+      regenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating...';
+
+      const res = await fetch(`${API_BASE}/generate-plan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: "<%= (goal.title || '').replace(/"/g, '\\"') %>",
+          subject: "<%= (goal.category || '').replace(/"/g, '\\"') %>",
+          type: "<%= (goal.type || '') %>",
+          dueDate: "<%= goal.targetDate %>",
+          priority: "<%= goal.priority || 'medium' %>",
+          difficulty: "<%= goal.difficulty || 'medium' %>",
+          description: "<%= (goal.description || '').replace(/"/g, '\\"') %>"
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to generate plan');
+      const data = await res.json();
+
+      // Best approach: reload to show new AI data from server
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Could not generate AI plan.');
+      regenerateBtn.disabled = false;
+      regenerateBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i>Regenerate Plan';
+    }
+  });
+</script>
+
+<style>
+  .milestone-title[contenteditable="true"] {
+    border-bottom: 1px dashed rgba(0,0,0,0.08);
+    padding-bottom: 2px;
+  }
+
+  .list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .milestone-title {
+    min-width: 180px;
+    max-width: 420px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 768px) {
+    .milestone-title { max-width: 220px; }
+  }
+</style>

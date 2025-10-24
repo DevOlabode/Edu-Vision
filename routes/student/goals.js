@@ -12,4 +12,6 @@ router.post('/', isLoggedIn, catchAsync(controller.savegoals));
 
 router.get('/', isLoggedIn, catchAsync(controller.allGoals));
 
+router.get('/:id', isLoggedIn, catchAsync(controller.showGoal))
+
 module.exports = router

@@ -49,7 +49,93 @@ module.exports.editForm = async(req, res) =>{
         res.redirect('/goals')
     }
 
-    res.render('student/goals//edit')
+    res.render('student/goals/edit')
 }
-//CANT ADD MILESTONE IN THE SHOW PAGE.
-// CHECK OUT THE SHOW PAGE.
+
+// API endpoints for functionality
+module.exports.updateProgress = async (req, res) => {
+    const { id } = req.params;
+    const { progress } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal) return res.status(404).json({ error: 'Goal not found' });
+
+    goal.progress = progress;
+    if (progress === 100) goal.status = 'completed';
+    await goal.save();
+
+    res.json({ progress: goal.progress, status: goal.status });
+};
+
+module.exports.addMilestone = async (req, res) => {
+    const { id } = req.params;
+    const { title, dueDate } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal) return res.status(404).json({ error: 'Goal not found' });
+
+    goal.milestones.push({ title, dueDate, completed: false });
+    await goal.save();
+
+    res.json({ milestones: goal.milestones });
+};
+
+module.exports.updateMilestone = async (req, res) => {
+    const { id } = req.params;
+    const { index, title } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal || !goal.milestones[index]) return res.status(404).json({ error: 'Milestone not found' });
+
+    goal.milestones[index].title = title;
+    await goal.save();
+
+    res.json({ milestones: goal.milestones });
+};
+
+module.exports.deleteMilestone = async (req, res) => {
+    const { id } = req.params;
+    const { index } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal || !goal.milestones[index]) return res.status(404).json({ error: 'Milestone not found' });
+
+    goal.milestones.splice(index, 1);
+    await goal.save();
+
+    res.json({ milestones: goal.milestones });
+};
+
+module.exports.toggleMilestone = async (req, res) => {
+    const { id } = req.params;
+    const { index, completed } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal || !goal.milestones[index]) return res.status(404).json({ error: 'Milestone not found' });
+
+    goal.milestones[index].completed = completed;
+    await goal.save();
+
+    res.json({ milestones: goal.milestones });
+};
+
+module.exports.markComplete = async (req, res) => {
+    const { id } = req.params;
+    const goal = await Goals.findById(id);
+    if (!goal) return res.status(404).json({ error: 'Goal not found' });
+
+    goal.status = 'completed';
+    goal.progress = 100;
+    await goal.save();
+
+    res.json({ status: goal.status, progress: goal.progress });
+};
+
+module.exports.regeneratePlan = async (req, res) => {
+    const { id } = req.params;
+    const { title, subject, type, dueDate, priority, difficulty, description } = req.body;
+    const goal = await Goals.findById(id);
+    if (!goal) return res.status(404).json({ error: 'Goal not found' });
+
+    const plan = await goalPlanner(description, title, subject, '', goal.milestones.map(m => m.title));
+    goal.tips = plan.studyTips;
+    goal.aiSuggestions = plan.suggestedPlan;
+    await goal.save();
+
+    res.json({ tips: goal.tips, aiSuggestions: goal.aiSuggestions });
+};

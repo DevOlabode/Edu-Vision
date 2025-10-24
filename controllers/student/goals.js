@@ -39,6 +39,17 @@ module.exports.showGoal = async(req, res)=>{
     }
 
     res.render('student/goals/show', { goal })
+};
+
+module.exports.editForm = async(req, res) =>{
+    const goal = await Goals.findById(req.params.id);
+
+    if(!goal) {
+        req.flash('error', 'Goal Not Found!')
+        res.redirect('/goals')
+    }
+
+    res.render('student/goals//edit')
 }
 //CANT ADD MILESTONE IN THE SHOW PAGE.
 // CHECK OUT THE SHOW PAGE.

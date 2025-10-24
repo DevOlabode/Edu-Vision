@@ -133,6 +133,12 @@ module.exports.delete = async(req, res)=>{
 
 module.exports.editForm = async(req, res)=>{
     const task = await Task.findById(req. params.id);
+
+    if(!task) {
+        req.flash('error', 'Task Not Found');
+        res.redirect('/task')
+    }
+    
     res.render('student/task/edit', { task })
 }
 

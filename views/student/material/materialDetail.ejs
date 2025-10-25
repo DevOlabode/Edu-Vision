@@ -1,6 +1,39 @@
 <% layout('layout/boilerplate.ejs') %>
 
 <div class="container mt-5 mb-5">
+  <!-- Chatbot Sidebar -->
+  <div id="chatbotSidebar" class="chatbot-sidebar">
+    <div class="chatbot-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="fas fa-robot me-2"></i>Study Assistant
+        </h5>
+        <button id="closeChatbot" class="btn btn-sm btn-outline-light">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages">
+      <div class="message bot-message">
+        <div class="message-content">
+          Hi! I'm your study assistant. Ask me any questions about this material!
+        </div>
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <div class="input-group">
+        <input type="text" id="chatbotInput" class="form-control" placeholder="Ask a question..." maxlength="200">
+        <button id="sendMessage" class="btn btn-primary">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Toggle Button -->
+  <button id="toggleChatbot" class="chatbot-toggle">
+    <i class="fas fa-comments"></i>
+  </button>
   <!-- Hero Header -->
   <div class="material-hero mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 25px; padding: 50px 40px; color: white; box-shadow: 0 20px 50px rgba(102, 126, 234, 0.4); position: relative; overflow: hidden;">
     <!-- Animated Background Elements -->
@@ -257,22 +290,122 @@
   transform: rotate(180deg);
 }
 
+/* Chatbot Styles */
+.chatbot-sidebar {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 350px;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+  z-index: 1050;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-sidebar.open {
+  right: 0;
+}
+
+.chatbot-header {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.chatbot-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.05);
+}
+
+.message {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.message.user-message {
+  justify-content: flex-end;
+}
+
+.message.bot-message {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.user-message .message-content {
+  background: #007bff;
+  color: white;
+}
+
+.bot-message .message-content {
+  background: rgba(255,255,255,0.9);
+  color: #333;
+}
+
+.chatbot-input {
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.chatbot-toggle {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-size: 24px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  z-index: 1049;
+  transition: all 0.3s ease;
+}
+
+.chatbot-toggle:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .material-hero {
     padding: 35px 25px !important;
   }
-  
+
   .material-hero h1 {
     font-size: 2rem !important;
   }
-  
+
   .section-card {
     margin-bottom: 30px;
   }
-  
+
   .flashcard-wrapper {
     height: 320px !important;
+  }
+
+  .chatbot-sidebar {
+    width: 100%;
+    right: -100%;
+  }
+
+  .chatbot-toggle {
+    right: 10px;
   }
 }
 </style>
@@ -392,6 +525,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
       container.appendChild(colDiv);
     });
+  }
+
+  // Chatbot functionality
+  const toggleChatbot = document.getElementById('toggleChatbot');
+  const chatbotSidebar = document.getElementById('chatbotSidebar');
+  const closeChatbot = document.getElementById('closeChatbot');
+  const chatbotInput = document.getElementById('chatbotInput');
+  const sendMessage = document.getElementById('sendMessage');
+  const chatbotMessages = document.getElementById('chatbotMessages');
+
+  // Toggle chatbot
+  toggleChatbot.addEventListener('click', function() {
+    chatbotSidebar.classList.toggle('open');
+  });
+
+  closeChatbot.addEventListener('click', function() {
+    chatbotSidebar.classList.remove('open');
+  });
+
+  // Send message
+  function sendChatMessage() {
+    const question = chatbotInput.value.trim();
+    if (!question) return;
+
+    // Add user message
+    addMessage(question, 'user');
+    chatbotInput.value = '';
+
+    // Show typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot-message';
+    typingDiv.innerHTML = `
+      <div class="message-content">
+        <i class="fas fa-circle-notch fa-spin me-2"></i>Thinking...
+      </div>
+    `;
+    chatbotMessages.appendChild(typingDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+    // Send to backend
+    fetch(`/materials/<%= material._id %>/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ question })
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Remove typing indicator
+      chatbotMessages.removeChild(typingDiv);
+
+      if (data.success) {
+        addMessage(data.answer, 'bot');
+      } else {
+        addMessage('Sorry, I couldn\'t process your question. Please try again.', 'bot');
+      }
+    })
+    .catch(error => {
+      console.error('Chat error:', error);
+      // Remove typing indicator
+      chatbotMessages.removeChild(typingDiv);
+      addMessage('Sorry, there was an error. Please try again later.', 'bot');
+    });
+  }
+
+  sendMessage.addEventListener('click', sendChatMessage);
+
+  chatbotInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendChatMessage();
+    }
+  });
+
+  function addMessage(text, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message`;
+    messageDiv.innerHTML = `
+      <div class="message-content">
+        ${text}
+      </div>
+    `;
+    chatbotMessages.appendChild(messageDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
   }
 });
 </script>

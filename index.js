@@ -83,7 +83,6 @@ app.use('/goals', goalRoutes)
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {
-    // console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
 
@@ -105,9 +104,6 @@ app.get('/auth/google/callback',
   }
 );
 
-
-
-
 app.all(/(.*)/, (req, res, next) => {
     next(new ExpressError('Page not found', 404))
 });
@@ -122,5 +118,5 @@ app.use((err, req, res, next)=>{
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    // console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

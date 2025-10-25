@@ -4,12 +4,12 @@ const cloudinary = require('../../config/cloudinary');
 const { google } = require('googleapis');
 
 const {summarizer} = require('../../AI/summarise')
+const {chatbot} = require('../../AI/chatbot')
 
 // Upload
 exports.upload = async (req, res) => {
     try {
         if (!req.file) {
-            // console.log('ERROR: No file uploaded');
             return res.status(400).json({
                 success: false,
                 error: 'No file uploaded'
@@ -17,10 +17,8 @@ exports.upload = async (req, res) => {
         }
 
         if (!req.body.title) {
-            // console.log('ERROR: No title provided');
             try {
                 await cloudinary.uploader.destroy(req.file.filename, { resource_type: 'auto' });
-                // console.log('Deleted file from Cloudinary due to missing title');
             } catch (deleteError) {
                 console.error('Error deleting file from Cloudinary:', deleteError);
             }
@@ -67,7 +65,6 @@ exports.upload = async (req, res) => {
         });
 
 
-        // Return response immediately
         res.status(201).json({
             success: true,
             material: {
@@ -328,6 +325,39 @@ exports.getFlashcards = async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to generate flashcards. Please try again later.'
+        });
+    }
+};
+
+// Chatbot
+exports.chat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { question } = req.body;
+
+        const material = await Material.findOne({
+            _id: id,
+            uploadedBy: req.user._id
+        });
+
+        if (!material) {
+            return res.status(404).json({
+                success: false,
+                error: 'Material not found'
+            });
+        }
+
+        const answer = await chatbot(question, material.content, material.summary);
+
+        res.json({
+            success: true,
+            answer: answer
+        });
+    } catch (error) {
+        console.error('Chat error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get answer. Please try again later.'
         });
     }
 };

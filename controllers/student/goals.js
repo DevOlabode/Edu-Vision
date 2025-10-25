@@ -53,7 +53,7 @@ module.exports.editForm = async(req, res) =>{
 };
 
 module.exports.edit = async(req, res)=>{
-    const {title, description, category, targetDate, progress, status, milestones, motivation} = req.body;
+    const {title, description, category, milestones, motivation} = req.body;
     const goal = await Goals.findById(req.params.id);
 
     if(!goal){

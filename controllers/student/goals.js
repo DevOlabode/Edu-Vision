@@ -16,6 +16,7 @@ module.exports.savegoals = async(req, res)=>{
         progress,
         status, 
         motivation,
+        milestones,
         createdBy : req.user._id,
         tips : plan.studyTips,
         aiSuggestions : plan.suggestedPlan

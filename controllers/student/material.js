@@ -331,7 +331,6 @@ exports.getFlashcards = async (req, res) => {
 
 // Chatbot
 exports.chat = async (req, res) => {
-    try {
         const { id } = req.params;
         const { question } = req.body;
 
@@ -353,13 +352,6 @@ exports.chat = async (req, res) => {
             success: true,
             answer: answer
         });
-    } catch (error) {
-        console.error('Chat error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to get answer. Please try again later.'
-        });
-    }
 };
 
 // Delete

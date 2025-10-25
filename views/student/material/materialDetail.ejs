@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
       loadMoreBtn.disabled = true;
       loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
 
-      fetch(`/materials/<%= material._id %>/flashcards?count=${flashcardsPerLoad}`)
+      fetch(`/api/materials/<%= material._id %>/flashcards?count=${flashcardsPerLoad}`)
         .then(res => res.json())
         .then(data => {
           if (data.success && Array.isArray(data.flashcards) && data.flashcards.length > 0) {
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 
     // Send to backend
-    fetch(`/materials/<%= material._id %>/chat`, {
+    fetch(`/api/materials/<%= material._id %>/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -585,7 +585,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => {
       console.error('Chat error:', error);
-      // Remove typing indicator
       chatbotMessages.removeChild(typingDiv);
       addMessage('Sorry, there was an error. Please try again later.', 'bot');
     });

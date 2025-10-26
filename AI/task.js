@@ -50,7 +50,7 @@ Description: ${description || "No description provided"}
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'openai/gpt-4o-mini', // or any model you prefer
+      model: 'gpt-5-2025-08-07',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
     });

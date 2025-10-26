@@ -13,7 +13,7 @@ module.exports.chatbot = async (question, content, summary) => {
   const messages = [
     {
       role: 'system',
-      content: `You are a helpful study assistant. BE a little friendly.  Answer questions about the material based on the provided content and summary. Be concise, accurate, and helpful for students.Do not return in markdonw or list. Just plain text`
+      content: `You are a helpful study assistant. A file as been uploaded and you are given the content and summary of the file.  Answer questions about the material based on the provided content and summary. Be concise, accurate, and helpful for students.Do not return in markdonw or list. Just plain text`
     },
     {
       role: 'user',

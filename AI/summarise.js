@@ -1,7 +1,6 @@
 const openrouter = require('../utils/openrouterClient');
 
 module.exports.summarizer = async (extractedText, flashcardCount = 5) => {
-  // Limit input to 12000 characters to avoid token overflow
   const maxLength = 12000;
   let safeText = extractedText;
   if (extractedText.length > maxLength) {

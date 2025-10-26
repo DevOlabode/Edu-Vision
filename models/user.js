@@ -9,6 +9,10 @@ const userSchema = new Schema({
         required : true,
         unique : true
     },
+    timezone : {
+        type : String,
+        required : true,
+    },
     firstName : {
         type : String,
         required : true
@@ -17,11 +21,11 @@ const userSchema = new Schema({
         type : String,
         required : true
     },
-    // username : {
-    //     type : String,
-    //     required : true,
-    //     unique : true
-    // },
+    username : {
+        type : String,
+        required : false,
+        unique : true
+    },
     bio : {
         type : String,
         required : false

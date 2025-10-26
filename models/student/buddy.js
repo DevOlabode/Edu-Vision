@@ -35,6 +35,9 @@ const BuddyMatchSchema = new Schema({
   },
   notes: {
     type: String
+  },
+  studyPreferences : {
+    
   }
 });
 

@@ -1,0 +1,213 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container-fluid mt-4">
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="welcome-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; color: white;">
+        <h1 class="mb-2">Welcome back, <%= currentUser.firstName %>! 👋</h1>
+        <p class="mb-0 opacity-75">Here's your progress overview</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Overview Cards -->
+  <div class="row g-4 mb-4">
+    <!-- Active Goals -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stat-card" style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="text-muted mb-0">Active Goals</h6>
+          <i class="fas fa-target fa-2x text-primary"></i>
+        </div>
+        <h2 class="mb-2"><%= stats.goals.active %></h2>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-bar bg-primary" style="width: <%= stats.goals.averageProgress %>%"></div>
+        </div>
+        <small class="text-muted"><%= stats.goals.averageProgress %>% average progress</small>
+      </div>
+    </div>
+
+    <!-- Pending Tasks -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stat-card" style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="text-muted mb-0">Pending Tasks</h6>
+          <i class="fas fa-tasks fa-2x text-warning"></i>
+        </div>
+        <h2 class="mb-2"><%= stats.tasks.pending %></h2>
+        <% if (stats.tasks.dueSoon > 0) { %>
+          <span class="badge bg-warning"><%= stats.tasks.dueSoon %> due soon</span>
+        <% } %>
+        <% if (stats.tasks.overdue > 0) { %>
+          <span class="badge bg-danger ms-1"><%= stats.tasks.overdue %> overdue</span>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Study Streak -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stat-card" style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="text-muted mb-0">Study Streak</h6>
+          <i class="fas fa-fire fa-2x text-danger"></i>
+        </div>
+        <h2 class="mb-2"><%= stats.activity.streak %> days</h2>
+        <small class="text-muted">Keep it going! 🔥</small>
+      </div>
+    </div>
+
+    <!-- Success Rate -->
+    <div class="col-xl-3 col-md-6">
+      <div class="stat-card" style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="text-muted mb-0">Success Rate</h6>
+          <i class="fas fa-trophy fa-2x text-success"></i>
+        </div>
+        <h2 class="mb-2"><%= stats.success.completionRate %>%</h2>
+        <small class="text-muted">Task completion rate</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Urgent Items Alert -->
+  <% if (urgentItems && urgentItems.length > 0) { %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="alert alert-danger" style="border-radius: 15px; border-left: 4px solid #dc3545;">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i>Urgent Items Require Attention!</h5>
+        <ul class="mb-0">
+          <% urgentItems.forEach(item => { %>
+            <li>
+              <strong><%= item.item.title %></strong> - <%= item.message %>
+              <a href="<%= item.action %>" class="btn btn-sm btn-outline-danger ms-2">Take Action</a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="row">
+    <!-- Left Column: Goals & Tasks -->
+    <div class="col-lg-8">
+      <!-- Goals Section -->
+      <div class="card mb-4" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: transparent; border-bottom: 2px solid #f0f0f0;">
+          <h5 class="mb-0"><i class="fas fa-target text-primary me-2"></i>Active Goals</h5>
+          <a href="/goals/new" class="btn btn-sm btn-primary">+ New Goal</a>
+        </div>
+        <div class="card-body">
+          <% if (goals && goals.length > 0) { %>
+            <% goals.filter(g => g.status === 'in-progress').slice(0, 3).forEach(goal => { %>
+              <div class="goal-item mb-3 p-3" style="border-left: 4px solid #667eea; background: #f8f9ff; border-radius: 10px;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="mb-0"><%= goal.title %></h6>
+                  <span class="badge bg-primary"><%= goal.progress %>%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar bg-primary" style="width: <%= goal.progress %>%"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">
+                    <i class="fas fa-calendar me-1"></i>
+                    Due: <%= new Date(goal.targetDate).toLocaleDateString() %>
+                  </small>
+                  <a href="/goals/<%= goal._id %>" class="btn btn-sm btn-outline-primary">View</a>
+                </div>
+              </div>
+            <% }) %>
+            <a href="/goals" class="btn btn-link">View All Goals →</a>
+          <% } else { %>
+            <p class="text-muted text-center py-4">No active goals. <a href="/goals/new">Create your first goal</a></p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Tasks Section -->
+      <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: transparent; border-bottom: 2px solid #f0f0f0;">
+          <h5 class="mb-0"><i class="fas fa-tasks text-warning me-2"></i>Upcoming Tasks</h5>
+          <a href="/task/new" class="btn btn-sm btn-warning">+ New Task</a>
+        </div>
+        <div class="card-body">
+          <% if (tasks && tasks.length > 0) { %>
+            <% tasks.filter(t => t.status !== 'completed').slice(0, 5).forEach(task => { %>
+              <div class="task-item mb-2 p-3" style="border-left: 4px solid <%= task.priority === 'high' ? '#dc3545' : task.priority === 'medium' ? '#ffc107' : '#28a745' %>; background: #f8f9fa; border-radius: 10px;">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1"><%= task.title %></h6>
+                    <small class="text-muted">
+                      <i class="fas fa-book me-1"></i><%= task.subject %> • 
+                      <i class="fas fa-calendar ms-2 me-1"></i><%= new Date(task.dueDate).toLocaleDateString() %>
+                    </small>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-<%= task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'success' %> mb-2">
+                      <%= task.priority %>
+                    </span>
+                    <br>
+                    <a href="/task/<%= task._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+            <a href="/task" class="btn btn-link">View All Tasks →</a>
+          <% } else { %>
+            <p class="text-muted text-center py-4">No pending tasks. <a href="/task/new">Create your first task</a></p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Quick Actions & Recent Materials -->
+    <div class="col-lg-4">
+      <!-- Quick Actions -->
+      <div class="card mb-4" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="card-header" style="background: transparent; border-bottom: 2px solid #f0f0f0;">
+          <h5 class="mb-0"><i class="fas fa-bolt text-warning me-2"></i>Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/upload" class="btn btn-outline-primary">
+              <i class="fas fa-upload me-2"></i>Upload Material
+            </a>
+            <a href="/task/new" class="btn btn-outline-warning">
+              <i class="fas fa-plus me-2"></i>Create Task
+            </a>
+            <a href="/goals/new" class="btn btn-outline-success">
+              <i class="fas fa-target me-2"></i>Set New Goal
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Materials -->
+      <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div class="card-header" style="background: transparent; border-bottom: 2px solid #f0f0f0;">
+          <h5 class="mb-0"><i class="fas fa-book text-info me-2"></i>Recent Materials</h5>
+        </div>
+        <div class="card-body">
+          <% if (materials && materials.length > 0) { %>
+            <% materials.forEach(material => { %>
+              <div class="material-item mb-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-file-<%= material.fileType === 'pdf' ? 'pdf' : 'alt' %> fa-2x text-primary me-3"></i>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-0" style="font-size: 0.9rem;"><%= material.title %></h6>
+                    <small class="text-muted"><%= material.fileType.toUpperCase() %></small>
+                  </div>
+                  <a href="/materials/<%= material._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                </div>
+              </div>
+            <% }) %>
+            <a href="/materials" class="btn btn-link btn-sm">View All →</a>
+          <% } else { %>
+            <p class="text-muted text-center py-3" style="font-size: 0.9rem;">No materials yet</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

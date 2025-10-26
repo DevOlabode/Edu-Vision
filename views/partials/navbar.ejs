@@ -23,6 +23,16 @@
         </li>
         <% if(currentUser){ %>
         <li class="nav-item">
+          <a class="nav-link nav-link-custom" href="/dashboard" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom" href="/goals" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
+            <i class="fas fa-bullseye me-2"></i>Goals
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link nav-link-custom" href="/upload" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
             <i class="fas fa-upload me-2"></i>Upload
           </a>
@@ -76,6 +86,38 @@
               </li>
 
               <!-- Menu Items -->
+              <li class="dropdown-section">
+                <a class="dropdown-item-enhanced dashboard-item" href="/dashboard">
+                  <div class="item-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                  </div>
+                  <div class="item-content">
+                    <div class="item-title">Dashboard</div>
+                    <div class="item-subtitle">View your progress overview</div>
+                  </div>
+                  <div class="item-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                </a>
+              </li>
+
+              <li class="dropdown-section">
+                <a class="dropdown-item-enhanced goals-item" href="/goals">
+                  <div class="item-icon">
+                    <i class="fas fa-bullseye"></i>
+                  </div>
+                  <div class="item-content">
+                    <div class="item-title">Goals</div>
+                    <div class="item-subtitle">Manage your learning goals</div>
+                  </div>
+                  <div class="item-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                </a>
+              </li>
+
+              <li class="dropdown-divider-enhanced"></li>
+
               <li class="dropdown-section">
                 <a class="dropdown-item-enhanced profile-item" href="/profile">
                   <div class="item-icon">
@@ -339,6 +381,11 @@
 .profile-item .item-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.goals-item .item-icon {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 
 .settings-item .item-icon {

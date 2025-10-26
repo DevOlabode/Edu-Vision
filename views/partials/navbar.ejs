@@ -22,7 +22,7 @@
           </a>
         </li>
         <% if(currentUser){ %>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link nav-link-custom" href="/dashboard" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
           </a>
@@ -31,7 +31,7 @@
           <a class="nav-link nav-link-custom" href="/goals" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
             <i class="fas fa-bullseye me-2"></i>Goals
           </a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link nav-link-custom" href="/upload" style="color: rgba(255,255,255,0.9); font-weight: 600; padding: 12px 20px; margin: 0 2px; border-radius: 25px; transition: all 0.3s ease;">
             <i class="fas fa-upload me-2"></i>Upload
@@ -156,7 +156,7 @@
                     <i class="fas fa-sign-out-alt"></i>
                   </div>
                   <div class="item-content">
-                    <div class="item-title">Logout</div>
+                    <div class="item-title" onclick="return confirm('Are You Sure You Want To Logout Your Account?')">Logout</div>
                     <div class="item-subtitle">Sign out of your account</div>
                   </div>
                   <div class="item-arrow">

@@ -28,7 +28,10 @@ const materialRoutes = require('./routes/student/material');
 const pagesRoutes = require('./routes/pages');
 const taskRoutes  = require('./routes/student/task');
 const goalRoutes = require('./routes/student/goals');
-const dashboardRoutes = require('./routes/student/dashboard')
+const dashboardRoutes = require('./routes/student/dashboard');
+const userRoutes = require('./routes/student/user');
+
+connectDB()
 
 app.use(express.urlencoded({extended : true}));
 
@@ -74,14 +77,13 @@ app.use((req, res, next)=>{
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-connectDB()
-
 app.use('/', authRoutes);
 app.use('/', pagesRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/task', taskRoutes);
 app.use('/goals', goalRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/', userRoutes)
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {

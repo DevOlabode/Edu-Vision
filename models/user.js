@@ -11,7 +11,7 @@ const userSchema = new Schema({
     },
     timezone : {
         type : String,
-        required : true,
+        required : false,
     },
     firstName : {
         type : String,

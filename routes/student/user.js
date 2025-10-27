@@ -10,4 +10,8 @@ router.get('/edit-profile', isLoggedIn, catchAsync(controller.editProfileForm))
 
 router.post('/edit-profile', isLoggedIn, catchAsync(controller.editProfile));
 
+router.get('/change-password', isLoggedIn,controller.changePasswordForm);
+
+router.post('/change-password', isLoggedIn, catchAsync(controller.changePassword))
+
 module.exports = router

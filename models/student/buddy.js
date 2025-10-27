@@ -36,9 +36,6 @@ const BuddyMatchSchema = new Schema({
   notes: {
     type: String
   },
-  studyPreferences : {
-    
-  }
 });
 
 module.exports = mongoose.model('BuddyMatch', BuddyMatchSchema);

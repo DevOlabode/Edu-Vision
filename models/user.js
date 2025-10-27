@@ -63,7 +63,17 @@ const userSchema = new Schema({
     grade: {
         type: String,
         required: false
-    }
+    },
+    studyPreferences : {
+        subject : [String],
+        availability : [String],
+        goals : String
+  },
+  buddyId : {
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        default : null
+  }
 }, { timestamps: true }
 );
 

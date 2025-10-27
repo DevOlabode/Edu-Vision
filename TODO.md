@@ -1,6 +1,7 @@
-# TODO: Add Edit Profile and Change Password to Profile Page
+# TODO: Add Study Preferences and Timezone to EditProfile Form
 
-## Tasks
-- [x] Create `views/auth/editProfile.ejs` - Form for editing user details (first name, last name, email, bio, role)
-- [x] Create `views/auth/changePassword.ejs` - Form for changing password (current, new, confirm)
-- [x] Update `views/auth/profile.ejs` - Add "Edit Profile" and "Change Password" buttons to Quick Actions section
+## Steps to Complete
+- [x] Add timezone select field to editProfile.ejs
+- [x] Add study preferences section to editProfile.ejs (subjects checkboxes, availability checkboxes, goals textarea)
+- [ ] Test the form to ensure data saves correctly to the user model
+- [ ] Verify that the updated fields display correctly on profile or other views

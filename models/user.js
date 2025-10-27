@@ -65,7 +65,7 @@ const userSchema = new Schema({
         required: false
     },
     studyPreferences : {
-        subject : [String],
+        subjects : [String],
         availability : [String],
         goals : String
   },

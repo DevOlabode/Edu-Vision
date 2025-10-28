@@ -128,6 +128,110 @@
               </select>
             </div>
 
+            <!-- Timezone -->
+            <div class="mb-4">
+              <label for="timezone" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                <i class="fas fa-globe me-2" style="color: #28a745;"></i>Timezone
+              </label>
+              <input type="text" class="form-control form-control-lg" id="timezone" name="timezone" list="timezoneList"
+                     style="border-radius: 12px; border: 2px solid #e9ecef; padding: 12px 16px; font-size: 1rem; transition: all 0.3s ease;"
+                     placeholder="Start typing to search timezones...">
+              <datalist id="timezoneList">
+                <option value="UTC-12:00 - Baker Island Time">
+                <option value="UTC-11:00 - Niue Time">
+                <option value="UTC-10:00 - Hawaii-Aleutian Standard Time">
+                <option value="UTC-09:00 - Alaska Standard Time">
+                <option value="UTC-08:00 - Pacific Standard Time">
+                <option value="UTC-07:00 - Mountain Standard Time">
+                <option value="UTC-06:00 - Central Standard Time">
+                <option value="UTC-05:00 - Eastern Standard Time">
+                <option value="UTC-04:00 - Atlantic Standard Time">
+                <option value="UTC-03:00 - Argentina Time">
+                <option value="UTC-02:00 - South Georgia Time">
+                <option value="UTC-01:00 - Azores Time">
+                <option value="UTC+00:00 - Greenwich Mean Time">
+                <option value="UTC+01:00 - Central European Time">
+                <option value="UTC+02:00 - Eastern European Time">
+                <option value="UTC+03:00 - Moscow Time">
+                <option value="UTC+04:00 - Gulf Standard Time">
+                <option value="UTC+05:00 - Pakistan Standard Time">
+                <option value="UTC+06:00 - Bangladesh Standard Time">
+                <option value="UTC+07:00 - Indochina Time">
+                <option value="UTC+08:00 - China Standard Time">
+                <option value="UTC+09:00 - Japan Standard Time">
+                <option value="UTC+10:00 - Australian Eastern Standard Time">
+                <option value="UTC+11:00 - Solomon Islands Time">
+                <option value="UTC+12:00 - Fiji Time">
+              </datalist>
+              <small style="color: #6c757d; font-size: 0.9rem; margin-top: 8px; display: block;">
+                <i class="fas fa-clock me-1"></i>Start typing to search and select your local timezone (optional)
+              </small>
+            </div>
+
+            <!-- Study Preferences -->
+            <div class="mb-4">
+              <label class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1rem; margin-bottom: 8px;">
+                <i class="fas fa-book me-2" style="color: #28a745;"></i>Study Preferences
+              </label>
+
+              <!-- Subjects -->
+              <div class="mb-3">
+                <label style="font-weight: 500; color: #2c3e50; font-size: 0.95rem; margin-bottom: 6px;">
+                  <i class="fas fa-list me-2" style="color: #28a745;"></i>Favorite Subjects
+                </label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  <% const subjects = ['Mathematics', 'Science', 'English', 'History', 'Geography', 'Art', 'Music', 'Physical Education', 'Computer Science', 'Languages']; %>
+                  <% subjects.forEach(subject => { %>
+                    <div class="form-check" style="flex: 1 1 180px;">
+                      <input class="form-check-input" type="checkbox" name="studyPreferences[subject]" value="<%= subject %>" id="register-subject-<%= subject.replace(/\s+/g, '-').toLowerCase() %>"
+                             style="transform: scale(1.1); margin-right: 6px;">
+                      <label class="form-check-label" for="register-subject-<%= subject.replace(/\s+/g, '-').toLowerCase() %>" style="font-size: 0.9rem; color: #495057;">
+                        <%= subject %>
+                      </label>
+                    </div>
+                  <% }); %>
+                </div>
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 6px; display: block;">
+                  <i class="fas fa-info-circle me-1"></i>Select subjects you're interested in (optional)
+                </small>
+              </div>
+
+              <!-- Availability -->
+              <div class="mb-3">
+                <label style="font-weight: 500; color: #2c3e50; font-size: 0.95rem; margin-bottom: 6px;">
+                  <i class="fas fa-calendar-alt me-2" style="color: #28a745;"></i>Study Availability
+                </label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  <% const availabilities = ['Weekdays Morning', 'Weekdays Afternoon', 'Weekdays Evening', 'Weekends Morning', 'Weekends Afternoon', 'Weekends Evening', 'Flexible']; %>
+                  <% availabilities.forEach(availability => { %>
+                    <div class="form-check" style="flex: 1 1 180px;">
+                      <input class="form-check-input" type="checkbox" name="studyPreferences[availability]" value="<%= availability %>" id="register-availability-<%= availability.replace(/\s+/g, '-').toLowerCase() %>"
+                             style="transform: scale(1.1); margin-right: 6px;">
+                      <label class="form-check-label" for="register-availability-<%= availability.replace(/\s+/g, '-').toLowerCase() %>" style="font-size: 0.9rem; color: #495057;">
+                        <%= availability %>
+                      </label>
+                    </div>
+                  <% }); %>
+                </div>
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 6px; display: block;">
+                  <i class="fas fa-clock me-1"></i>Select your preferred study times (optional)
+                </small>
+              </div>
+
+              <!-- Goals -->
+              <div class="mb-3">
+                <label for="studyGoals" style="font-weight: 500; color: #2c3e50; font-size: 0.95rem; margin-bottom: 6px;">
+                  <i class="fas fa-bullseye me-2" style="color: #28a745;"></i>Study Goals
+                </label>
+                <textarea class="form-control form-control-lg" id="studyGoals" name="studyPreferences[goals]" rows="2"
+                         style="border-radius: 12px; border: 2px solid #e9ecef; padding: 10px 14px; font-size: 0.95rem; transition: all 0.3s ease; background: rgba(40, 167, 69, 0.02); resize: vertical;"
+                         placeholder="Describe your study goals..."></textarea>
+                <small style="color: #6c757d; font-size: 0.85rem; margin-top: 6px; display: block;">
+                  <i class="fas fa-lightbulb me-1"></i>Share your learning objectives (optional)
+                </small>
+              </div>
+            </div>
+
             <!-- Password Fields Row -->
             <div class="row mb-4">
               <div class="col-md-6">

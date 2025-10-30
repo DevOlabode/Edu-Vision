@@ -30,7 +30,8 @@ const taskRoutes  = require('./routes/student/task');
 const goalRoutes = require('./routes/student/goals');
 const dashboardRoutes = require('./routes/student/dashboard');
 const userRoutes = require('./routes/student/user');
-const buddyMatchRoutes = require('./routes/student/buddyMatch')
+const buddyMatchRoutes = require('./routes/student/buddyMatch');
+const notificationRoutes = require('./routes/notifications');
 
 connectDB()
 
@@ -86,6 +87,7 @@ app.use('/goals', goalRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/', userRoutes);
 app.use('/', buddyMatchRoutes);
+// app.use('/api/notifications', notificationRoutes);
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {

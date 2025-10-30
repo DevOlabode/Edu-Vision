@@ -74,8 +74,7 @@ const userSchema = new Schema({
         ref : 'User',
         default : null
   }
-}, { timestamps: true }
-);
+}, { timestamps: true })
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 

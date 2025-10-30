@@ -1,4 +1,5 @@
 const Material = require('../models/student/material');
+const Notifications = require('../models/notification');
 
 exports.home = (req, res)=>{
     res.render('shared/home');
@@ -150,5 +151,16 @@ exports.materialDetail = async (req, res) => {
         console.error('Material detail error:', error);
         req.flash('error', 'Something went wrong');
         res.redirect('/materials');
+    }
+};
+
+exports.notifications = async (req, res) => {
+    try {
+        const notifications = await Notifications.find({ userId: req.user._id }).sort('-createdAt');
+        res.render('student/notifications', { notifications });
+    } catch (error) {
+        console.error('Notifications page error:', error);
+        req.flash('error', 'Something went wrong');
+        res.redirect('/');
     }
 };

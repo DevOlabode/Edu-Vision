@@ -14,6 +14,8 @@ router.get('/materials', isLoggedIn, pagesController.materials);
 
 router.get('/materials/:id', isLoggedIn, pagesController.materialDetail);
 
+router.get('/notifications', isLoggedIn, pagesController.notifications);
+
 router.delete('/materials/:id', isLoggedIn, materialController.delete);
 
 module.exports = router;

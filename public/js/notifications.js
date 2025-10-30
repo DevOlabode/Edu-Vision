@@ -104,12 +104,6 @@ class NotificationManager {
         badge.style.display = 'none';
       }
     }
-
-    // Update dropdown
-    const dropdown = document.getElementById('notificationDropdown');
-    if (dropdown) {
-      this.renderNotifications(dropdown);
-    }
   }
 
   renderNotifications(container) {

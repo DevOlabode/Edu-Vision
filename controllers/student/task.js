@@ -45,6 +45,18 @@ module.exports.newTask = async(req, res)=>{
         planner : plan
     });
     await task.save();
+
+    // Add at the end of newTask function
+    const notificationService = require('../../services/notificationService');
+    await notificationService.createNotification({
+    userId: req.user._id,
+    type: 'task',
+    title: '📝 New Task Created',
+    message: `Task "${task.title}" is due ${new Date(task.dueDate).toLocaleDateString()}`,
+    link: `/task/${task._id}`,
+    icon: '✨'
+    });
+
     req.flash('success', 'Task created successfully!');
     res.redirect('/task');
 };

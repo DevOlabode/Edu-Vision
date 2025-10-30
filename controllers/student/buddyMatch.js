@@ -20,7 +20,7 @@ async function findStudyBuddy(currentUserId) {
     buddyId: null,
     'studyPreferences.subjects': { $in: subjects },
     'studyPreferences.availability': { $in: availability },
-    timezone: timezone // simple match; can be enhanced with offset logic
+    timezone: timezone 
   });
 
   if (!candidates.length) return null;
@@ -32,7 +32,7 @@ async function findStudyBuddy(currentUserId) {
     userB: buddy._id,
     status: 'active',
     sharedGoals: [goals, buddy.studyPreferences.goals],
-    compatibilityScore: 85 // slightly higher for timezone match
+    compatibilityScore: 60
   });
 
   currentUser.buddyId = buddy._id;

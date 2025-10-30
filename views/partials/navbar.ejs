@@ -55,6 +55,23 @@
         </li>
       </ul>
 
+      <div class="notification-wrapper">
+        <button class="notification-bell" id="notificationBellBtn">
+          <i class="fas fa-bell"></i>
+          <span class="badge" id="notificationBadge" style="display: none;">0</span>
+        </button>
+        
+        <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+          <div class="notification-header">
+            <h6>Notifications</h6>
+            <!-- <button onclick="notificationManager.markAllAsRead()" class="btn-mark-all-read">Mark all read</button> -->
+          </div>
+          <div class="notification-list" id="notificationList">
+            <!-- Notifications will be rendered here -->
+          </div>
+        </div>
+  </div>
+
       <!-- User Actions -->
       <ul class="navbar-nav ms-auto">
         <% if(currentUser){ %>
@@ -182,6 +199,8 @@
     </div>
   </div>
 </nav>
+
+<script src="/js/notifications.js"></script>
 
 <style>
 .navbar-custom .nav-link-custom:hover {
@@ -511,3 +530,19 @@
   }
 }
 </style>
+
+<!-- <script>
+// Toggle notification dropdown
+document.getElementById('notificationBellBtn').addEventListener('click', () => {
+  const dropdown = document.getElementById('notificationDropdown');
+  dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const wrapper = document.querySelector('.notification-wrapper');
+  if (!wrapper.contains(e.target)) {
+    document.getElementById('notificationDropdown').style.display = 'none';
+  }
+});
+</script> -->

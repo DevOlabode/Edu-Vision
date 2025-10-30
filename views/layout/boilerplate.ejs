@@ -10,10 +10,6 @@
     <script>
         window.PUSHER_KEY = '<%= process.env.PUSHER_KEY %>';
         window.PUSHER_CLUSTER = '<%= process.env.PUSHER_CLUSTER %>';
-
-        if(currentUser){
-          window.currentUserId = `<%= currentUser._id %>`;
-        }
     </script>
 </head>
 <body>
@@ -25,6 +21,5 @@
 
     <script src="/js/validate-form.js"></script>
     <script src="/js/flashcard.js"></script>
-    <script src="/js/notifications.js"></script>
 </body>
 </html>

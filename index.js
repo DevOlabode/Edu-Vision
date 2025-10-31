@@ -87,7 +87,7 @@ app.use('/goals', goalRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/', userRoutes);
 app.use('/', buddyMatchRoutes);
-// app.use('/api/notifications', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Add middleware to log all API requests
 app.use('/api', (req, res, next) => {

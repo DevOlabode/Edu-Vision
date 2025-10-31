@@ -10,6 +10,7 @@
     <script>
         window.PUSHER_KEY = '<%= process.env.PUSHER_KEY %>';
         window.PUSHER_CLUSTER = '<%= process.env.PUSHER_CLUSTER %>';
+        window.currentUserId = '<%= currentUser ? currentUser._id : null %>';
     </script>
 </head>
 <body>

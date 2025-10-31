@@ -22,6 +22,17 @@ module.exports.savegoals = async(req, res)=>{
         aiSuggestions : plan.suggestedPlan
     });
     await goals.save();
+
+    // Add Notification After Creating A New Goal.
+
+    const notificationService = require('../../services/notificationService');
+    await notificationService.createNotification({
+        userId : req.user._id,
+        type : 'goals',
+        title : 'New Goal Created',
+        message : `${goals.title} Goal was created ${new Date(goals.createdAt).toLocaleDateString()}`,
+        link : `/goals/${goals._id}`,
+    })
     res.redirect('/goals')
 }
 

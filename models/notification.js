@@ -10,7 +10,7 @@ const notificationSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['material', 'task', 'goal', 'buddy', 'reminder', 'achievement', 'system'],
+    enum: ['material', 'task', 'goals', 'goal', 'buddy', 'reminder', 'achievement', 'system'],
     required: true
   },
   title: {

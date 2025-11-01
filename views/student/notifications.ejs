@@ -320,6 +320,7 @@ class NotificationsPage {
     const totalElement = document.getElementById('totalNotifications');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
     const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const unreadFilterBtn = document.querySelector('[data-filter="unread"]');
 
     // Update total count
     totalElement.textContent = this.notifications.length;
@@ -327,6 +328,18 @@ class NotificationsPage {
     // Check if there are unread notifications
     const hasUnread = this.notifications.some(n => !n.read);
     markAllReadBtn.style.display = hasUnread ? 'inline-block' : 'none';
+
+    // Hide/disable unread filter button if no unread notifications
+    if (unreadFilterBtn) {
+      if (hasUnread) {
+        unreadFilterBtn.style.display = 'inline-block';
+        unreadFilterBtn.disabled = false;
+        unreadFilterBtn.style.opacity = '1';
+        unreadFilterBtn.style.pointerEvents = 'auto';
+      } else {
+        unreadFilterBtn.style.display = 'none';
+      }
+    }
 
     if (this.notifications.length === 0) {
       container.innerHTML = `

@@ -8,18 +8,30 @@ module.exports.newForm = (req, res)=>{
 module.exports.savegoals = async(req, res)=>{
     const {title, description, category, targetDate, progress, status, milestones, motivation} = req.body;
     const plan = await goalPlanner(description, title, category,motivation,milestones);
+
+    // Handle fallback plan when AI credits are exhausted
+    let tips = plan.studyTips || [];
+    let aiSuggestions = plan.suggestedPlan || [];
+
+    if (plan.fallback) {
+        tips = plan.studyTips;
+        aiSuggestions = plan.suggestedPlan;
+        // You could add a flash message here to inform the user about the fallback
+        req.flash('info', 'AI goal planning is currently using a basic template. Full AI features will return when credits are restored.');
+    }
+
     const goals = new Goals({
         title,
         description,
-        category, 
+        category,
         targetDate,
         progress,
-        status, 
+        status,
         motivation,
         milestones,
         createdBy : req.user._id,
-        tips : plan.studyTips,
-        aiSuggestions : plan.suggestedPlan
+        tips : tips,
+        aiSuggestions : aiSuggestions
     });
     await goals.save();
 
@@ -74,12 +86,22 @@ module.exports.edit = async(req, res)=>{
 
     const plan = await goalPlanner(description, title, category,motivation,milestones);
 
-    const update = await Goals.findByIdAndUpdate(req.params.id, 
+    // Handle fallback plan when AI credits are exhausted
+    let tips = plan.studyTips || [];
+    let aiSuggestions = plan.suggestedPlan || [];
+
+    if (plan.fallback) {
+        tips = plan.studyTips;
+        aiSuggestions = plan.suggestedPlan;
+        req.flash('info', 'AI goal planning is currently using a basic template. Full AI features will return when credits are restored.');
+    }
+
+    const update = await Goals.findByIdAndUpdate(req.params.id,
         {
             ...req.body,
             createdBy : req.user._id,
-            tips : plan.studyTips,
-            aiSuggestion : plan.suggestedPlan
+            tips : tips,
+            aiSuggestions : aiSuggestions
         },
         {
             runValidators: true,
@@ -179,8 +201,18 @@ module.exports.regeneratePlan = async (req, res) => {
     if (!goal) return res.status(404).json({ error: 'Goal not found' });
 
     const plan = await goalPlanner(description, title, subject, '', goal.milestones.map(m => m.title));
-    goal.tips = plan.studyTips;
-    goal.aiSuggestions = plan.suggestedPlan;
+
+    // Handle fallback plan when AI credits are exhausted
+    let tips = plan.studyTips || [];
+    let aiSuggestions = plan.suggestedPlan || [];
+
+    if (plan.fallback) {
+        tips = plan.studyTips;
+        aiSuggestions = plan.suggestedPlan;
+    }
+
+    goal.tips = tips;
+    goal.aiSuggestions = aiSuggestions;
     await goal.save();
 
     res.json({ tips: goal.tips, aiSuggestions: goal.aiSuggestions });

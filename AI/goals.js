@@ -58,6 +58,34 @@ ${motivation}
 
   } catch (error) {
     console.error('Goal planner error:', error.response?.data || error.message);
-    return { error: 'Goal planning failed.' };
+
+    // Handle insufficient credits error
+    if (error.response?.status === 402 || error.response?.data?.error?.code === 402) {
+      return {
+        error: 'AI service temporarily unavailable due to insufficient credits. Please try again later or contact support.',
+        fallback: true,
+        overview: "Goal planning assistance is currently unavailable.",
+        suggestedPlan: [
+          "Step 1: Define your goal clearly - Deadline: Set a reasonable deadline",
+          "Step 2: Break down into smaller tasks - Deadline: Within 1 week",
+          "Step 3: Create a study schedule - Deadline: Within 2 weeks",
+          "Step 4: Gather necessary resources - Deadline: Within 3 weeks",
+          "Step 5: Start working on first milestone - Deadline: Within 4 weeks",
+          "Step 6: Review progress and adjust plan - Deadline: Ongoing"
+        ],
+        studyTips: [
+          "Set specific, measurable goals",
+          "Break large tasks into smaller, manageable steps",
+          "Create a consistent study schedule",
+          "Track your progress regularly",
+          "Stay motivated by celebrating small wins",
+          "Don't hesitate to ask for help when needed"
+        ],
+        estimatedTime: "Varies based on goal complexity",
+        motivation: "Remember that every expert was once a beginner. Stay consistent and you'll achieve your goals!"
+      };
+    }
+
+    return { error: 'Goal planning failed. Using basic template instead.', fallback: true };
   }
 };

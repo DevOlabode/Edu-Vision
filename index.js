@@ -33,7 +33,7 @@ const userRoutes = require('./routes/student/user');
 const buddyMatchRoutes = require('./routes/student/buddyMatch');
 const notificationRoutes = require('./routes/notifications');
 
-connectDB()
+connectDB();
 
 app.use(express.urlencoded({extended : true}));
 
@@ -89,12 +89,10 @@ app.use('/', userRoutes);
 app.use('/', buddyMatchRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Add middleware to log all API requests
 app.use('/api', (req, res, next) => {
     next();
 });
 
-// Google OAuth routes
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );

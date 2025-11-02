@@ -36,6 +36,12 @@ const BuddyMatchSchema = new Schema({
   notes: {
     type: String
   },
-});
+  status : {
+    type : String,
+    enum : ['pending', 'accepted', 'rejected'],
+    default : 'pending',
+    required : true
+  }
+}, {timestamps : true});
 
 module.exports = mongoose.model('BuddyMatch', BuddyMatchSchema);

@@ -42,6 +42,15 @@ exports.upload = async (req, res) => {
 
         await material.save();
 
+        const notificationService = require('../../services/notificationService');
+        await notificationService.createNotification({
+            userId : req.user._id,
+            type : 'material',
+            title : 'New Material Uploaded',
+            message : `Material ${material.title} uploaded on ${new Date(material.createdAt).toLocaleDateString()}`,
+            link : `materials/${material._id}`
+        })
+
         const materialId = material._id;
 
         setImmediate(async () => {

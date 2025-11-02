@@ -9,14 +9,12 @@ module.exports.savegoals = async(req, res)=>{
     const {title, description, category, targetDate, progress, status, milestones, motivation} = req.body;
     const plan = await goalPlanner(description, title, category,motivation,milestones);
 
-    // Handle fallback plan when AI credits are exhausted
     let tips = plan.studyTips || [];
     let aiSuggestions = plan.suggestedPlan || [];
 
     if (plan.fallback) {
         tips = plan.studyTips;
         aiSuggestions = plan.suggestedPlan;
-        // You could add a flash message here to inform the user about the fallback
         req.flash('info', 'AI goal planning is currently using a basic template. Full AI features will return when credits are restored.');
     }
 
@@ -34,8 +32,6 @@ module.exports.savegoals = async(req, res)=>{
         aiSuggestions : aiSuggestions
     });
     await goals.save();
-
-    // Add Notification After Creating A New Goal.
 
     const notificationService = require('../../services/notificationService');
     await notificationService.createNotification({
@@ -86,7 +82,6 @@ module.exports.edit = async(req, res)=>{
 
     const plan = await goalPlanner(description, title, category,motivation,milestones);
 
-    // Handle fallback plan when AI credits are exhausted
     let tips = plan.studyTips || [];
     let aiSuggestions = plan.suggestedPlan || [];
 

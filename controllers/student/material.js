@@ -35,7 +35,7 @@ exports.upload = async (req, res) => {
             fileName: req.file.originalname,
             fileType: fileType,
             fileSize: req.file.size,
-            cloudinaryId: req.file.filename, // This is the public_id
+            cloudinaryId: req.file.filename,
             uploadedBy: req.user._id,
             status: 'processing'
         });

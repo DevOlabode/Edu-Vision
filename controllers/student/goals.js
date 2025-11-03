@@ -31,6 +31,7 @@ module.exports.savegoals = async(req, res)=>{
         tips : tips,
         aiSuggestions : aiSuggestions
     });
+    
     await goals.save();
 
     const notificationService = require('../../services/notificationService');
@@ -45,7 +46,7 @@ module.exports.savegoals = async(req, res)=>{
 }
 
 module.exports.allGoals = async(req, res)=>{
-    const goals = await Goals.find();
+    const goals = await Goals.find({createdBy : req.user._id});
     res.render('student/goals/all', { goals })
 }
 

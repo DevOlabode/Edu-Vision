@@ -62,6 +62,9 @@ module.exports.findBuddy = async (req, res) => {
       return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
+    // Populate buddy information for frontend
+    await match.populate('userA userB', 'firstName lastName email studyPreferences');
+
     res.status(200).json({ message: 'Buddy Request Sent!', match });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -6,6 +6,10 @@ const catchAsync = require('../../utils/catchAsync');
 
 const controller = require('../../controllers/student/buddyMatch')
 
+router.get('/', isLoggedIn, (req, res) => {
+  res.render('buddyMatch/index', { title: 'Find Study Buddy' });
+});
+
 router.get('/match', isLoggedIn, catchAsync(controller.findBuddy))
 
 module.exports  = router

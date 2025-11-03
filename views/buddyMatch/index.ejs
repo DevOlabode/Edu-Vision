@@ -1,0 +1,325 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container-fluid mt-4">
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="welcome-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; color: white;">
+        <h1 class="mb-2">Find Your Study Buddy! 👥</h1>
+        <p class="mb-0 opacity-75">Connect with students who share your study preferences and goals</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Buddy Matching Card -->
+      <div class="card mb-4" style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div class="card-body p-5">
+          <!-- Current Preferences Display -->
+          <div class="mb-4">
+            <h4 class="mb-3"><i class="fas fa-user-cog text-primary me-2"></i>Your Study Preferences</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="preference-item mb-3">
+                  <strong>Subjects:</strong>
+                  <div class="mt-1">
+                    <% if (currentUser.studyPreferences && currentUser.studyPreferences.subjects) { %>
+                      <% currentUser.studyPreferences.subjects.forEach(subject => { %>
+                        <span class="badge bg-primary me-1"><%= subject %></span>
+                      <% }) %>
+                    <% } else { %>
+                      <span class="text-muted">No subjects set</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="preference-item mb-3">
+                  <strong>Availability:</strong>
+                  <div class="mt-1">
+                    <% if (currentUser.studyPreferences && currentUser.studyPreferences.availability) { %>
+                      <% currentUser.studyPreferences.availability.forEach(time => { %>
+                        <span class="badge bg-info me-1"><%= time %></span>
+                      <% }) %>
+                    <% } else { %>
+                      <span class="text-muted">No availability set</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="preference-item">
+                  <strong>Goals:</strong>
+                  <div class="mt-1">
+                    <% if (currentUser.studyPreferences && currentUser.studyPreferences.goals) { %>
+                      <p class="mb-0"><%= currentUser.studyPreferences.goals %></p>
+                    <% } else { %>
+                      <span class="text-muted">No goals set</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Find Buddy Button -->
+          <div class="text-center mb-4">
+            <button id="findBuddyBtn" class="btn btn-primary btn-lg" style="padding: 15px 40px; border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
+              <i class="fas fa-search me-2"></i>Find Study Buddy
+            </button>
+            <p class="text-muted mt-2">We'll match you with someone who shares your study interests!</p>
+          </div>
+
+          <!-- Loading Spinner (hidden by default) -->
+          <div id="loadingSpinner" class="text-center mb-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted mt-2">Finding your perfect study buddy...</p>
+          </div>
+
+          <!-- Match Result Container -->
+          <div id="matchResult" class="match-result" style="display: none;">
+            <!-- Success Match -->
+            <div id="matchSuccess" style="display: none;">
+              <div class="alert alert-success" style="border-radius: 15px; border: none; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                <h4 class="alert-heading"><i class="fas fa-check-circle me-2"></i>Buddy Request Sent!</h4>
+                <p class="mb-3">We've found a potential study buddy for you. Here's their information:</p>
+                <div class="buddy-card p-4" style="background: rgba(255,255,255,0.1); border-radius: 10px;">
+                  <div class="d-flex align-items-center mb-3">
+                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                      <i class="fas fa-user fa-2x" style="color: white;"></i>
+                    </div>
+                    <div>
+                      <h5 class="mb-1" id="buddyName"></h5>
+                      <p class="mb-0" id="buddyEmail"></p>
+                    </div>
+                  </div>
+                  <div class="buddy-details">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <strong>Shared Subjects:</strong>
+                        <div id="sharedSubjects" class="mt-1"></div>
+                      </div>
+                      <div class="col-md-6">
+                        <strong>Shared Availability:</strong>
+                        <div id="sharedAvailability" class="mt-1"></div>
+                      </div>
+                    </div>
+                    <div class="mt-3">
+                      <strong>Compatibility Score:</strong>
+                      <div class="progress mt-2" style="height: 8px;">
+                        <div id="compatibilityBar" class="progress-bar bg-white" style="width: 60%"></div>
+                      </div>
+                      <small class="text-white-50"><span id="compatibilityScore">60</span>% match</small>
+                    </div>
+                  </div>
+                </div>
+                <hr style="border-color: rgba(255,255,255,0.3);">
+                <p class="mb-0">They will receive your buddy request. If they accept, you'll be able to start studying together!</p>
+              </div>
+            </div>
+
+            <!-- No Match Found -->
+            <div id="noMatch" style="display: none;">
+              <div class="alert alert-warning" style="border-radius: 15px; border: none;">
+                <h4 class="alert-heading"><i class="fas fa-search me-2"></i>No Suitable Buddy Found</h4>
+                <p class="mb-3">We couldn't find a study buddy that matches your preferences right now.</p>
+                <div class="suggestions">
+                  <h6>Try these suggestions:</h6>
+                  <ul class="mb-0">
+                    <li>Update your study preferences to be more flexible</li>
+                    <li>Add more subjects or availability times</li>
+                    <li>Check back later as more students join</li>
+                  </ul>
+                </div>
+                <hr>
+                <div class="text-center">
+                  <a href="/profile" class="btn btn-outline-primary">Update Preferences</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="matchError" style="display: none;">
+              <div class="alert alert-danger" style="border-radius: 15px; border: none;">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Something Went Wrong</h4>
+                <p class="mb-0" id="errorMessage">Please try again later or contact support if the problem persists.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips Card -->
+      <div class="card" style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div class="card-body p-4">
+          <h5 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Buddy Matching Tips</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="tip-item mb-3">
+                <i class="fas fa-users text-primary me-2"></i>
+                <strong>Be specific:</strong> The more detailed your preferences, the better your match!
+              </div>
+              <div class="tip-item mb-3">
+                <i class="fas fa-clock text-info me-2"></i>
+                <strong>Timezone matters:</strong> We match based on compatible timezones.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="tip-item mb-3">
+                <i class="fas fa-handshake text-success me-2"></i>
+                <strong>Shared goals:</strong> Buddies with similar objectives study better together.
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-sync text-secondary me-2"></i>
+                <strong>Keep trying:</strong> If no match is found, update your preferences and try again.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.preference-item {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+}
+
+.match-result {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.buddy-card {
+  transition: transform 0.3s ease;
+}
+
+.buddy-card:hover {
+  transform: translateY(-2px);
+}
+
+.tip-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tip-item:last-child {
+  border-bottom: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4) !important;
+}
+
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite;
+}
+</style>
+
+<script>
+document.getElementById('findBuddyBtn').addEventListener('click', async function() {
+  const btn = this;
+  const spinner = document.getElementById('loadingSpinner');
+  const result = document.getElementById('matchResult');
+
+  // Hide previous results
+  result.style.display = 'none';
+  document.getElementById('matchSuccess').style.display = 'none';
+  document.getElementById('noMatch').style.display = 'none';
+  document.getElementById('matchError').style.display = 'none';
+
+  // Show loading
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Finding Buddy...';
+  spinner.style.display = 'block';
+
+  try {
+    const response = await fetch('/buddyMatch/match', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      if (data.match) {
+        // Show success with buddy info
+        displayMatchSuccess(data.match);
+      } else {
+        // No match found
+        document.getElementById('noMatch').style.display = 'block';
+      }
+    } else {
+      // Show error
+      document.getElementById('errorMessage').textContent = data.message || 'An error occurred';
+      document.getElementById('matchError').style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('errorMessage').textContent = 'Network error. Please try again.';
+    document.getElementById('matchError').style.display = 'block';
+  } finally {
+    // Hide loading
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-search me-2"></i>Find Study Buddy';
+    spinner.style.display = 'none';
+    result.style.display = 'block';
+  }
+});
+
+function displayMatchSuccess(match) {
+  const successDiv = document.getElementById('matchSuccess');
+  const buddyName = document.getElementById('buddyName');
+  const buddyEmail = document.getElementById('buddyEmail');
+  const sharedSubjects = document.getElementById('sharedSubjects');
+  const sharedAvailability = document.getElementById('sharedAvailability');
+  const compatibilityBar = document.getElementById('compatibilityBar');
+  const compatibilityScore = document.getElementById('compatibilityScore');
+
+  // Populate buddy info from match data
+  const buddy = match.userB;
+  buddyName.textContent = `${buddy.firstName} ${buddy.lastName}`;
+  buddyEmail.textContent = buddy.email;
+
+  // Display shared subjects
+  if (buddy.studyPreferences && buddy.studyPreferences.subjects) {
+    sharedSubjects.innerHTML = buddy.studyPreferences.subjects
+      .map(subject => `<span class="badge bg-primary me-1">${subject}</span>`)
+      .join('');
+  } else {
+    sharedSubjects.innerHTML = '<span class="text-muted">No subjects specified</span>';
+  }
+
+  // Display shared availability
+  if (buddy.studyPreferences && buddy.studyPreferences.availability) {
+    sharedAvailability.innerHTML = buddy.studyPreferences.availability
+      .map(time => `<span class="badge bg-info me-1">${time}</span>`)
+      .join('');
+  } else {
+    sharedAvailability.innerHTML = '<span class="text-muted">No availability specified</span>';
+  }
+
+  // Compatibility score
+  const score = match.compatibilityScore || 60;
+  compatibilityBar.style.width = score + '%';
+  compatibilityScore.textContent = score;
+
+  successDiv.style.display = 'block';
+}
+</script>

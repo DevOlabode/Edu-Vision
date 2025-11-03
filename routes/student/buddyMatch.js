@@ -6,9 +6,7 @@ const catchAsync = require('../../utils/catchAsync');
 
 const controller = require('../../controllers/student/buddyMatch')
 
-router.get('/buddy-match', isLoggedIn, (req, res) => {
-  res.render('buddyMatch/index', { title: 'Find Study Buddy' });
-});
+router.get('/buddy-match', isLoggedIn, controller.findMatch);
 
 router.post('/buddy-match', isLoggedIn, catchAsync(controller.findBuddy));
 

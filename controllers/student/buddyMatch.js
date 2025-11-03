@@ -52,6 +52,9 @@ async function findStudyBuddy(currentUserId) {
 
   return match;
 }
+module.ezports.findMatch = (req, res) => {
+  res.render('buddyMatch/index', { title: 'Find Study Buddy' });
+};
 
 module.exports.findBuddy = async (req, res) => {
   try {

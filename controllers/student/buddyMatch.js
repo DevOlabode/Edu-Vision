@@ -14,42 +14,56 @@ async function findStudyBuddy(currentUserId) {
 
   const { subjects, availability, goals } = studyPreferences;
 
-  // Match candidates with similar timezone (±1 hour offset)
+  // Extract timezone offset (e.g., "UTC+01:00" → 1)
+  const currentOffset = parseInt(timezone?.match(/[-+]\d+/)?.[0] || 0);
+
+  // Find candidates with similar timezone (±1 hour)
   const candidates = await User.find({
     _id: { $ne: currentUserId },
-    buddyId: null,
+    buddies: { $ne: currentUserId },
     'studyPreferences.subjects': { $in: subjects },
     'studyPreferences.availability': { $in: availability },
-    timezone: timezone 
+    timezone: { $in: [`UTC${currentOffset - 1}:00`, `UTC${currentOffset}:00`, `UTC${currentOffset + 1}:00`] }
   });
 
   if (!candidates.length) return null;
 
   const buddy = candidates[0];
 
+  // Check for existing match
+  const existingMatch = await BuddyMatch.findOne({
+    $or: [
+      { userA: currentUser._id, userB: buddy._id },
+      { userA: buddy._id, userB: currentUser._id }
+    ],
+    requestStatus: { $in: ['pending', 'accepted'] }
+  });
+
+  if (existingMatch) return null;
+
   const match = await BuddyMatch.create({
     userA: currentUser._id,
     userB: buddy._id,
-    status: 'active',
+    requestStatus: 'pending',
+    relationshipStatus: 'pending',
     sharedGoals: [goals, buddy.studyPreferences.goals],
     compatibilityScore: 60
   });
 
-  currentUser.buddyId = buddy._id;
-  buddy.buddyId = currentUser._id;
-  await currentUser.save();
-  await buddy.save();
-
   return match;
 }
 
-module.exports.findBuddy = async(req, res)=>{
+module.exports.findBuddy = async (req, res) => {
+  try {
     const userId = req.user._id;
-    const match  = await findStudyBuddy(userId);
+    const match = await findStudyBuddy(userId);
 
-    if(!match){
-        return res.status(404).json({message : 'No Suitable Buddy Found'})
+    if (!match) {
+      return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
-    res.json({message : 'Buddy Found!', match})
+    res.status(200).json({ message: 'Buddy Request Sent!', match });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };

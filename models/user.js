@@ -73,7 +73,12 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : 'User',
         default : null
-    }
+    },
+    buddies : [{
+        type : Schema.Types.ObjectId,
+        ref : 'User',
+        default : null
+    }]
 }, { timestamps: true })
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });

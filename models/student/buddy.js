@@ -1,6 +1,3 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-
 const BuddyMatchSchema = new Schema({
   userA: {
     type: Schema.Types.ObjectId,
@@ -16,7 +13,13 @@ const BuddyMatchSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  status: {
+  requestStatus: { 
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending',
+    required: true
+  },
+  relationshipStatus: { 
     type: String,
     enum: ['pending', 'active', 'ended'],
     default: 'pending'
@@ -35,13 +38,5 @@ const BuddyMatchSchema = new Schema({
   },
   notes: {
     type: String
-  },
-  status : {
-    type : String,
-    enum : ['pending', 'accepted', 'rejected'],
-    default : 'pending',
-    required : true
   }
-}, {timestamps : true});
-
-module.exports = mongoose.model('BuddyMatch', BuddyMatchSchema);
+}, { timestamps: true });

@@ -248,8 +248,8 @@ document.getElementById('findBuddyBtn').addEventListener('click', async function
   spinner.style.display = 'block';
 
   try {
-    const response = await fetch('/buddyMatch/match', {
-      method: 'GET',
+    const response = await fetch('/buddy-match', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       }

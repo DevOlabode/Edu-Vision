@@ -1,3 +1,6 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose
+
 const BuddyMatchSchema = new Schema({
   userA: {
     type: Schema.Types.ObjectId,

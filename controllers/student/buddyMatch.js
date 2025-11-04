@@ -8,15 +8,10 @@ const findStudyBuddy = async(currentUserId)=>{
   console.log(availability, subjects)
 
   const candidates = await User.find({
-    _id : {$ne : currentUserId},
+    // _id : {$ne : currentUserId},
     // buddies : { $ne : currentUserId},
     'studyPreferences.subjects' : {$in : subjects},
-    $or: [
-      { 'studyPreferences.availability': { $in: availability } },
-      { 'studyPreferences.availability': { $exists: false } },
-      { 'studyPreferences.availability': { $size: 0 } }
-    ],
-    'studyPreferences': { $exists: true }
+    // 'studyPreferences': { $exists: true }
   });
 
   if(!candidates.length) return null;
@@ -39,7 +34,7 @@ module.exports.findBuddy = async (req, res) => {
       return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
-    // await match.populate('userA userB', 'firstName lastName email studyPreferences');
+    // await match.populate('userA userB', 'firstName lastName email studyPreferences'); 
     console.log(candidates);
     res.status(200).send({ message: 'Buddy Request Sent!', candidates });
   } catch (err) {

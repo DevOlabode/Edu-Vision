@@ -67,7 +67,7 @@ const userSchema = new Schema({
     studyPreferences : {
         subjects : [String],
         availability : [String],
-        goals : String
+        goals : [String]
   },
   buddyId : {
         type : Schema.Types.ObjectId,

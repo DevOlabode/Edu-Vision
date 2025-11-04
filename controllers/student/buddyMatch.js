@@ -5,12 +5,18 @@ const findStudyBuddy = async(currentUserId)=>{
   const currentUser = await User.findById(currentUserId);
   const { studyPreferences } = currentUser
   const {goals, availability, subjects} = studyPreferences;
+  console.log(availability, subjects)
 
   const candidates = await User.find({
     _id : {$ne : currentUserId},
-    buddies : { $ne : currentUserId},
+    // buddies : { $ne : currentUserId},
     'studyPreferences.subjects' : {$in : subjects},
-    'studyPreferences.availability' : {$in : availability}
+    $or: [
+      { 'studyPreferences.availability': { $in: availability } },
+      { 'studyPreferences.availability': { $exists: false } },
+      { 'studyPreferences.availability': { $size: 0 } }
+    ],
+    'studyPreferences': { $exists: true }
   });
 
   if(!candidates.length) return null;

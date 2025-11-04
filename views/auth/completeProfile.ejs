@@ -25,6 +25,35 @@
         <div class="complete-profile-card-body" style="padding: 40px;">
           <form action="/complete-profile" method="POST" class="needs-validation" novalidate>
 
+            <!-- Password Section (for Google users) -->
+            <div class="mb-4">
+              <label for="password" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1.1rem; margin-bottom: 12px;">
+                <i class="fas fa-lock me-2" style="color: #667eea;"></i>Set Your Password
+              </label>
+              <input type="password" class="form-control form-control-lg" id="password" name="password" required
+                     style="border-radius: 15px; border: 2px solid #e9ecef; padding: 14px 20px; font-size: 1rem; transition: all 0.3s ease; background: rgba(102, 126, 234, 0.02);"
+                     placeholder="Create a secure password">
+              <div class="invalid-feedback" style="margin-top: 8px;">
+                Please provide a password.
+              </div>
+              <small style="color: #6c757d; font-size: 0.9rem; margin-top: 8px; display: block;">
+                <i class="fas fa-info-circle me-1"></i>This password will allow you to log in directly if needed.
+              </small>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1.1rem; margin-bottom: 12px;">
+                <i class="fas fa-lock me-2" style="color: #667eea;"></i>Confirm Password
+              </label>
+              <input type="password" class="form-control form-control-lg" id="confirmPassword" name="confirmPassword" required
+                     style="border-radius: 15px; border: 2px solid #e9ecef; padding: 14px 20px; font-size: 1rem; transition: all 0.3s ease; background: rgba(102, 126, 234, 0.02);"
+                     placeholder="Confirm your password">
+              <div class="invalid-feedback" style="margin-top: 8px;">
+                Please confirm your password.
+              </div>
+            </div>
+
             <!-- Bio Section -->
             <div class="mb-4">
               <label for="bio" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1.1rem; margin-bottom: 12px;">
@@ -243,6 +272,23 @@ document.getElementById('studentType').addEventListener('change', function() {
   } else {
     gradeDiv.style.display = 'none';
     grade.required = false;
+  }
+});
+
+// Password confirmation validation
+document.getElementById('confirmPassword').addEventListener('input', function() {
+  const password = document.getElementById('password').value;
+  const confirmPassword = this.value;
+  const feedback = this.parentNode.querySelector('.invalid-feedback');
+
+  if (confirmPassword && password !== confirmPassword) {
+    this.setCustomValidity('Passwords do not match');
+    feedback.textContent = 'Passwords do not match';
+    this.classList.add('is-invalid');
+  } else {
+    this.setCustomValidity('');
+    feedback.textContent = 'Please confirm your password.';
+    this.classList.remove('is-invalid');
   }
 });
 

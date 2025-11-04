@@ -112,8 +112,19 @@ module.exports.completeProfileForm = (req, res) => {
 };
 
 module.exports.completeProfile = async(req, res) => {
-    const { bio, role, studentType, grade, timezone, studyPreferences } = req.body;
+    const { password, confirmPassword, bio, role, studentType, grade, timezone, studyPreferences } = req.body;
+
+    if (password !== confirmPassword) {
+        req.flash('error', 'Passwords do not match.');
+        return res.redirect('/complete-profile');
+    }
+
     const user = await User.findById(req.user._id);
+
+    // Set password for Google OAuth users
+    if (password) {
+        await user.setPassword(password);
+    }
 
     user.bio = bio;
     user.role = role;

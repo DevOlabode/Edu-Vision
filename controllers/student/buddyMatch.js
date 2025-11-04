@@ -3,9 +3,6 @@ const BuddyMatch = require('../../models/student/buddy');
 
 async function findStudyBuddy(currentUserId) {
   const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    throw new Error('User not found');
-  }
 
   const { studyPreferences, timezone } = currentUser;
   if (!studyPreferences || !studyPreferences.subjects || !studyPreferences.availability || !studyPreferences.goals) {
@@ -80,7 +77,6 @@ module.exports.findBuddy = async (req, res) => {
       return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
-    // Populate buddy information for frontend
     await match.populate('userA userB', 'firstName lastName email studyPreferences');
 
     res.status(200).json({ message: 'Buddy Request Sent!', match });

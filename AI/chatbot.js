@@ -29,7 +29,7 @@ module.exports.chatbot = async (question, content, summary) => {
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
+      model: 'google/gemini-2.0-flash-exp:free',
       messages,
       temperature: 0.7,
       max_tokens: 300

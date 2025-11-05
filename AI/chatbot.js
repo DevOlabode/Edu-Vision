@@ -29,7 +29,7 @@ module.exports.chatbot = async (question, content, summary) => {
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'minimax/minimax-m2:free',
       messages,
       temperature: 0.7,
       max_tokens: 300

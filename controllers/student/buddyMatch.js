@@ -16,7 +16,7 @@ const findStudyBuddy = async(currentUserId)=>{
 
   if(!candidates.length) return null;
 
-  return candidates
+  return candidates;
 }
 
 module.exports.findStudyBuddy = findStudyBuddy;

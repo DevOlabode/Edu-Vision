@@ -21,11 +21,10 @@ const userSchema = new Schema({
         type : String,
         required : true
     },
-    username : {
-        type : String,
-        required : false,
-        unique : true
-    },
+    // username : {
+    //     type : String,
+    //     required : false,
+    // },
     bio : {
         type : String,
         required : false

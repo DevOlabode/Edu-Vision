@@ -1,7 +1,5 @@
-// chatbot/chatbotService.js
 const openrouter = require('../utils/openrouterClient');
 
-// Helper function to trim long text inputs
 const getRecentSlice = (text, maxLength = 4000) => {
   return text.length > maxLength ? text.slice(-maxLength) : text;
 };
@@ -31,7 +29,7 @@ module.exports.chatbot = async (question, content, summary) => {
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'tngtech/deepseek-r1t2-chimera:free',
+      model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
       messages,
       temperature: 0.7,
       max_tokens: 300

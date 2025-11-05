@@ -10,7 +10,7 @@ module.exports.summarizer = async (extractedText, flashcardCount = 5) => {
 You are an academic assistant helping students study efficiently. Given the following document content, summarize it into clear, concise study notes.
 Highlight key concepts, definitions, and important facts. Use bullet points and simple language suitable for a high school or university student.
 At the end, generate ${flashcardCount} flashcards based on the content. Format flashcards as Q&A pairs, clearly separated from the notes.
-
+Make flashcard questions direct and answers accurate but brief.
 Document:
 ${safeText}
   `;

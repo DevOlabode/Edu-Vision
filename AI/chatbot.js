@@ -31,7 +31,7 @@ module.exports.chatbot = async (question, content, summary) => {
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'openai/gpt-3.5-turbo',
+      model: 'minimax/minimax-m2:free',
       messages,
       temperature: 0.7,
       max_tokens: 300

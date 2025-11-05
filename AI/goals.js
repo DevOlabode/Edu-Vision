@@ -36,7 +36,7 @@ ${motivation}
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'openai/gpt-3.5-turbo',
+      model: 'minimax/minimax-m2:free',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7
     });

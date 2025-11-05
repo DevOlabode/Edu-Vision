@@ -25,6 +25,22 @@
         <div class="complete-profile-card-body" style="padding: 40px;">
           <form action="/complete-profile" method="POST" class="needs-validation" novalidate>
 
+            <!-- Username Section (for Google users) -->
+            <div class="mb-4">
+              <label for="username" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1.1rem; margin-bottom: 12px;">
+                <i class="fas fa-user me-2" style="color: #667eea;"></i>Choose Your Username
+              </label>
+              <input type="text" class="form-control form-control-lg" id="username" name="username" required
+                     style="border-radius: 15px; border: 2px solid #e9ecef; padding: 14px 20px; font-size: 1rem; transition: all 0.3s ease; background: rgba(102, 126, 234, 0.02);"
+                     placeholder="Enter a unique username" pattern="[a-zA-Z0-9_]{3,20}" maxlength="20">
+              <div class="invalid-feedback" style="margin-top: 8px;">
+                Username must be 3-20 characters long and contain only letters, numbers, and underscores.
+              </div>
+              <small style="color: #6c757d; font-size: 0.9rem; margin-top: 8px; display: block;">
+                <i class="fas fa-info-circle me-1"></i>This will be your unique identifier on EduVision AI.
+              </small>
+            </div>
+
             <!-- Password Section (for Google users) -->
             <div class="mb-4">
               <label for="password" class="form-label" style="font-weight: 600; color: #2c3e50; font-size: 1.1rem; margin-bottom: 12px;">

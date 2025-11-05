@@ -112,16 +112,24 @@ module.exports.completeProfileForm = (req, res) => {
 };
 
 module.exports.completeProfile = async(req, res) => {
-    const { password, confirmPassword, bio, role, studentType, grade, timezone, studyPreferences } = req.body;
+    const { username, password, confirmPassword, bio, role, studentType, grade, timezone, studyPreferences } = req.body;
 
     if (password !== confirmPassword) {
         req.flash('error', 'Passwords do not match.');
         return res.redirect('/complete-profile');
     }
 
+    // Check if username is unique
+    const existingUser = await User.findOne({ username: username });
+    if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+        req.flash('error', 'Username is already taken. Please choose a different one.');
+        return res.redirect('/complete-profile');
+    }
+
     const user = await User.findById(req.user._id);
 
-    // Set password for Google OAuth users
+    // Set username and password for Google OAuth users
+    user.username = username;
     if (password) {
         await user.setPassword(password);
     }

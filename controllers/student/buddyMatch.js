@@ -8,10 +8,10 @@ const findStudyBuddy = async(currentUserId)=>{
   console.log(availability, subjects)
 
   const candidates = await User.find({
-    // _id : {$ne : currentUserId},
-    // buddies : { $ne : currentUserId},
+    _id : {$ne : currentUserId},
+    buddies : { $ne : currentUserId},
     'studyPreferences.subjects' : {$in : subjects},
-    // 'studyPreferences': { $exists: true }
+    'studyPreferences': { $exists: true }
   });
 
   if(!candidates.length) return null;

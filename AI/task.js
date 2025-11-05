@@ -50,7 +50,7 @@ Description: ${description || "No description provided"}
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'gpt-5-2025-08-07',
+      model: 'minimax/minimax-m2:free',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
     });

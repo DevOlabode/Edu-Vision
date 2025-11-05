@@ -86,40 +86,13 @@
             <!-- Success Match -->
             <div id="matchSuccess" style="display: none;">
               <div class="alert alert-success" style="border-radius: 15px; border: none; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
-                <h4 class="alert-heading"><i class="fas fa-check-circle me-2"></i>Buddy Request Sent!</h4>
-                <p class="mb-3">We've found a potential study buddy for you. Here's their information:</p>
-                <div class="buddy-card p-4" style="background: rgba(255,255,255,0.1); border-radius: 10px;">
-                  <div class="d-flex align-items-center mb-3">
-                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                      <i class="fas fa-user fa-2x" style="color: white;"></i>
-                    </div>
-                    <div>
-                      <h5 class="mb-1" id="buddyName"></h5>
-                      <p class="mb-0" id="buddyEmail"></p>
-                    </div>
-                  </div>
-                  <div class="buddy-details">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <strong>Shared Subjects:</strong>
-                        <div id="sharedSubjects" class="mt-1"></div>
-                      </div>
-                      <div class="col-md-6">
-                        <strong>Shared Availability:</strong>
-                        <div id="sharedAvailability" class="mt-1"></div>
-                      </div>
-                    </div>
-                    <div class="mt-3">
-                      <strong>Compatibility Score:</strong>
-                      <div class="progress mt-2" style="height: 8px;">
-                        <div id="compatibilityBar" class="progress-bar bg-white" style="width: 60%"></div>
-                      </div>
-                      <small class="text-white-50"><span id="compatibilityScore">60</span>% match</small>
-                    </div>
-                  </div>
+                <h4 class="alert-heading"><i class="fas fa-check-circle me-2"></i>Potential Study Buddies Found!</h4>
+                <p class="mb-3">We've found some potential study buddies for you. Here are the candidates:</p>
+                <div id="candidatesContainer" class="row">
+                  <!-- Candidate cards will be populated here -->
                 </div>
                 <hr style="border-color: rgba(255,255,255,0.3);">
-                <p class="mb-0">They will receive your buddy request. If they accept, you'll be able to start studying together!</p>
+                <p class="mb-0">Click "Send Request" on any buddy to connect. If they accept, you'll be able to start studying together!</p>
               </div>
             </div>
 
@@ -258,9 +231,9 @@ document.getElementById('findBuddyBtn').addEventListener('click', async function
     const data = await response.json();
 
     if (response.ok) {
-      if (data.match) {
-        // Show success with buddy info
-        displayMatchSuccess(data.match);
+      if (data.candidates && data.candidates.length > 0) {
+        // Show success with candidates
+        displayCandidates(data.candidates);
       } else {
         // No match found
         document.getElementById('noMatch').style.display = 'block';
@@ -283,43 +256,106 @@ document.getElementById('findBuddyBtn').addEventListener('click', async function
   }
 });
 
-function displayMatchSuccess(match) {
+function displayCandidates(candidates) {
   const successDiv = document.getElementById('matchSuccess');
-  const buddyName = document.getElementById('buddyName');
-  const buddyEmail = document.getElementById('buddyEmail');
-  const sharedSubjects = document.getElementById('sharedSubjects');
-  const sharedAvailability = document.getElementById('sharedAvailability');
-  const compatibilityBar = document.getElementById('compatibilityBar');
-  const compatibilityScore = document.getElementById('compatibilityScore');
+  const container = document.getElementById('candidatesContainer');
+  container.innerHTML = ''; // Clear previous content
 
-  // Populate buddy info from match data
-  const buddy = match.userB;
-  buddyName.textContent = `${buddy.firstName} ${buddy.lastName}`;
-  buddyEmail.textContent = buddy.email;
+  candidates.forEach(candidate => {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'col-md-6 mb-3';
 
-  // Display shared subjects
-  if (buddy.studyPreferences && buddy.studyPreferences.subjects) {
-    sharedSubjects.innerHTML = buddy.studyPreferences.subjects
-      .map(subject => `<span class="badge bg-primary me-1">${subject}</span>`)
-      .join('');
-  } else {
-    sharedSubjects.innerHTML = '<span class="text-muted">No subjects specified</span>';
-  }
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'buddy-card p-3';
+    cardDiv.style.background = 'rgba(255,255,255,0.1)';
+    cardDiv.style.borderRadius = '10px';
 
-  // Display shared availability
-  if (buddy.studyPreferences && buddy.studyPreferences.availability) {
-    sharedAvailability.innerHTML = buddy.studyPreferences.availability
-      .map(time => `<span class="badge bg-info me-1">${time}</span>`)
-      .join('');
-  } else {
-    sharedAvailability.innerHTML = '<span class="text-muted">No availability specified</span>';
-  }
+    cardDiv.innerHTML = `
+      <div class="d-flex align-items-center mb-3">
+        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+          <i class="fas fa-user fa-lg" style="color: white;"></i>
+        </div>
+        <div>
+          <h6 class="mb-1" style="color: white;">${candidate.firstName} ${candidate.lastName}</h6>
+          <p class="mb-0 small" style="color: rgba(255,255,255,0.8);">${candidate.email}</p>
+        </div>
+      </div>
+      <div class="buddy-details mb-3">
+        <div class="row">
+          <div class="col-12 mb-2">
+            <strong style="color: white;">Shared Subjects:</strong>
+            <div class="mt-1">
+              ${candidate.studyPreferences && candidate.studyPreferences.subjects ?
+                candidate.studyPreferences.subjects.map(subject => `<span class="badge bg-primary me-1">${subject}</span>`).join('') :
+                '<span class="text-muted small">No subjects specified</span>'}
+            </div>
+          </div>
+          <div class="col-12">
+            <strong style="color: white;">Shared Availability:</strong>
+            <div class="mt-1">
+              ${candidate.studyPreferences && candidate.studyPreferences.availability ?
+                candidate.studyPreferences.availability.map(time => `<span class="badge bg-info me-1">${time}</span>`).join('') :
+                '<span class="text-muted small">No availability specified</span>'}
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-light btn-sm w-100 sendRequestBtn" data-user-id="${candidate._id}">
+        <i class="fas fa-paper-plane me-1"></i>Send Request
+      </button>
+    `;
 
-  // Compatibility score
-  const score = match.compatibilityScore || 60;
-  compatibilityBar.style.width = score + '%';
-  compatibilityScore.textContent = score;
+    colDiv.appendChild(cardDiv);
+    container.appendChild(colDiv);
+  });
+
+  // Add event listeners to send request buttons
+  document.querySelectorAll('.sendRequestBtn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const userId = this.getAttribute('data-user-id');
+      await sendBuddyRequest(userId, this);
+    });
+  });
 
   successDiv.style.display = 'block';
+}
+
+async function sendBuddyRequest(userId, button) {
+  button.disabled = true;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
+
+  try {
+    const response = await fetch('/buddy-match/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ buddyId: userId })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      button.className = 'btn btn-success btn-sm w-100';
+      button.innerHTML = '<i class="fas fa-check me-1"></i>Request Sent!';
+    } else {
+      button.className = 'btn btn-danger btn-sm w-100';
+      button.innerHTML = '<i class="fas fa-times me-1"></i>Failed';
+      setTimeout(() => {
+        button.disabled = false;
+        button.className = 'btn btn-light btn-sm w-100';
+        button.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send Request';
+      }, 2000);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    button.className = 'btn btn-danger btn-sm w-100';
+    button.innerHTML = '<i class="fas fa-times me-1"></i>Failed';
+    setTimeout(() => {
+      button.disabled = false;
+      button.className = 'btn btn-light btn-sm w-100';
+      button.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send Request';
+    }, 2000);
+  }
 }
 </script>

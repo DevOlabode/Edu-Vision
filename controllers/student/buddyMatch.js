@@ -30,11 +30,11 @@ module.exports.findBuddy = async (req, res) => {
     const userId = req.user._id;
     const candidates = await findStudyBuddy(userId);
 
-    if (!candidates) {
+    if (!candidates || candidates.length === 0) {
       return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
-    // await match.populate('userA userB', 'firstName lastName email studyPreferences'); 
+    // await match.populate('userA userB', 'firstName lastName email studyPreferences');
     console.log(candidates);
     res.status(200).send({ message: 'Buddy Request Sent!', candidates });
   } catch (err) {

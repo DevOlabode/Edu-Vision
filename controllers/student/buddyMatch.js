@@ -5,13 +5,13 @@ const findStudyBuddy = async(currentUserId)=>{
   const currentUser = await User.findById(currentUserId);
   const { studyPreferences } = currentUser
   const {goals, availability, subjects} = studyPreferences;
-  // console.log(availability, subjects)
 
   const candidates = await User.find({
     _id : {$ne : currentUserId},
     buddies : { $ne : currentUserId},
     'studyPreferences.subjects' : {$in : subjects},
-    'studyPreferences': { $exists: true }
+    'studyPreferences': { $exists: true },
+    'studyPreferences.availability': { $in: availability },
   });
 
   if(!candidates.length) return null;
@@ -22,7 +22,7 @@ const findStudyBuddy = async(currentUserId)=>{
 module.exports.findStudyBuddy = findStudyBuddy;
 
 module.exports.findMatch = (req, res) => {
-  res.render('buddyMatch/index', { title: 'Find Study Buddy' });
+  res.render('student/buddyMatch/index', { title: 'Find Study Buddy' });
 };
 
 module.exports.findBuddy = async (req, res) => {
@@ -38,6 +38,14 @@ module.exports.findBuddy = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
+
+const getSharedGoals = (sender, receiver) => {
+  const senderGoals = sender.studyPreferences?.goals || [];
+  const receiverGoals = receiver.studyPreferences?.goals || [];
+
+  const sharedGoals = senderGoals.filter(goal => receiverGoals.includes(goal));
+  return sharedGoals;
 };
 
 module.exports.sendBuddyRequest = async (req, res) => {
@@ -56,6 +64,8 @@ module.exports.sendBuddyRequest = async (req, res) => {
     ]
   });
 
+  const sharedGoals = getSharedGoals(senderId, receiverId);
+
   if(existingRequest){
     req.flash('error', 'Buddy Request Already Sent or Received');
     return res.redirect('/student/buddy-match');
@@ -67,8 +77,13 @@ module.exports.sendBuddyRequest = async (req, res) => {
     requestStatus: 'pending',
     relationshipStatus: 'pending',
     compatibilityScore: Math.floor(Math.random() * 101),
-    sharedGoals: [],
-    notes: '',
+    sharedGoals: sharedGoals,
     matchedOn: new Date()
-  })
+  });
+
+  await newRequest.save();
+  console.log(newRequest);
+
+  req.flash('success', 'Buddy Request Sent Successfully');
+  res.redirect('/student/buddy-match');
 };

@@ -35,9 +35,6 @@ const BuddyMatchSchema = new Schema({
   sharedGoals: {
     type: [String],
     default: []
-  },
-  lastInteraction: {
-    type: Date
   }
 }, { timestamps: true });
 

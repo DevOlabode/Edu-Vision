@@ -325,19 +325,21 @@ async function sendBuddyRequest(userId, button) {
   button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
 
   try {
-    const response = await fetch('/buddy-match/request', {
+    const response = await fetch('/buddy-match/send-request', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain',
       },
-      body: JSON.stringify({ buddyId: userId })
+      body: userId
     });
 
-    const data = await response.json();
-
     if (response.ok) {
+      console.log('Request Sent!')
       button.className = 'btn btn-success btn-sm w-100';
       button.innerHTML = '<i class="fas fa-check me-1"></i>Request Sent!';
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } else {
       button.className = 'btn btn-danger btn-sm w-100';
       button.innerHTML = '<i class="fas fa-times me-1"></i>Failed';

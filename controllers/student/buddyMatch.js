@@ -82,7 +82,7 @@ module.exports.sendBuddyRequest = async (req, res) => {
   });
 
   await newRequest.save();
-  console.log(newRequest);
+  console.log('Request sent',newRequest);
 
   req.flash('success', 'Buddy Request Sent Successfully');
   res.redirect('/student/buddy-match');

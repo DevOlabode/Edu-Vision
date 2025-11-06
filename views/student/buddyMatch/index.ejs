@@ -334,12 +334,8 @@ async function sendBuddyRequest(userId, button) {
     });
 
     if (response.ok) {
-      console.log('Request Sent!')
       button.className = 'btn btn-success btn-sm w-100';
       button.innerHTML = '<i class="fas fa-check me-1"></i>Request Sent!';
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } else {
       button.className = 'btn btn-danger btn-sm w-100';
       button.innerHTML = '<i class="fas fa-times me-1"></i>Failed';
@@ -360,4 +356,30 @@ async function sendBuddyRequest(userId, button) {
     }, 2000);
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const buddyRequestForms = document.querySelectorAll('.buddy-request-form');
+  buddyRequestForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const receiverId = formData.get('receiverId');
+      fetch('/buddy-match/send-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(receiverId)
+      })
+      .then(res => res.ok ? res.text() : Promise.reject(res))
+      .then(msg => {
+        // Optionally show a success message
+        alert('Buddy Request Sent Successfully');
+        // Optionally disable the button or update UI
+        form.querySelector('button[type="submit"]').disabled = true;
+      })
+      .catch(() => {
+        alert('Something went wrong while sending the request');
+      });
+    });
+  });
+});
 </script>

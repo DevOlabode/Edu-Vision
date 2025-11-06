@@ -61,6 +61,7 @@ module.exports.newTask = async(req, res)=>{
     res.redirect('/task');
 };
 
+
 module.exports.showTask = async(req, res)=>{
     const {id} = req.params;
     const task = await Task.findById(id);

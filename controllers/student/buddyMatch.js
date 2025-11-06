@@ -92,8 +92,19 @@ module.exports.sendBuddyRequest = async (req, res) => {
 
     await newRequest.save();
 
-    
     console.log('Request sent:', newRequest);
+
+    // const notificationService = require('../../services/notificationService');
+    // await notificationService.createNotification({
+    //   userId: receiverId,
+    //   type: 'buddy-request',
+    //   title: '🤝 New Buddy Request',
+    //   message: `${sender.name} has sent you a buddy request!`,
+    //   link: `/buddy-match/requests`,
+    //   icon: '✨'
+    // });
+
+    // console.log('Notification sent to receiver');
 
     req.flash('success', 'Buddy Request Sent Successfully');
     res.redirect('/buddy-match');

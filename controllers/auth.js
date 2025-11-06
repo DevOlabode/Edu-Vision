@@ -1,5 +1,13 @@
+//General Models
 const User = require('../models/user');
+const Notification = require('../models/notification');
+
+// Student Related Models
+
 const Assignment = require('../models/student/task');
+const Goals  = require('../models/student/goals');
+const Materials = require('../models/student/material');
+const Buddy = require('../models/student/buddy');
 
 const passport = require('passport');
 const { sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/emailService');
@@ -151,4 +159,12 @@ module.exports.deleteAccount = async(req, res)=>{
     const userId = req.user._id;
 
     await Assignment.deleteMany({ createdBy : userId });
-}
+    await Goals.deleteMany({ createdBy : userId });
+    await Materials.deleteMany({ createdBy : userId });
+    await Buddy.deleteMany({ createdBy : userId });
+    await Notification.deleteMany({ user : userId });
+    const user = await User.findByIdAndDelete(userId);
+
+    req.flash('success', 'Your account has been deleted successfully.');
+    res.redirect('/');
+};

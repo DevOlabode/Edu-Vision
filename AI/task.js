@@ -50,7 +50,7 @@ Description: ${description || "No description provided"}
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'minimax/minimax-m2:free',
+      model: 'openrouter/polaris-alpha',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
     });

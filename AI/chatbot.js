@@ -29,7 +29,7 @@ module.exports.chatbot = async (question, content, summary) => {
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'minimax/minimax-m2:free',
+      model: 'openrouter/polaris-alpha',
       messages,
       temperature: 0.7,
       max_tokens: 300

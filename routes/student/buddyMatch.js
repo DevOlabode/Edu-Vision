@@ -6,8 +6,10 @@ const catchAsync = require('../../utils/catchAsync');
 
 const controller = require('../../controllers/student/buddyMatch')
 
-router.get('/buddy-match', isLoggedIn, controller.findMatch);
+router.get('/', isLoggedIn, controller.findMatch);
 
-router.post('/buddy-match', isLoggedIn, catchAsync(controller.findBuddy));
+router.post('/', isLoggedIn, catchAsync(controller.findBuddy));
+
+router.post('/send-request', isLoggedIn, catchAsync(controller.sendBuddyRequest));
 
 module.exports  = router

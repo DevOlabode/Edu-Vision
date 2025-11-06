@@ -86,7 +86,7 @@ app.use('/task', taskRoutes);
 app.use('/goals', goalRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/', userRoutes);
-app.use('/', buddyMatchRoutes);
+app.use('/buddy-match', buddyMatchRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 app.use('/api', (req, res, next) => {

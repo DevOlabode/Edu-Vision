@@ -49,41 +49,55 @@ const getSharedGoals = (sender, receiver) => {
 };
 
 module.exports.sendBuddyRequest = async (req, res) => {
-  const senderId = req.user._id;
-  const receiverId = req.body;
+  try {
+    const senderId = req.user._id;
+    const receiverId = req.body.receiverId; // Make sure you're sending { receiverId: '...' } in the request body
 
-  if(!receiverId){
-    req.flash('error', 'Budddy ID is required');
-    return res.redirect('/student/buddy-match');
-  };
+    if (!receiverId) {
+      req.flash('error', 'Buddy ID is required');
+      return res.redirect('/student/buddy-match');
+    }
 
-  const existingRequest = await BuddyMatch.findOne({
-    $or : [
-      {senderId, receiverId },
-      { sender: receiverId, receiver: senderId }
-    ]
-  });
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
 
-  const sharedGoals = getSharedGoals(senderId, receiverId);
+    if (!sender || !receiver) {
+      req.flash('error', 'Invalid sender or receiver');
+      return res.redirect('/student/buddy-match');
+    }
 
-  if(existingRequest){
-    req.flash('error', 'Buddy Request Already Sent or Received');
-    return res.redirect('/student/buddy-match');
+    const existingRequest = await BuddyMatch.findOne({
+      $or: [
+        { userA: senderId, userB: receiverId },
+        { userA: receiverId, userB: senderId }
+      ]
+    });
+
+    if (existingRequest) {
+      req.flash('error', 'Buddy Request Already Sent or Received');
+      return res.redirect('/student/buddy-match');
+    }
+
+    const sharedGoals = getSharedGoals(sender, receiver);
+
+    const newRequest = new BuddyMatch({
+      userA: senderId,
+      userB: receiverId,
+      requestStatus: 'pending',
+      relationshipStatus: 'pending',
+      compatibilityScore: Math.floor(Math.random() * 101),
+      sharedGoals: sharedGoals,
+      matchedOn: new Date()
+    });
+
+    await newRequest.save();
+    console.log('Request sent:', newRequest);
+
+    req.flash('success', 'Buddy Request Sent Successfully');
+    res.redirect('/student/buddy-match');
+  } catch (err) {
+    console.error('Error sending buddy request:', err);
+    req.flash('error', 'Something went wrong while sending the request');
+    res.redirect('/student/buddy-match');
   }
-
-  const newRequest = new BuddyMatch({
-    sender : senderId,
-    reciever : receiverId,
-    requestStatus: 'pending',
-    relationshipStatus: 'pending',
-    compatibilityScore: Math.floor(Math.random() * 101),
-    sharedGoals: sharedGoals,
-    matchedOn: new Date()
-  });
-
-  await newRequest.save();
-  console.log('Request sent',newRequest);
-
-  req.flash('success', 'Buddy Request Sent Successfully');
-  res.redirect('/student/buddy-match');
 };

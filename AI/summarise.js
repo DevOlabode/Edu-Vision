@@ -17,7 +17,7 @@ ${safeText}
 
   try {
     const response = await openrouter.post('/chat/completions', {
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'openrouter/polaris-alpha',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7
     });

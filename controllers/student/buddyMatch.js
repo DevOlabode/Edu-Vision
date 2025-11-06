@@ -5,7 +5,7 @@ const findStudyBuddy = async(currentUserId)=>{
   const currentUser = await User.findById(currentUserId);
   const { studyPreferences } = currentUser
   const {goals, availability, subjects} = studyPreferences;
-  console.log(availability, subjects)
+  // console.log(availability, subjects)
 
   const candidates = await User.find({
     _id : {$ne : currentUserId},
@@ -34,8 +34,6 @@ module.exports.findBuddy = async (req, res) => {
       return res.status(404).json({ message: 'No Suitable Buddy Found' });
     }
 
-    // await match.populate('userA userB', 'firstName lastName email studyPreferences');
-    console.log(candidates);
     res.status(200).send({ message: 'Buddy Request Sent!', candidates });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Assignment = require('../models/student/task');
 
 const passport = require('passport');
 const { sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/emailService');
@@ -145,3 +146,9 @@ module.exports.completeProfile = async(req, res) => {
     req.flash('success', 'Profile completed successfully! Welcome to EduVision AI!');
     res.redirect('/');
 };
+
+module.exports.deleteAccount = async(req, res)=>{
+    const userId = req.user._id;
+
+    await Assignment.deleteMany({ createdBy : userId });
+}

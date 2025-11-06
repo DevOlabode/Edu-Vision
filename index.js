@@ -44,6 +44,7 @@ app.engine('ejs', ejsMate);
 app.use(methodOverride('_method'))
 
 app.use(express.json());
+app.use(express.text());
 
 app.use(flash());
 

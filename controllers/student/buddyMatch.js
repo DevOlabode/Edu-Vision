@@ -41,8 +41,8 @@ module.exports.findBuddy = async (req, res) => {
 };
 
 const getSharedGoals = (sender, receiver) => {
-  const senderGoals = sender.studyPreferences?.goals || [];
-  const receiverGoals = receiver.studyPreferences?.goals || [];
+  const senderGoals = sender.studyPreferences.goals || [];
+  const receiverGoals = receiver.studyPreferences.goals || [];
 
   const sharedGoals = senderGoals.filter(goal => receiverGoals.includes(goal));
   return sharedGoals;
@@ -51,11 +51,11 @@ const getSharedGoals = (sender, receiver) => {
 module.exports.sendBuddyRequest = async (req, res) => {
   try {
     const senderId = req.user._id;
-    const receiverId = req.body.receiverId; // Make sure you're sending { receiverId: '...' } in the request body
+    const receiverId = req.body; // Plain text body
 
     if (!receiverId) {
       req.flash('error', 'Buddy ID is required');
-      return res.redirect('/student/buddy-match');
+      return res.redirect('/buddy-match');
     }
 
     const sender = await User.findById(senderId);
@@ -63,26 +63,26 @@ module.exports.sendBuddyRequest = async (req, res) => {
 
     if (!sender || !receiver) {
       req.flash('error', 'Invalid sender or receiver');
-      return res.redirect('/student/buddy-match');
+      return res.redirect('/buddy-match');
     }
 
     const existingRequest = await BuddyMatch.findOne({
       $or: [
-        { userA: senderId, userB: receiverId },
-        { userA: receiverId, userB: senderId }
+        { sender: senderId, reciever: receiverId },
+        { sender: receiverId, reciever: senderId }
       ]
     });
 
     if (existingRequest) {
       req.flash('error', 'Buddy Request Already Sent or Received');
-      return res.redirect('/student/buddy-match');
+      return res.redirect('/buddy-match');
     }
 
     const sharedGoals = getSharedGoals(sender, receiver);
 
     const newRequest = new BuddyMatch({
-      userA: senderId,
-      userB: receiverId,
+      sender: senderId,
+      reciever: receiverId,
       requestStatus: 'pending',
       relationshipStatus: 'pending',
       compatibilityScore: Math.floor(Math.random() * 101),
@@ -91,13 +91,15 @@ module.exports.sendBuddyRequest = async (req, res) => {
     });
 
     await newRequest.save();
+
+    
     console.log('Request sent:', newRequest);
 
     req.flash('success', 'Buddy Request Sent Successfully');
-    res.redirect('/student/buddy-match');
+    res.redirect('/buddy-match');
   } catch (err) {
     console.error('Error sending buddy request:', err);
     req.flash('error', 'Something went wrong while sending the request');
-    res.redirect('/student/buddy-match');
+    res.redirect('/buddy-match');
   }
 };

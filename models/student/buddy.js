@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose
 
 const BuddyMatchSchema = new Schema({
-  userA: {
+  sender: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  userB: {
+  reciever: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -38,9 +38,6 @@ const BuddyMatchSchema = new Schema({
   },
   lastInteraction: {
     type: Date
-  },
-  notes: {
-    type: String
   }
 }, { timestamps: true });
 

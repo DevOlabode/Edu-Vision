@@ -39,3 +39,36 @@ module.exports.findBuddy = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+module.exports.sendBuddyRequest = async (req, res) => {
+  const senderId = req.user._id;
+  const receiverId = req.body;
+
+  if(!receiverId){
+    req.flash('error', 'Budddy ID is required');
+    return res.redirect('/student/buddy-match');
+  };
+
+  const existingRequest = await BuddyMatch.findOne({
+    $or : [
+      {senderId, receiverId },
+      { sender: receiverId, receiver: senderId }
+    ]
+  });
+
+  if(existingRequest){
+    req.flash('error', 'Buddy Request Already Sent or Received');
+    return res.redirect('/student/buddy-match');
+  }
+
+  const newRequest = new BuddyMatch({
+    sender : senderId,
+    reciever : receiverId,
+    requestStatus: 'pending',
+    relationshipStatus: 'pending',
+    compatibilityScore: Math.floor(Math.random() * 101),
+    sharedGoals: [],
+    notes: '',
+    matchedOn: new Date()
+  })
+};

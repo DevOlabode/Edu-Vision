@@ -192,7 +192,7 @@ module.exports.deleteAccount = async (req, res) => {
   await Notification.deleteMany({ user: userId });
   await User.findByIdAndDelete(userId);
 
-  await req.logout(); // Passport 0.6+ requires await
+  await req.logout();
   req.session.destroy(() => {
     req.flash('success', 'Your account has been deleted successfully.');
     res.redirect('/');

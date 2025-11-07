@@ -23,7 +23,7 @@ const userSchema = new Schema({
     },
     username : {
         type : String,
-        required : true,
+        required : false,
         unique : true,
         sparse : false // ensure all users must have a unique username
     },

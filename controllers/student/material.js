@@ -60,6 +60,7 @@ exports.upload = async (req, res) => {
 
                 const summary = await summarizer(text);
 
+                console.log(summary)
 
                 await Material.findByIdAndUpdate(materialId, {
                     content: text,

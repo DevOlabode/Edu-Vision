@@ -34,7 +34,12 @@ const notificationSchema = new Schema({
   },
   readAt: {
     type: Date
-  }
+  },
+  buddyMatchId: {
+    type : Schema.Types.ObjectId,
+    ref : 'Buddymatch',
+    default : null
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Notification', notificationSchema);

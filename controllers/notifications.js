@@ -1,7 +1,5 @@
 const pusher = require('../config/pusher');
 const notificationService = require('../services/notificationService');
-const Notification = require('../models/notification');
-const BuddyMatch = require('../models/student/buddy');
 
 module.exports.unreadCount = async (req, res) => {
   try {
@@ -87,29 +85,3 @@ module.exports.pusherAuth  = (req, res) => {
   const authResponse = pusher.authorizeChannel(socketId, channel);
   res.send(authResponse);
 };
-
-module.exports.acceptRequest = async(req, res)=>{
-  const notification = req.params.id;
-  if(!notification && notification.type !== 'buddy-request'){
-    req.flash('error', 'Invalid buddy request notification.');
-    return res.redirect('/notifications');
-  }
-
-  const buddyMatch = await BuddyMatch.findOne({
-    sender : notification.buddyMatchId,
-    reciever : req.user._id,
-    requestStatus : 'pending' 
-  });
-
-    if (buddyMatch) {
-    buddyMatch.requestStatus = 'accepted';
-    buddyMatch.relationshipStatus = 'active';
-    await buddyMatch.save();
-    notification.read = true;
-    await notification.save();
-    req.flash('success', 'Buddy request accepted!');
-  }
-
-  res.redirect('/profile');
-
-}

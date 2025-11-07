@@ -1,5 +1,6 @@
 const User = require('../../models/user');
 const BuddyMatch = require('../../models/student/buddy');
+const Notification = require('../../models/notification');
 
 const findStudyBuddy = async(currentUserId)=>{
   const currentUser = await User.findById(currentUserId);
@@ -113,4 +114,54 @@ module.exports.sendBuddyRequest = async (req, res) => {
     req.flash('error', 'Something went wrong while sending the request');
     res.redirect('/buddy-match');
   }
+};
+
+module.exports.acceptRequest = async(req, res)=>{
+  const notification = req.params.id;
+  if(!notification && notification.type !== 'buddy-request'){
+    req.flash('error', 'Invalid buddy request notification.');
+    return res.redirect('/notifications');
+  }
+
+  const buddyMatch = await BuddyMatch.findOne({
+    sender : notification.buddyMatchId,
+    reciever : req.user._id,
+    requestStatus : 'pending' 
+  });
+
+  if (buddyMatch) {
+    buddyMatch.requestStatus = 'accepted';
+    buddyMatch.relationshipStatus = 'active';
+    await buddyMatch.save();
+    notification.read = true;
+    await notification.save();
+    req.flash('success', 'Buddy request accepted!');
+  }
+
+  res.redirect('/profile');
+}
+
+module.exports.declineRequest = async(req, res)=>{
+  const notification = await Notification.findById(req.params.id);
+  if (!notification || notification.type !== 'buddy-request') {
+    req.flash('error', 'Invalid buddy request.');
+    return res.redirect('/profile');
+  }
+
+  const buddyMatch = await BuddyMatch.findOne({
+    sender: notification.link,
+    reciever: req.user._id,
+    requestStatus: 'pending'
+  });
+
+  if (buddyMatch) {
+    buddyMatch.requestStatus = 'rejected';
+    buddyMatch.relationshipStatus = 'ended';
+    await buddyMatch.save();
+    notification.read = true;
+    await notification.save();
+    req.flash('info', 'Buddy request declined.');
+  }
+
+  res.redirect('/profile');
 };

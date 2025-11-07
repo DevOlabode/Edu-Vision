@@ -65,15 +65,24 @@
                     <div class="notification-time"><%= new Date(notification.createdAt).toLocaleString() %></div>
                   </div>
                   <div class="notification-actions">
-                    <% if (!notification.read) { %>
-                      <button onclick="notificationsPage.markAsRead('<%= notification._id %>')" class="btn-mark-read" title="Mark as read"><i class="fas fa-check"></i></button>
+                    <% if (notification.type === 'buddy-request' && notification.status === 'pending') { %>
+                      <form action="/student/buddyMatch/<%= notification._id %>/accept" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm me-2" style="border-radius: 20px;">Accept</button>
+                      </form>
+                      <form action="/student/buddyMatch/<%= notification._id %>/decline" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 20px;">Reject</button>
+                      </form>
+                    <% } else { %>
+                      <% if (!notification.read) { %>
+                        <button onclick="notificationsPage.markAsRead('<%= notification._id %>')" class="btn-mark-read" title="Mark as read"><i class="fas fa-check"></i></button>
+                      <% } %>
+                      <button onclick="notificationsPage.deleteNotification('<%= notification._id %>')" class="btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
                     <% } %>
-                    <button onclick="notificationsPage.deleteNotification('<%= notification._id %>')" class="btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
                   </div>
                 </div>
               <% }); %>
             <% } else { %>
-              <div class="empty-state text-center py-5">
+              <div class="empty-state text-center py-5"></div>
                 <div class="empty-icon mb-4">
                   <i class="fas fa-bell-slash fa-4x" style="color: #e9ecef;"></i>
                 </div>
@@ -380,8 +389,17 @@ class NotificationsPage {
             <div class="notification-time">${this.formatTime(n.createdAt)}</div>
           </div>
           <div class="notification-actions">
-            ${!n.read ? `<button onclick="notificationsPage.markAsRead('${n._id}')" class="btn-mark-read" title="Mark as read"><i class="fas fa-check"></i></button>` : ''}
-            <button onclick="notificationsPage.deleteNotification('${n._id}')" class="btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+            ${(n.type === 'buddy-request' && n.status === 'pending') ? `
+              <form action="/student/buddyMatch/${n._id}/accept" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-success btn-sm me-2" style="border-radius: 20px;">Accept</button>
+              </form>
+              <form action="/student/buddyMatch/${n._id}/decline" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 20px;">Reject</button>
+              </form>
+            ` : `
+              ${!n.read ? `<button onclick="notificationsPage.markAsRead('${n._id}')" class="btn-mark-read" title="Mark as read"><i class="fas fa-check"></i></button>` : ''}
+              <button onclick="notificationsPage.deleteNotification('${n._id}')" class="btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+            `}
           </div>
         </div>
       `).join('');

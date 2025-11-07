@@ -173,18 +173,30 @@ module.exports.deleteAcctForm = (req, res)=>{
     res.render('auth/deleteAccount');
 }
 
-module.exports.deleteAccount = async(req, res)=>{
-    const userId = req.user._id;
+module.exports.deleteAccount = async (req, res) => {
+  const userId = req.user._id;
+  const { password, reason } = req.body;
 
-    await Assignment.deleteMany({ createdBy : userId });
-    await Goals.deleteMany({ createdBy : userId });
-    await Materials.deleteMany({ createdBy : userId });
-    await Buddy.deleteMany({ createdBy : userId });
-    await Notification.deleteMany({ user : userId });
-    const user = await User.findByIdAndDelete(userId);
+  const user = await User.findById(userId);
+  const isMatch = await user.authenticate(password);
 
+  if (!isMatch || !isMatch.user) {
+    req.flash('error', 'Incorrect password. Account deletion aborted.');
+    return res.redirect('/delete-account');
+  }
+
+  await Assignment.deleteMany({ createdBy: userId });
+  await Goals.deleteMany({ createdBy: userId });
+  await Materials.deleteMany({ createdBy: userId });
+  await Buddy.deleteMany({ createdBy: userId });
+  await Notification.deleteMany({ user: userId });
+  await User.findByIdAndDelete(userId);
+
+  await req.logout(); // Passport 0.6+ requires await
+  req.session.destroy(() => {
     req.flash('success', 'Your account has been deleted successfully.');
     res.redirect('/');
+  });
 };
 
 // Google OAuth callback logic

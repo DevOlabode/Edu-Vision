@@ -83,6 +83,25 @@
             <% } %>
           </div>
 
+          <!-- Custom Buddy Requests -->
+          <div class="custom-buddy-requests mt-4">
+            <% notifications.forEach(notification => { %>
+              <div class="notification mb-3 p-3" style="background: #f8f9ff; border-radius: 12px; box-shadow: 0 2px 8px rgba(102,126,234,0.07);">
+                <p class="mb-2" style="font-weight: 500; color: #2c3e50;"><%= notification.message %></p>
+                <% if (notification.type === 'buddy-request' && notification.status === 'pending') { %>
+                  <form action="/notifications/<%= notification._id %>/accept" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-success btn-sm me-2" style="border-radius: 20px;">Accept</button>
+                  </form>
+                  <form action="/notifications/<%= notification._id %>/decline" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 20px;">Decline</button>
+                  </form>
+                <% } else { %>
+                  <p class="mt-2" style="color: #6c757d;">Status: <%= notification.status %></p>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+
           <!-- Load More Button -->
           <div class="load-more-container text-center p-4" id="loadMoreContainer" style="display: none;">
             <button class="btn btn-primary" id="loadMoreBtn" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">

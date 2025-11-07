@@ -12,4 +12,8 @@ router.post('/', isLoggedIn, catchAsync(controller.findBuddy));
 
 router.post('/send-request', isLoggedIn, catchAsync(controller.sendBuddyRequest));
 
+router.post('/:id/accept', isLoggedIn, catchAsync(controller.acceptRequest));
+
+router.post('/:id/decline', isLoggedIn, catchAsync(controller.declineRequest));
+
 module.exports  = router

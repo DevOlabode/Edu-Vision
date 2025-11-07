@@ -3,7 +3,6 @@ const User = require('../models/user');
 const Notification = require('../models/notification');
 
 // Student Related Models
-
 const Assignment = require('../models/student/task');
 const Goals  = require('../models/student/goals');
 const Materials = require('../models/student/material');
@@ -18,7 +17,22 @@ module.exports.registerForm = (req, res) =>{
 
 module.exports.register = async(req, res, next) =>{
     const {username, email, password, lastName, firstName, bio, role, studentType, grade, timezone, studyPreferences} = req.body;
-    const user = new User({ username, firstName, lastName, email, bio, role, studentType, grade, timezone, studyPreferences });
+    const user = new User({
+        username,
+        firstName,
+        lastName,
+        email,
+        bio,
+        role,
+        studentType,
+        grade,
+        timezone,
+        studyPreferences: {
+            subjects: studyPreferences.subjects,
+            availability: studyPreferences.availability,
+            goals: studyPreferences.goals
+        }
+    });
     const registeredUser = await User.register(user, password);
 
     sendWelcomeEmail(email, firstName)
@@ -167,4 +181,35 @@ module.exports.deleteAccount = async(req, res)=>{
 
     req.flash('success', 'Your account has been deleted successfully.');
     res.redirect('/');
+};
+
+// Google OAuth callback logic
+module.exports.googleOAuthCallback = async (profile) => {
+    // Try to find user by Google ID or email first
+    let user = await User.findOne({
+        $or: [
+            { googleId: profile.id },
+            { email: profile.emails && profile.emails[0] && profile.emails[0].value }
+        ]
+    });
+    if (user) return user;
+
+    // Generate a unique username
+    let baseUsername = profile.emails && profile.emails[0] && profile.emails[0].value ? profile.emails[0].value.split('@')[0] : 'user';
+    let username = baseUsername;
+    let counter = 1;
+    while (await User.findOne({ username })) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+    }
+
+    user = new User({
+        username,
+        email: profile.emails && profile.emails[0] && profile.emails[0].value,
+        firstName: profile.name && profile.name.givenName,
+        lastName: profile.name && profile.name.familyName,
+        googleId: profile.id,
+    });
+    await user.save();
+    return user;
 };

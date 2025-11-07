@@ -21,10 +21,12 @@ const userSchema = new Schema({
         type : String,
         required : true
     },
-    // username : {
-    //     type : String,
-    //     required : false,
-    // },
+    username : {
+        type : String,
+        required : true,
+        unique : true,
+        sparse : false // ensure all users must have a unique username
+    },
     bio : {
         type : String,
         required : false

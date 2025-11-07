@@ -16,7 +16,13 @@ module.exports.registerForm = (req, res) =>{
 }
 
 module.exports.register = async(req, res, next) =>{
-    const {username, email, password, lastName, firstName, bio, role, studentType, grade, timezone, studyPreferences} = req.body;
+    const {username, email, password, lastName, firstName, bio, role, studentType, grade, timezone, studyPreferences,confirmPassword} = req.body;
+
+    if(password !== confirmPassword){
+        req.flash('error', 'Passwords do not match.');
+        return res.redirect('/register');
+    };
+    
     const user = new User({
         username,
         firstName,

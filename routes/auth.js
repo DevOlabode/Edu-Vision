@@ -31,6 +31,8 @@ router.get('/complete-profile', isLoggedIn, userController.completeProfileForm);
 
 router.post('/complete-profile', isLoggedIn, catchAsync(userController.completeProfile));
 
+router.get('/delete-account', isLoggedIn, userController.deleteAcctForm);
+
 router.post('/delete-account', isLoggedIn, catchAsync(userController.deleteAccount));
 
 module.exports = router;

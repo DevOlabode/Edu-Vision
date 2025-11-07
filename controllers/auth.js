@@ -169,6 +169,10 @@ module.exports.completeProfile = async(req, res) => {
     res.redirect('/');
 };
 
+module.exports.deleteAcctForm = (req, res)=>{
+    res.render('auth/deleteAccount');
+}
+
 module.exports.deleteAccount = async(req, res)=>{
     const userId = req.user._id;
 

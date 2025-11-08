@@ -120,8 +120,8 @@ module.exports.acceptRequest = async(req, res)=>{
   }
 
   const buddyMatch = await BuddyMatch.findOne({
-    sender : notification.buddyMatchId,
-    reciever : req.user._id,
+    sender : req.user._id,
+    reciever : notification.buddyMatchId,
     requestStatus : 'pending' 
   });
 
@@ -132,10 +132,12 @@ module.exports.acceptRequest = async(req, res)=>{
     notification.read = true;
     await notification.save();
     req.flash('success', 'Buddy request accepted!');
+  }else{
+    res.json({message: 'No pending buddy request found.'});
   }
 
   res.redirect('/profile');
-}
+};
 
 module.exports.declineRequest = async(req, res)=>{
   const notification = await Notification.findById(req.params.id);

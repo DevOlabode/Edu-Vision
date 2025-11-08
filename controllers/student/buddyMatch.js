@@ -52,7 +52,7 @@ const getSharedGoals = (sender, receiver) => {
 module.exports.sendBuddyRequest = async (req, res) => {
   try {
     const senderId = req.user._id;
-    const receiverId = req.body; // Plain text body
+    const receiverId = req.body; 
 
     if (!receiverId) {
       req.flash('error', 'Buddy ID is required');
@@ -113,37 +113,31 @@ module.exports.sendBuddyRequest = async (req, res) => {
   }
 };
 
-module.exports.acceptRequest = async(req, res)=>{
-  const notification = req.params.id;
+module.exports.acceptRequest = async (req, res) => {
+  const notificationId = req.params.id;
+  const notification = await Notification.findById(notificationId);
 
-  if(!notification && notification.type !== 'buddy-request'){
+  if (!notification || notification.type !== 'buddy-request') {
     req.flash('error', 'Invalid buddy request notification.');
     return res.redirect('/notifications');
-  };
-
-  console.log(notification);
-
-  console.log('reciever', notification.userId);
-
-  const buddyMatch = await BuddyMatch.findOne({
-    sender : req.user._id,
-    reciever : notification.userId,
-    requestStatus : 'pending' 
-  });
-
-  console.log(buddyMatch);
-
-  if (buddyMatch) {
-    buddyMatch.requestStatus = 'accepted';
-    buddyMatch.relationshipStatus = 'active';
-    await buddyMatch.save();
-    notification.read = true;
-    await notification.save();
-    req.flash('success', 'Buddy request accepted!');
-    res.status(200).json({msg : 'Accepted Buddy Request'});
-  }else{
-    res.status(404).json({message: 'No pending buddy request found.'});
   }
+
+  const buddyMatch = await BuddyMatch.findById(notification.buddyMatchId);
+
+  if (!buddyMatch || buddyMatch.requestStatus !== 'pending') {
+    req.flash('error', 'No pending buddy request found.');
+    return res.redirect('/notifications');
+  }
+
+  buddyMatch.requestStatus = 'accepted';
+  buddyMatch.relationshipStatus = 'active';
+  await buddyMatch.save();
+
+  notification.read = true;
+  await notification.save();
+
+  req.flash('success', 'Buddy request accepted!');
+  res.redirect('/profile');
 };
 
 module.exports.declineRequest = async(req, res)=>{

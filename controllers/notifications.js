@@ -1,6 +1,8 @@
 const pusher = require('../config/pusher');
 const notificationService = require('../services/notificationService');
 
+const Notification = require('../models/notification');
+
 module.exports.unreadCount = async (req, res) => {
   try {
     const Notification = require('../models/notification');
@@ -58,10 +60,8 @@ module.exports.readAll = async (req, res) => {
 
 module.exports.deleteNotifications = async (req, res) => {
   try {
-    const result = await notificationService.deleteNotification(
-      req.params.id, 
-      req.user._id
-    );
+
+    const result = await Notification.deleteOne({userId : req.user._id})
     
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Notification not found' });

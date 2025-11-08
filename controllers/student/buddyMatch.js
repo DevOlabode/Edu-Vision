@@ -100,7 +100,8 @@ module.exports.sendBuddyRequest = async (req, res) => {
       title: '🤝 New Buddy Request',
       message: `${sender.username} has sent you a buddy request!`,
       link: `/buddy-match/requests`,
-      icon: '✨' 
+      icon: '✨',
+      buddyMatchId: newRequest._id
     });
 
     req.flash('success', 'Buddy Request Sent Successfully');
@@ -114,16 +115,23 @@ module.exports.sendBuddyRequest = async (req, res) => {
 
 module.exports.acceptRequest = async(req, res)=>{
   const notification = req.params.id;
+
   if(!notification && notification.type !== 'buddy-request'){
     req.flash('error', 'Invalid buddy request notification.');
     return res.redirect('/notifications');
-  }
+  };
+
+  console.log(notification);
+
+  console.log('reciever', notification.userId);
 
   const buddyMatch = await BuddyMatch.findOne({
     sender : req.user._id,
-    reciever : notification.buddyMatchId,
+    reciever : notification.userId,
     requestStatus : 'pending' 
   });
+
+  console.log(buddyMatch);
 
   if (buddyMatch) {
     buddyMatch.requestStatus = 'accepted';
@@ -132,11 +140,10 @@ module.exports.acceptRequest = async(req, res)=>{
     notification.read = true;
     await notification.save();
     req.flash('success', 'Buddy request accepted!');
+    res.status(200).json({msg : 'Accepted Buddy Request'});
   }else{
-    res.json({message: 'No pending buddy request found.'});
+    res.status(404).json({message: 'No pending buddy request found.'});
   }
-
-  res.redirect('/profile');
 };
 
 module.exports.declineRequest = async(req, res)=>{

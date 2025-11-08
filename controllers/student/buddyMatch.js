@@ -136,6 +136,16 @@ module.exports.acceptRequest = async (req, res) => {
   notification.read = true;
   await notification.save();
 
+  const notificationService = require('../../services/notificationService');
+  await notificationService.createNotification({
+    userId : buddyMatch.sender,
+    type : 'buddy-accept',
+    title : `Buddy Request Accepted`,
+    message : `${buddyMatch.reciever} accepted your request! Start Studying Now.`,
+    link : `/buddy-match`,
+    icon : '✨'
+  })
+
   req.flash('success', 'Buddy request accepted!');
   res.redirect('/profile');
 };

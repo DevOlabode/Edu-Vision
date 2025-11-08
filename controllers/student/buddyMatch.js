@@ -147,20 +147,20 @@ module.exports.declineRequest = async(req, res)=>{
     return res.redirect('/profile');
   }
 
-  const buddyMatch = await BuddyMatch.findOne({
-    sender: notification.link,
-    reciever: req.user._id,
-    requestStatus: 'pending'
-  });
+  const buddyMatch = await BuddyMatch.findById(notification.buddyMatchId);
 
-  if (buddyMatch) {
-    buddyMatch.requestStatus = 'rejected';
-    buddyMatch.relationshipStatus = 'ended';
-    await buddyMatch.save();
-    notification.read = true;
-    await notification.save();
-    req.flash('info', 'Buddy request declined.');
-  }
+  if (!buddyMatch || buddyMatch.requestStatus !== 'pending') {
+    req.flash('error', 'No pending buddy request found.');
+    return res.redirect('/notifications');
+  };
 
-  res.redirect('/profile');
+  buddyMatch.requestStatus = 'rejected';
+  buddyMatch.relationshipStatus = 'ended';
+  await buddyMatch.save();
+
+  notification.read = true;
+  await notification.save();
+
+  const redirectUrl = '/notifications'
+  res.redirect(redirectUrl);
 };

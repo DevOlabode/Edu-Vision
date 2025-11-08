@@ -144,7 +144,7 @@ module.exports.acceptRequest = async (req, res) => {
     message : `${buddyMatch.reciever} accepted your request! Start Studying Now.`,
     link : `/buddy-match`,
     icon : '✨'
-  })
+  });
 
   req.flash('success', 'Buddy request accepted!');
   res.redirect('/profile');

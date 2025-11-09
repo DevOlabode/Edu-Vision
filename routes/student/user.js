@@ -16,4 +16,6 @@ router.post('/change-password', isLoggedIn, catchAsync(controller.updatePassword
 
 router.get('/users', isLoggedIn, catchAsync(controller.allUsers));
 
+router.get('/users/:id', isLoggedIn, catchAsync(controller.profilePage))
+
 module.exports = router

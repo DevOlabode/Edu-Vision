@@ -1,4 +1,5 @@
 const User = require('../../models/user');
+const Materials = require('../../models/student/material');
 
 module.exports.editProfileForm = async (req, res) => {
     const user = req.user;
@@ -81,5 +82,9 @@ module.exports.allUsers = async(req, res)=>{
 module.exports.profilePage = async(req, res)=>{
     const userId = req.params.id;
    const user = await User.findById(userId);
+
+   const materials = await Materials.find({createdBy : userId});
+   console.log('Uploaded Materials',materials);
+   
     res.render('student/user/profile', { user });
 }

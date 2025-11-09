@@ -171,6 +171,16 @@ module.exports.declineRequest = async(req, res)=>{
   notification.read = true;
   await notification.save();
 
+  const notificationService = require('../../services/notificationService');
+  await notificationService.createNotification({
+    userId : buddyMatch.sender,
+    type : 'buddy-reject',
+    title : `Buddy Request Declined`,
+    message : `${buddyMatch.reciever} declined your request!`,
+    link : `/buddy-match`,
+    icon : '✨'
+  });
+
   const redirectUrl = '/notifications'
   res.redirect(redirectUrl);
 };

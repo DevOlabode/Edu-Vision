@@ -65,7 +65,6 @@ module.exports.allUsers = async(req, res)=>{
     const { q } = req.query;
     let users;
     if (q && q.trim() !== '') {
-        // Search by firstName, lastName, or email (case-insensitive)
         users = await User.find({
             $or: [
                 { firstName: { $regex: q, $options: 'i' } },

@@ -59,4 +59,9 @@ module.exports.updatePassword = async (req, res) => {
 
     req.flash('success', 'Password changed successfully');
     res.redirect('/profile');
-}
+};
+
+module.exports.allUsers = async(req, res)=>{
+    const users = await Users.find();
+    res.status(200).json({msg : 'All Users', users});
+};

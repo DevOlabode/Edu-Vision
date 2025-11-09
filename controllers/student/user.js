@@ -62,6 +62,19 @@ module.exports.updatePassword = async (req, res) => {
 };
 
 module.exports.allUsers = async(req, res)=>{
-    const users = await Users.find();
-    res.status(200).json({msg : 'All Users', users});
+    const { q } = req.query;
+    let users;
+    if (q && q.trim() !== '') {
+        // Search by firstName, lastName, or email (case-insensitive)
+        users = await User.find({
+            $or: [
+                { firstName: { $regex: q, $options: 'i' } },
+                { lastName: { $regex: q, $options: 'i' } },
+                { email: { $regex: q, $options: 'i' } }
+            ]
+        });
+    } else {
+        users = await User.find();
+    }
+    res.render('student/user/allUsers', { users, search: q || '' });
 };

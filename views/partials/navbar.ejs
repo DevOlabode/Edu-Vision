@@ -60,6 +60,12 @@
         </li>
       </ul>
 
+      <!-- User Search Bar -->
+      <form class="d-flex ms-3" role="search" action="/users" method="get" style="max-width: 300px;">
+        <input class="form-control me-2" type="search" name="q" placeholder="Search users..." aria-label="Search users" style="border-radius: 20px;">
+        <button class="btn btn-outline-light" type="submit" style="border-radius: 20px;"><i class="fas fa-search"></i></button>
+      </form>
+
       <div class="notification-wrapper">
         <a href="/notifications" class="notification-bell-link">
           <button class="notification-bell" id="notificationBellBtn">

@@ -84,7 +84,5 @@ module.exports.profilePage = async(req, res)=>{
    const user = await User.findById(userId);
 
    const materials = await Materials.find({uploadedBy : userId});
-   console.log('Uploaded Materials',materials);
-
     res.render('student/user/profile', { user });
 };

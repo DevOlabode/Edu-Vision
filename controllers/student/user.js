@@ -77,3 +77,9 @@ module.exports.allUsers = async(req, res)=>{
     }
     res.render('student/user/allUsers', { users, search: q || '' });
 };
+
+module.exports.profilePage = async(req, res)=>{
+    const userId = req.params.id;
+   const user = await User.findById(userId);
+    res.render('student/user/profile', { user });
+}

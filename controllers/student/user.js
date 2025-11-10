@@ -47,7 +47,6 @@ module.exports.updatePassword = async (req, res) => {
         return res.redirect('/profile');
     }
 
-     // ✅ check if current password is correct
     const { user: authenticatedUser, error } = await user.authenticate(currentPassword);
     
     if (error || !authenticatedUser) {
@@ -79,20 +78,6 @@ module.exports.allUsers = async(req, res)=>{
     res.render('student/user/allUsers', { users, search: q || '' });
 };
 
-// module.exports.searchMaterials = async (req, res) => {
-//     const { q } = req.query;
-//     let materials = [];
-//     if (q && q.trim() !== '') {
-//         materials = await Materials.find({
-//             $or: [
-//                 { title: { $regex: q, $options: 'i' } },
-//                 { fileName: { $regex: q, $options: 'i' } }
-//             ]
-//         }).populate('uploadedBy', 'firstName lastName _id');
-//     }
-//     res.render('student/material/materials', { materials, search: q || '' });
-// };
-
 module.exports.searchMaterialAndUsers = async(req, res) =>{
     const { q } = req.query;
     let users = [];
@@ -114,7 +99,7 @@ module.exports.searchMaterialAndUsers = async(req, res) =>{
         })
     }
 
-    res.render('student/searchResults', {materials, users, search : q || ''})
+    res.render('student/user/searchResults', {materials, users, search : q || ''})
 }
 
 module.exports.profilePage = async(req, res)=>{

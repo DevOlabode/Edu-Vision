@@ -18,6 +18,9 @@ router.get('/users', isLoggedIn, catchAsync(controller.allUsers));
 
 router.get('/users/:id', isLoggedIn, catchAsync(controller.profilePage));
 
-router.get('/materials/search', isLoggedIn, catchAsync(controller.searchMaterials));
+// router.get('/materials/search', isLoggedIn, catchAsync(controller.searchMaterials));
+
+// Search for users and materials
+router.get('/search', isLoggedIn, catchAsync(controller.searchMaterialAndUsers))
 
 module.exports = router

@@ -45,9 +45,13 @@
       </div>
       <div class="mt-3">
         <strong>Uploaded by:</strong>
-        <a href="/users/<%= material.uploadedBy._id %>" class="text-decoration-none">
-          <%= material.uploadedBy.firstName %> <%= material.uploadedBy.lastName %>
-        </a>
+        <% if (material.uploadedBy) { %>
+          <a href="/users/<%= material.uploadedBy._id %>" class="text-decoration-none">
+            <%= material.uploadedBy.firstName %> <%= material.uploadedBy.lastName %>
+          </a>
+        <% } else { %>
+          <span>Unknown</span>
+        <% } %>
       </div>
     </div>
   </div>

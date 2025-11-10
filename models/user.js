@@ -79,6 +79,11 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId,
         ref : 'User',
         default : null
+    }],
+    savedMaterials : [{
+        type : Schema.Types.ObjectId,
+        ref : 'Material',
+        default : null
     }]
 }, { timestamps: true })
 

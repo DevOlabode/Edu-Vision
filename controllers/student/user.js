@@ -79,19 +79,43 @@ module.exports.allUsers = async(req, res)=>{
     res.render('student/user/allUsers', { users, search: q || '' });
 };
 
-module.exports.searchMaterials = async (req, res) => {
+// module.exports.searchMaterials = async (req, res) => {
+//     const { q } = req.query;
+//     let materials = [];
+//     if (q && q.trim() !== '') {
+//         materials = await Materials.find({
+//             $or: [
+//                 { title: { $regex: q, $options: 'i' } },
+//                 { fileName: { $regex: q, $options: 'i' } }
+//             ]
+//         }).populate('uploadedBy', 'firstName lastName _id');
+//     }
+//     res.render('student/material/materials', { materials, search: q || '' });
+// };
+
+module.exports.searchMaterialAndUsers = async(req, res) =>{
     const { q } = req.query;
+    let users = [];
     let materials = [];
-    if (q && q.trim() !== '') {
+
+    if(q && q.trim() !== ''){
         materials = await Materials.find({
-            $or: [
-                { title: { $regex: q, $options: 'i' } },
-                { fileName: { $regex: q, $options: 'i' } }
+            $or : [
+                {title : { $regex : q, $options : 'i'}},
+                { fileName : { $regex : q, $options : 'i'}}
             ]
-        }).populate('uploadedBy', 'firstName lastName _id');
+        }).populate('uploadedBy', 'firstName lastName _id')
+
+        users = await User.find({
+            $or : [
+                {firstName : {$regex : q, $options : 'i'}},
+                {lastName : {$regex : q, $options : 'i'}},
+            ]
+        })
     }
-    res.render('student/material/materials', { materials, search: q || '' });
-};
+
+    res.render('student/searchResults', {materials, users, search : q || ''})
+}
 
 module.exports.profilePage = async(req, res)=>{
     const userId = req.params.id;

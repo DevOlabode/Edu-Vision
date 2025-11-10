@@ -104,8 +104,8 @@ module.exports.saveMaterial = async(req, res)=>{
     user.savedMaterials.push(material._id);
     await user.save();
 
-    const redirectUrl = res.locals.returnTo || '/search'
-    res.redirect('/search');
+    const returnUrl = res.locals.returnTo || '/search'
+    res.redirect(returnUrl)
 };
 
 module.exports.profilePage = async(req, res)=>{

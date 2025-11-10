@@ -18,6 +18,7 @@ router.get('/users', isLoggedIn, catchAsync(controller.allUsers));
 
 router.get('/users/:id', isLoggedIn, catchAsync(controller.profilePage));
 
-
+// Material search route
+router.get('/materials/search', isLoggedIn, catchAsync(controller.searchMaterials));
 
 module.exports = router

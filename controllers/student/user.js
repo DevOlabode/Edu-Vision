@@ -70,12 +70,27 @@ module.exports.allUsers = async(req, res)=>{
             $or: [
                 { firstName: { $regex: q, $options: 'i' } },
                 { lastName: { $regex: q, $options: 'i' } },
+                { email: { $regex: q, $options: 'i' } }
             ]
         });
     } else {
         users = await User.find();
     }
     res.render('student/user/allUsers', { users, search: q || '' });
+};
+
+module.exports.searchMaterials = async (req, res) => {
+    const { q } = req.query;
+    let materials = [];
+    if (q && q.trim() !== '') {
+        materials = await Materials.find({
+            $or: [
+                { title: { $regex: q, $options: 'i' } },
+                { fileName: { $regex: q, $options: 'i' } }
+            ]
+        }).populate('uploadedBy', 'firstName lastName _id');
+    }
+    res.render('student/material/materials', { materials, search: q || '' });
 };
 
 module.exports.profilePage = async(req, res)=>{

@@ -83,7 +83,28 @@ module.exports.searchMaterialAndUsers = async(req, res) =>{
     }
 
     res.render('student/user/searchResults', {materials, users, search : q || ''})
-}
+};
+
+module.exports.saveMaterial = async(req, res)=>{
+    const user  = req.user;
+    const material = await Materials.findById(req.params.id);
+
+    if(!material){
+        req.flash('error', 'Material not found');
+        res.redirect('/search')
+    };
+
+    if(user.savedMaterials.includes(material._id)){
+        req.flash('error', 'Already Saved This Material');
+        res.redirect('/search')
+    }
+
+    user.savedMaterials.push(material._id);
+    await user.save();
+
+    const redirectUrl = res.locals.returnTo || '/search'
+    res.redirect(redirectUrl);
+};
 
 module.exports.profilePage = async(req, res)=>{
     const userId = req.params.id;

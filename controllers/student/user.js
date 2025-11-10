@@ -61,22 +61,22 @@ module.exports.updatePassword = async (req, res) => {
     res.redirect('/profile');
 };
 
-module.exports.allUsers = async(req, res)=>{
-    const { q } = req.query;
-    let users;
-    if (q && q.trim() !== '') {
-        users = await User.find({
-            $or: [
-                { firstName: { $regex: q, $options: 'i' } },
-                { lastName: { $regex: q, $options: 'i' } },
-                { email: { $regex: q, $options: 'i' } }
-            ]
-        });
-    } else {
-        users = await User.find();
-    }
-    res.render('student/user/allUsers', { users, search: q || '' });
-};
+// module.exports.allUsers = async(req, res)=>{
+//     const { q } = req.query;
+//     let users;
+//     if (q && q.trim() !== '') {
+//         users = await User.find({
+//             $or: [
+//                 { firstName: { $regex: q, $options: 'i' } },
+//                 { lastName: { $regex: q, $options: 'i' } },
+//                 { email: { $regex: q, $options: 'i' } }
+//             ]
+//         });
+//     } else {
+//         users = await User.find();
+//     }
+//     res.render('student/user/allUsers', { users, search: q || '' });
+// };
 
 module.exports.searchMaterialAndUsers = async(req, res) =>{
     const { q } = req.query;

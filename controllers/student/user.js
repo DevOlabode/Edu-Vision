@@ -89,8 +89,6 @@ module.exports.saveMaterial = async(req, res)=>{
     const user  = req.user;
     const material = await Materials.findById(req.params.materialId);
 
-    console.log(req.params.id);
-
     if(!material){
         req.flash('error', 'Material not found');
         return res.redirect('/search')
@@ -104,8 +102,7 @@ module.exports.saveMaterial = async(req, res)=>{
     user.savedMaterials.push(material._id);
     await user.save();
 
-    const returnUrl = res.locals.returnTo || '/search'
-    res.redirect(returnUrl)
+    return res.status(200).json({success : true, 'Material Saved Successfully'})
 };
 
 module.exports.profilePage = async(req, res)=>{

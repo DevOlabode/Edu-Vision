@@ -82,7 +82,7 @@ module.exports.searchMaterialAndUsers = async(req, res) =>{
         })
     }
 
-    res.render('student/user/searchResults', {materials, users, search : q || ''})
+    res.render('student/user/searchResults', {materials, users, search : q || '', user: req.user})
 };
 
 module.exports.saveMaterial = async(req, res)=>{

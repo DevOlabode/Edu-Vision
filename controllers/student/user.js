@@ -87,23 +87,25 @@ module.exports.searchMaterialAndUsers = async(req, res) =>{
 
 module.exports.saveMaterial = async(req, res)=>{
     const user  = req.user;
-    const material = await Materials.findById(req.params.id);
+    const material = await Materials.findById(req.params.materialId);
+
+    console.log(req.params.id);
 
     if(!material){
         req.flash('error', 'Material not found');
-        res.redirect('/search')
+        return res.redirect('/search')
     };
 
     if(user.savedMaterials.includes(material._id)){
         req.flash('error', 'Already Saved This Material');
-        res.redirect('/search')
+        return res.redirect('/search')
     }
 
     user.savedMaterials.push(material._id);
     await user.save();
 
     const redirectUrl = res.locals.returnTo || '/search'
-    res.redirect(redirectUrl);
+    res.redirect('/search');
 };
 
 module.exports.profilePage = async(req, res)=>{

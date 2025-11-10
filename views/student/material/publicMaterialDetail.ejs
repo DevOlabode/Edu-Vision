@@ -41,6 +41,15 @@
           <a href="https://res.cloudinary.com/<your-cloud-name>/raw/upload/<%= material.cloudinaryId %>" target="_blank" class="btn btn-outline-primary btn-lg w-100" style="border-radius: 50px; font-weight: 600; padding: 14px 30px; box-shadow: 0 8px 20px rgba(40, 167, 69, 0.2); border: none; transition: all 0.3s ease;">
             <i class="fas fa-download me-2"></i>Download File
           </a>
+          <% if (user && !user.savedMaterials.includes(material._id)) { %>
+            <a href="/save/<%= material._id %>" class="btn btn-outline-success btn-lg w-100 mt-2" style="border-radius: 50px; font-weight: 600; padding: 14px 30px; box-shadow: 0 8px 20px rgba(40, 255, 149, 0.2); border: none; transition: all 0.3s ease;">
+              <i class="fas fa-bookmark me-2"></i>Save Material
+            </a>
+          <% } else if (user && user.savedMaterials.includes(material._id)) { %>
+            <div class="text-success text-center mt-2" style="font-weight: 600;">
+              <i class="fas fa-bookmark me-2"></i>Saved
+            </div>
+          <% } %>
         </div>
       </div>
       <div class="mt-3">

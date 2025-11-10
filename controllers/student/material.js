@@ -411,5 +411,5 @@ exports.viewPublicMaterial = async (req, res) => {
     if (!material) {
         return res.status(404).render('shared/error', { message: 'Material not found.' });
     }
-    res.render('student/material/publicMaterialDetail', { material });
+    res.render('student/material/publicMaterialDetail', { material, user: req.user });
 };

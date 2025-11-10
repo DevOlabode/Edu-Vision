@@ -181,7 +181,7 @@ exports.uploadFromDrive = async (req, res) => {
                 success: false,
                 error: 'Google Drive access not authorized'
             });
-        }
+        };
 
         // Set up Google Drive API
         const oauth2Client = new google.auth.OAuth2();
@@ -401,4 +401,15 @@ exports.delete = async (req, res) => {
             error: error.message
         });
     }
+};
+
+// View a public material (any user's material by id)
+exports.viewPublicMaterial = async (req, res) => {
+    const Material = require('../../models/student/material');
+    const User = require('../../models/user');
+    const material = await Material.findById(req.params.id).populate('uploadedBy', 'firstName lastName _id');
+    if (!material) {
+        return res.status(404).render('shared/error', { message: 'Material not found.' });
+    }
+    res.render('student/material/publicMaterialDetail', { material });
 };

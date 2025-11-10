@@ -23,6 +23,8 @@ router.post('/upload', isLoggedIn,  (req, res, next) => {
 // Google Drive upload route
 router.post('/upload/drive', isLoggedIn, controller.uploadFromDrive);
 
+router.get('/public/:id', isLoggedIn, controller.viewPublicMaterial);
+
 router.get('/', isLoggedIn, controller.getAll);
 router.get('/:id', isLoggedIn, controller.getOne);
 router.get('/:id/flashcards', isLoggedIn, controller.getFlashcards);

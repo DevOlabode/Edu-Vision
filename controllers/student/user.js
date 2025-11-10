@@ -70,7 +70,6 @@ module.exports.allUsers = async(req, res)=>{
             $or: [
                 { firstName: { $regex: q, $options: 'i' } },
                 { lastName: { $regex: q, $options: 'i' } },
-                { email: { $regex: q, $options: 'i' } }
             ]
         });
     } else {

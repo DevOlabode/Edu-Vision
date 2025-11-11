@@ -29,4 +29,4 @@ module.exports.redirectIfLoggedIn = (req, res, next)=>{
         return res.redirect('/');
     }
     next();
-}
+};

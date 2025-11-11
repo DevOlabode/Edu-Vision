@@ -20,72 +20,38 @@
         </div>
       </div>
 
-      <% if (materials && materials.length > 0) { %>
-        <!-- Materials Grid styled like Study Notes -->
-        <div class="materials-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px;">
-          <% materials.forEach(material => { %>
-            <div class="content-card mb-4" style="background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 25px; padding: 60px 40px; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15); position: relative; overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.1);">
-              <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
-              <div class="card-header mb-4">
-                <div class="d-flex align-items-center">
-                  <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
-                    <i class="fas fa-user-circle" style="color: white; font-size: 24px;"></i>
-                  </div>
-                  <div>
-                    <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 5px; font-size: 1.8rem;">
-                      <a href="/materials/<%= material._id %>" class="text-decoration-none" style="color: #2c3e50; transition: color 0.3s ease;">
-                        <%= material.title %>
-                      </a>
-                    </h2>
-                    <p style="color: #6c757d; margin: 0; font-size: 1rem;">Uploaded <%= new Date(material.createdAt).toLocaleDateString() %></p>
-                  </div>
-                </div>
-              </div>
-              <div class="card-content">
-                <p style="color: #495057; font-size: 1.1rem; line-height: 1.7; margin: 0;">
-                  <%= material.description || 'No description provided.' %>
-                </p>
-                <div class="material-meta mt-4 mb-4">
-                  <span style="display: inline-block; background: #f8f9fa; color: #667eea; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Type: <%= material.fileType.toUpperCase() %></span>
-                  <span style="display: inline-block; background: #f8f9fa; color: #764ba2; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Size: <%= (material.fileSize / 1024).toFixed(2) %> KB</span>
-                  <span style="display: inline-block; background: #f8f9fa; color: #28a745; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600;">Status: <%= material.status %></span>
-                </div>
-                <div class="material-actions" style="display: flex; gap: 15px;">
-                  <a href="/materials/<%= material._id %>" class="btn btn-primary flex-fill" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
-                    <i class="fas fa-eye me-2"></i>View Material
-                  </a>
-                  <form action="/materials/<%= material._id %>?_method=DELETE" method="POST" class="d-inline flex-fill">
-                    <button type="submit" class="btn btn-outline-danger flex-fill" onclick="return confirm('Are you sure you want to delete this material?')" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; border: 2px solid #dc3545; transition: all 0.3s ease;">
-                      <i class="fas fa-trash-alt me-2"></i>Delete
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          <% }); %>
+      <!-- Loading Spinner -->
+      <div id="loading" class="text-center" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <!-- Materials Count -->
-        <div class="materials-count mt-4 text-center">
-          <div style="display: inline-block; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px 30px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <span style="color: #2c3e50; font-weight: 700; font-size: 1.1rem;">
-              <i class="fas fa-layer-group me-2" style="color: #667eea;"></i>
-              <%= materials.length %> Material<%= materials.length !== 1 ? 's' : '' %> Total
-            </span>
-          </div>
+        <p class="mt-2">Loading materials...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error" class="alert alert-danger" style="display: none;"></div>
+
+      <!-- Materials Grid -->
+      <div id="materials-grid" class="materials-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px;"></div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="d-flex justify-content-center mt-4" style="display: none;">
+        <nav aria-label="Materials pagination">
+          <ul class="pagination">
+            <!-- Pagination buttons will be added here -->
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Materials Count -->
+      <div id="materials-count" class="materials-count mt-4 text-center" style="display: none;">
+        <div style="display: inline-block; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px 30px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <span style="color: #2c3e50; font-weight: 700; font-size: 1.1rem;">
+            <i class="fas fa-layer-group me-2" style="color: #667eea;"></i>
+            <span id="total-count">0</span> Material<span id="plural">s</span> Total
+          </span>
         </div>
-      <% } else { %>
-        <!-- Empty State -->
-        <div class="empty-state text-center" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 20px; padding: 60px 40px; margin-top: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.08); border: 2px dashed rgba(102, 126, 234, 0.2);">
-          <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px; opacity: 0.6;">
-            <i class="fas fa-book-open"></i>
-          </div>
-          <h3 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">No Materials Yet</h3>
-          <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 30px;">Start building your study library by uploading your first document</p>
-          <a href="/upload" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
-            <i class="fas fa-upload me-2"></i>Upload Your First Material
-          </a>
-        </div>
-      <% } %>
+      </div>
     </div>
   </div>
 </div>
@@ -114,3 +80,145 @@
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
 }
 </style>
+
+<script>
+let currentPage = 1;
+const limit = 20;
+
+async function fetchMaterials(page = 1) {
+  const loading = document.getElementById('loading');
+  const error = document.getElementById('error');
+  const grid = document.getElementById('materials-grid');
+  const pagination = document.getElementById('pagination');
+  const count = document.getElementById('materials-count');
+
+  loading.style.display = 'block';
+  error.style.display = 'none';
+  grid.innerHTML = '';
+  pagination.style.display = 'none';
+  count.style.display = 'none';
+
+  try {
+    const response = await fetch(`/api/materials?page=${page}&limit=${limit}`);
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch materials');
+    }
+
+    loading.style.display = 'none';
+
+    if (data.materials.length === 0) {
+      // Empty state
+      grid.innerHTML = `
+        <div class="empty-state text-center" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 20px; padding: 60px 40px; margin-top: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.08); border: 2px dashed rgba(102, 126, 234, 0.2); grid-column: 1 / -1;">
+          <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px; opacity: 0.6;">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">No Materials Yet</h3>
+          <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 30px;">Start building your study library by uploading your first document</p>
+          <a href="/upload" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
+            <i class="fas fa-upload me-2"></i>Upload Your First Material
+          </a>
+        </div>
+      `;
+    } else {
+      // Render materials
+      data.materials.forEach(material => {
+        const card = document.createElement('div');
+        card.className = 'content-card mb-4';
+        card.style.cssText = 'background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%); border-radius: 25px; padding: 60px 40px; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15); position: relative; overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.1);';
+        card.innerHTML = `
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
+          <div class="card-header mb-4">
+            <div class="d-flex align-items-center">
+              <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);">
+                <i class="fas fa-user-circle" style="color: white; font-size: 24px;"></i>
+              </div>
+              <div>
+                <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 5px; font-size: 1.8rem;">
+                  <a href="/materials/${material._id}" class="text-decoration-none" style="color: #2c3e50; transition: color 0.3s ease;">
+                    ${material.title}
+                  </a>
+                </h2>
+                <p style="color: #6c757d; margin: 0; font-size: 1rem;">Uploaded ${new Date(material.createdAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p style="color: #495057; font-size: 1.1rem; line-height: 1.7; margin: 0;">
+              ${material.description || 'No description provided.'}
+            </p>
+            <div class="material-meta mt-4 mb-4">
+              <span style="display: inline-block; background: #f8f9fa; color: #667eea; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Type: ${material.fileType.toUpperCase()}</span>
+              <span style="display: inline-block; background: #f8f9fa; color: #764ba2; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600; margin-right: 10px;">Size: ${(material.fileSize / 1024).toFixed(2)} KB</span>
+              <span style="display: inline-block; background: #f8f9fa; color: #28a745; padding: 6px 12px; border-radius: 20px; font-size: 0.95rem; font-weight: 600;">Status: ${material.status}</span>
+            </div>
+            <div class="material-actions" style="display: flex; gap: 15px;">
+              <a href="/materials/${material._id}" class="btn btn-primary flex-fill" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
+                <i class="fas fa-eye me-2"></i>View Material
+              </a>
+              <form action="/materials/${material._id}?_method=DELETE" method="POST" class="d-inline flex-fill">
+                <button type="submit" class="btn btn-outline-danger flex-fill" onclick="return confirm('Are you sure you want to delete this material?')" style="border-radius: 25px; font-weight: 600; padding: 12px 20px; border: 2px solid #dc3545; transition: all 0.3s ease;">
+                  <i class="fas fa-trash-alt me-2"></i>Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Update count
+      document.getElementById('total-count').textContent = data.total;
+      document.getElementById('plural').textContent = data.total !== 1 ? 's' : '';
+      count.style.display = 'block';
+
+      // Render pagination
+      if (data.pages > 1) {
+        renderPagination(data.page, data.pages);
+        pagination.style.display = 'block';
+      }
+    }
+  } catch (err) {
+    loading.style.display = 'none';
+    error.textContent = err.message;
+    error.style.display = 'block';
+  }
+}
+
+function renderPagination(currentPage, totalPages) {
+  const paginationUl = document.querySelector('.pagination');
+  paginationUl.innerHTML = '';
+
+  // Previous button
+  const prevLi = document.createElement('li');
+  prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+  prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+  paginationUl.appendChild(prevLi);
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    const pageLi = document.createElement('li');
+    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+    pageLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+    paginationUl.appendChild(pageLi);
+  }
+
+  // Next button
+  const nextLi = document.createElement('li');
+  nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+  nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+  paginationUl.appendChild(nextLi);
+}
+
+function changePage(page) {
+  currentPage = page;
+  fetchMaterials(page);
+}
+
+// Load materials on page load
+document.addEventListener('DOMContentLoaded', () => {
+  fetchMaterials();
+});
+</script>

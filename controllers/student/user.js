@@ -90,13 +90,11 @@ module.exports.saveMaterial = async(req, res)=>{
     const material = await Materials.findById(req.params.materialId);
 
     if(!material){
-        req.flash('error', 'Material not found');
-        return res.redirect('/search')
+        return res.status(404).json({success: false, message: 'Material not found'});
     };
 
     if(user.savedMaterials.includes(material._id)){
-        req.flash('error', 'Already Saved This Material');
-        return res.redirect('/search')
+        return res.status(400).json({success: false, message: 'Already Saved This Material'});
     }
 
     user.savedMaterials.push(material._id);

@@ -4,9 +4,6 @@ const controller = require('../../controllers/student/material');
 const upload = require('../../middleware/upload');
 const { isLoggedIn } = require('../../middleware');
 
-// router.use(isLoggedIn);
-
-// Add error handler for multer
 router.post('/upload', isLoggedIn,  (req, res, next) => {
     upload.single('file')(req, res, (err) => {
         if (err) {
@@ -30,12 +27,5 @@ router.get('/:id', isLoggedIn, controller.getOne);
 router.get('/:id/flashcards', isLoggedIn, controller.getFlashcards);
 router.post('/:id/chat', isLoggedIn, controller.chat);
 router.put('/:id', isLoggedIn,  controller.update);
-
-// Add route for materials page
-router.get('/materials', isLoggedIn, async (req, res) => {
-        const Material = require('../../models/student/material');
-        const materials = await Material.find({ uploadedBy: req.user._id }).sort('-createdAt');
-        res.render('materials', { materials });
-});
 
 module.exports = router;

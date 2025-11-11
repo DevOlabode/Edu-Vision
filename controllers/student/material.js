@@ -95,6 +95,11 @@ exports.upload = async (req, res) => {
 // Get all
 exports.getAll = async (req, res) => {
     try {
+        const User = req.user;
+
+        const savedMaterialsId = User.savedMaterials || [];
+        console.log('Saved Materials IDs:', savedMaterialsId);
+
         const { page = 1, limit = 20 } = req.query;
         
         const materials = await Material.find({ uploadedBy: req.user._id })
@@ -110,7 +115,7 @@ exports.getAll = async (req, res) => {
             materials, 
             total, 
             page: +page, 
-            pages: Math.ceil(total / limit) 
+            pages: Math.ceil(total / limit),
         });
     } catch (error) {
         console.error('Get all materials error:', error);

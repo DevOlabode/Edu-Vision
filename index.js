@@ -16,7 +16,7 @@ const methodOverride = require('method-override');
 
 require('./config/oauth')
 
-const User = require('./models/user'); // adjust path as needed
+const User = require('./models/user');
 
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');

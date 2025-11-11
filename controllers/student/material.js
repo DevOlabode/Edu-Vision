@@ -98,30 +98,36 @@ exports.getAll = async (req, res) => {
         const User = req.user;
 
         const savedMaterialsId = User.savedMaterials || [];
-        const savedMaterials = await Material.find({ _id: { $in: savedMaterialsId } });
-        const { page = 1, limit = 20 } = req.query;
-        
-        const materials = await Material.find({ uploadedBy: req.user._id })
+
+        const { page = 1, limit = 20, saved = 'false' } = req.query;
+
+        let query = {};
+        if (saved === 'true') {
+            query = { _id: { $in: savedMaterialsId } };
+        } else {
+            query = { uploadedBy: req.user._id };
+        }
+
+        const materials = await Material.find(query)
             .select('-content')
             .sort('-createdAt')
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
-        const total = await Material.countDocuments({ uploadedBy: req.user._id });
+        const total = await Material.countDocuments(query);
 
-        res.json({ 
+        res.json({
             success: true,
-            materials, 
-            total, 
-            page: +page, 
+            materials,
+            total,
+            page: +page,
             pages: Math.ceil(total / limit),
-            savedMaterials
         });
     } catch (error) {
         console.error('Get all materials error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 };

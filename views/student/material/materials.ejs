@@ -13,6 +13,9 @@
             <p class="mb-0 opacity-75" style="font-size: 1.1rem;">Access and manage your uploaded documents</p>
           </div>
           <div class="text-end">
+            <button id="toggle-saved" class="btn btn-outline-primary btn-lg px-4 py-3 me-3" style="border-radius: 15px; font-weight: 600; transition: all 0.3s ease;">
+              <i class="fas fa-bookmark me-2"></i>Show Saved Materials
+            </button>
             <a href="/upload" class="btn btn-light btn-lg px-4 py-3" style="border-radius: 15px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: all 0.3s ease;">
               <i class="fas fa-plus me-2"></i>Upload New Material
             </a>
@@ -84,6 +87,7 @@
 <script>
 let currentPage = 1;
 const limit = 20;
+let showSaved = false;
 
 async function fetchMaterials(page = 1) {
   const loading = document.getElementById('loading');
@@ -99,7 +103,7 @@ async function fetchMaterials(page = 1) {
   count.style.display = 'none';
 
   try {
-    const response = await fetch(`/api/materials?page=${page}&limit=${limit}`);
+    const response = await fetch(`/api/materials?page=${page}&limit=${limit}&saved=${showSaved}`);
     const data = await response.json();
 
     if (!data.success) {
@@ -110,16 +114,16 @@ async function fetchMaterials(page = 1) {
 
     if (data.materials.length === 0) {
       // Empty state
+      const emptyMessage = showSaved ? 'No saved materials yet' : 'No materials yet';
+      const emptyDescription = showSaved ? 'Save materials from your library to access them quickly here' : 'Start building your study library by uploading your first document';
       grid.innerHTML = `
         <div class="empty-state text-center" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 20px; padding: 60px 40px; margin-top: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.08); border: 2px dashed rgba(102, 126, 234, 0.2); grid-column: 1 / -1;">
           <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px; opacity: 0.6;">
             <i class="fas fa-book-open"></i>
           </div>
-          <h3 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">No Materials Yet</h3>
-          <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 30px;">Start building your study library by uploading your first document</p>
-          <a href="/upload" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);">
-            <i class="fas fa-upload me-2"></i>Upload Your First Material
-          </a>
+          <h3 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">${emptyMessage}</h3>
+          <p style="color: #6c757d; font-size: 1.1rem; margin-bottom: 30px;">${emptyDescription}</p>
+          ${showSaved ? '<a href="/materials" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);"><i class="fas fa-arrow-left me-2"></i>Back to All Materials</a>' : '<a href="/upload" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 30px; font-weight: 600; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);"><i class="fas fa-upload me-2"></i>Upload Your First Material</a>'}
         </div>
       `;
     } else {
@@ -217,8 +221,27 @@ function changePage(page) {
   fetchMaterials(page);
 }
 
+function toggleSavedMaterials() {
+  const toggleBtn = document.getElementById('toggle-saved');
+  showSaved = !showSaved;
+  currentPage = 1;
+
+  if (showSaved) {
+    toggleBtn.innerHTML = '<i class="fas fa-list me-2"></i>Show All Materials';
+    toggleBtn.className = 'btn btn-primary btn-lg px-4 py-3 me-3';
+  } else {
+    toggleBtn.innerHTML = '<i class="fas fa-bookmark me-2"></i>Show Saved Materials';
+    toggleBtn.className = 'btn btn-outline-primary btn-lg px-4 py-3 me-3';
+  }
+
+  fetchMaterials();
+}
+
 // Load materials on page load
 document.addEventListener('DOMContentLoaded', () => {
   fetchMaterials();
+
+  // Add event listener for toggle button
+  document.getElementById('toggle-saved').addEventListener('click', toggleSavedMaterials);
 });
 </script>

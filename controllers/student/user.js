@@ -102,7 +102,7 @@ module.exports.saveMaterial = async(req, res)=>{
     user.savedMaterials.push(material._id);
     await user.save();
 
-    return res.status(200).json({success : true, 'Material Saved Successfully'})
+    return res.status(200).json({success : true, message: 'Material Saved Successfully'})
 };
 
 module.exports.profilePage = async(req, res)=>{

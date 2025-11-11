@@ -42,9 +42,9 @@
             <i class="fas fa-download me-2"></i>Download File
           </a>
           <% if (user && !user.savedMaterials.includes(material._id)) { %>
-            <a href="/save/<%= material._id %>" class="btn btn-outline-success btn-lg w-100 mt-2" style="border-radius: 50px; font-weight: 600; padding: 14px 30px; box-shadow: 0 8px 20px rgba(40, 255, 149, 0.2); border: none; transition: all 0.3s ease;">
+            <button class="btn btn-outline-success btn-lg w-100 mt-2 save-material-btn" data-material-id="<%= material._id %>" style="border-radius: 50px; font-weight: 600; padding: 14px 30px; box-shadow: 0 8px 20px rgba(40, 255, 149, 0.2); border: none; transition: all 0.3s ease;">
               <i class="fas fa-bookmark me-2"></i>Save Material
-            </a>
+            </button>
           <% } else if (user && user.savedMaterials.includes(material._id)) { %>
             <div class="text-success text-center mt-2" style="font-weight: 600;">
               <i class="fas fa-bookmark me-2"></i>Saved
@@ -235,3 +235,38 @@
   transform: rotate(180deg);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle save button click
+    const saveBtn = document.querySelector('.save-material-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const materialId = this.getAttribute('data-material-id');
+            console.log(materialId);
+
+            try {
+                const response = await fetch(`/save/${materialId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Replace button with saved text
+                    this.outerHTML = '<div class="text-success text-center mt-2" style="font-weight: 600;"><i class="fas fa-bookmark me-2"></i>Saved</div>';
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to save material'));
+                }
+            } catch (error) {
+                console.error('Error saving material:', error);
+                alert('Error saving material. Please try again.');
+            }
+        });
+    }
+});
+</script>

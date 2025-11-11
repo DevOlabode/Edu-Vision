@@ -77,3 +77,38 @@
     <div class="alert alert-warning">No users or materials found for your search.</div>
   <% } %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle save button clicks
+    document.querySelectorAll('.btn-outline-success').forEach(button => {
+        if (button.textContent.includes('Save')) {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const materialId = this.getAttribute('href').split('/').pop();
+
+                try {
+                    const response = await fetch(`/save/${materialId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Replace button with saved text
+                        this.outerHTML = '<span class="text-success"><i class="fas fa-bookmark"></i> Saved</span>';
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to save material'));
+                    }
+                } catch (error) {
+                    console.error('Error saving material:', error);
+                    alert('Error saving material. Please try again.');
+                }
+            });
+        }
+    });
+});
+</script>

@@ -93,11 +93,12 @@ module.exports.saveMaterial = async(req, res)=>{
         return res.status(404).json({success: false, message: 'Material not found'});
     };
 
-    if(user.savedMaterials.includes(material._id)){
+    if(user.savedMaterials.materials.includes(material._id)){
         return res.status(400).json({success: false, message: 'Already Saved This Material'});
     }
 
-    user.savedMaterials.push(material._id);
+    user.savedMaterials.savedFrom = material.uploadedBy;
+    user.savedMaterials.materials.push(material._id);
     await user.save();
 
     return res.status(200).json({success : true, message: 'Material Saved Successfully'})

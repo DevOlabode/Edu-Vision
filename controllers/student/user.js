@@ -85,24 +85,60 @@ module.exports.searchMaterialAndUsers = async(req, res) =>{
     res.render('student/user/searchResults', {materials, users, search : q || '', user: req.user})
 };
 
-module.exports.saveMaterial = async(req, res)=>{
-    const user  = req.user;
-    const material = await Materials.findById(req.params.materialId);
+// module.exports.saveMaterial = async(req, res)=>{
+//     const user  = req.user;
+//     const material = await Materials.findById(req.params.materialId);
 
-    if(!material){
-        return res.status(404).json({success: false, message: 'Material not found'});
-    };
+//     if(!material){
+//         return res.status(404).json({success: false, message: 'Material not found'});
+//     };
 
-    if(user.savedMaterials.materials.includes(material._id)){
-        return res.status(400).json({success: false, message: 'Already Saved This Material'});
+//     if(user.savedMaterials.materials.includes(material._id)){
+//         return res.status(400).json({success: false, message: 'Already Saved This Material'});
+//     }
+
+//     user.savedMaterials.savedFrom = material.uploadedBy;
+//     user.savedMaterials.materials.push(material._id);
+//     await user.save();
+
+//     return res.status(200).json({success : true, message: 'Material Saved Successfully'})
+// };
+module.exports.saveMaterial = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { materialId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    user.savedMaterials.savedFrom = material.uploadedBy;
-    user.savedMaterials.materials.push(material._id);
-    await user.save();
+    const existingSaved = user.savedMaterials.find(
+      (item) => item.materials.toString() === materialId
+    );
 
-    return res.status(200).json({success : true, message: 'Material Saved Successfully'})
+    if (existingSaved) {
+      // Remove saved material
+      user.savedMaterials = user.savedMaterials.filter(
+        (item) => item.materials.toString() !== materialId
+      );
+      await user.save();
+      return res.json({ success: true, message: 'Material unsaved successfully', saved: false });
+    } else {
+      // Add saved material
+      user.savedMaterials.push({
+        materials: materialId,
+        savedFrom: req.user._id,
+      });
+      await user.save();
+      return res.json({ success: true, message: 'Material saved successfully', saved: true });
+    }
+  } catch (error) {
+    console.error('Save material error:', error);
+    res.status(500).json({ success: false, message: 'Server error while saving material' });
+  }
 };
+
 
 module.exports.profilePage = async(req, res)=>{
     const userId = req.params.id;

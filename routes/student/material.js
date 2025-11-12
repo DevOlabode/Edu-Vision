@@ -27,6 +27,5 @@ router.get('/:id', isLoggedIn, controller.getOne);
 router.get('/:id/flashcards', isLoggedIn, controller.getFlashcards);
 router.post('/:id/chat', isLoggedIn, controller.chat);
 router.put('/:id', isLoggedIn,  controller.update);
-router.post('/:materialId/save', isLoggedIn, require('../../controllers/student/user').saveMaterial);
 
 module.exports = router;

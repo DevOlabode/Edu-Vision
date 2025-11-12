@@ -19,6 +19,6 @@ router.get('/users/:id', isLoggedIn, catchAsync(controller.profilePage));
 
 router.get('/search', isLoggedIn, catchAsync(controller.searchMaterialAndUsers));
 
-router.post('/save/:materialId', isLoggedIn, catchAsync(controller.saveMaterial))
+router.post('/save/:materialId', isLoggedIn, catchAsync(controller.saveMaterial));
 
 module.exports = router

@@ -25,7 +25,7 @@ const userSchema = new Schema({
         type : String,
         required : false,
         unique : true,
-        sparse : false // ensure all users must have a unique username
+        sparse : false 
     },
     bio : {
         type : String,
@@ -81,9 +81,20 @@ const userSchema = new Schema({
         default : null
     }],
     savedMaterials : [{
-        type : Schema.Types.ObjectId,
-        ref : 'Material',
-        default : null
+        materials : {
+            type : Schema.Types.ObjectId,
+            ref : 'Material',
+            default : null
+        },
+        savedFrom : {
+            type : Schema.Types.ObjectId,
+            ref : 'User',
+            default : null 
+        },
+        savedAt : {
+            type : Date,
+            default : Date.now
+        }
     }]
 }, { timestamps: true })
 
